@@ -1,0 +1,111 @@
+/* Define primary colors for easier management */
+$primary-purple: #800080; // A deep purple
+$primary-black: #000000; // Pure black
+$light-grey: #a0a0a0; // For text
+
+footer {
+  background-color: #000; // Matches bg-gray-900 closely with black
+  color: #c0c0c0; // Matches text-gray-300 closely
+  padding-top: 2.5rem; // py-10
+  padding-bottom: 2.5rem; // py-10
+  border-top-left-radius: 0.75rem; // rounded-t-xl
+  border-top-right-radius: 0.75rem; // rounded-t-xl
+  margin-top: 3rem; // mt-12
+
+  .container {
+    max-width: 1280px; /* Equivalent to mx-auto */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem; /* px-4 */
+
+    @media (min-width: 768px) { // md:px-8
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+
+    @media (min-width: 1024px) { // lg:px-12
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem; // gap-8
+
+    @media (min-width: 768px) { // md:grid-cols-2
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) { // lg:grid-cols-4
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Custom styles for better integration with the theme */
+  .footer-link {
+    color: #a0a0a0; // text-gray-400
+    transition-property: color;
+    transition-duration: 200ms;
+    &:hover {
+      color: #b366ff; // hover:text-purple-400 (a lighter purple for hover)
+    }
+  }
+
+  .footer-heading {
+    font-size: 1.125rem; // text-lg
+    font-weight: 600; // font-semibold
+    color: $primary-purple; // text-purple-500
+    margin-bottom: 1rem; // mb-4
+  }
+
+  .icon-link {
+    color: #a0a0a0; // text-gray-400
+    transition-property: color;
+    transition-duration: 200ms;
+    &:hover {
+      color: #b366ff; // hover:text-purple-400
+    }
+  }
+
+  .payment-logo {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+    cursor: pointer;
+    transition-property: transform;
+    transition-duration: 200ms;
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  .border-t {
+    border-top-width: 1px;
+    border-color: #4a5568; // border-gray-700
+    margin-top: 2.5rem; // mt-10
+    padding-top: 1.5rem; // pt-6
+    text-align: center;
+    font-size: 0.875rem; // text-sm
+    color: #a0a0a0; // text-gray-500
+  }
+}
+
+/* Specific styles for contact information */
+.space-x-2 > *:not([hidden]) ~ *:not([hidden]) {
+  margin-left: 0.5rem; /* Equivalent to space-x-2 */
+}
+
+.space-y-2 > *:not([hidden]) ~ *:not([hidden]) {
+  margin-top: 0.5rem; /* Equivalent to space-y-2 */
+}
+
+.space-x-4 > *:not([hidden]) ~ *:not([hidden]) {
+  margin-left: 1rem; /* Equivalent to space-x-4 */
+}
+
+.gap-3 {
+  gap: 0.75rem; /* Equivalent to gap-3 */
+}
