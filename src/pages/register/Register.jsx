@@ -59,7 +59,7 @@ export default function Register() {
     setLoading(true);
     try {
       const { confirmPassword, ...payload } = user;
-      const res = await newRequest.post("/auth/register", payload); // ✅ backend call
+      const res = await newRequest.post("/users/register/", payload); // ✅ backend call
       localStorage.setItem("currentUser", JSON.stringify(res.data)); // ✅ save user
       setSuccess("Registration successful! Redirecting...");
       setTimeout(() => navigate("/"), 1000);
