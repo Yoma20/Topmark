@@ -60,9 +60,9 @@ export default function Register() {
     try {
       const { confirmPassword, ...payload } = user;
       const res = await newRequest.post("/users/register/", payload); // ✅ backend call
-      localStorage.setItem("currentUser", JSON.stringify(res.data)); // ✅ save user
+      
       setSuccess("Registration successful! Redirecting...");
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/login", { state: { message: "Account created! Please sign in." } }), 1500);
     } catch (err) {
       console.error("Registration failed:", err);
       setError(
@@ -165,3 +165,4 @@ export default function Register() {
     </div>
   );
 }
+
