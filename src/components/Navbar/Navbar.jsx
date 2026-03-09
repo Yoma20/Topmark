@@ -3,6 +3,8 @@ import './navbar.scss'
 import { motion } from "framer-motion";
 import { GraduationCap, BookOpen, Users, MessageSquare, Star, Search, Briefcase, Award, Code, LineChart, Film, Music, DollarSign, Brain, Smile, BarChart2, Camera, Palette } from "lucide-react"; // Imported new icons
 import { twMerge } from "tailwind-merge";
+import { useContext } from 'react';
+import AuthContext from '../../AuthContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
 const Navbar = () => {
@@ -25,18 +27,17 @@ const Navbar = () => {
         }
     }, []);
 
-    const current_user = JSON.parse(localStorage.getItem('currentUser'));
+    const { user: current_user, logout } = useContext(AuthContext)
 
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        try {
-            await newRequest.post('/auth/logout');
-            localStorage.setItem("currentUser", null);
-            navigate("/")
-        } catch (err) {
-            console.log(err);
-        }
+      try {
+        await logout(); 
+        navigate("/");
+      } catch (err) {
+        console.log(err);
+      }
     }
     const [input, setinput] = useState("");
     const handlesubmit = () => {
