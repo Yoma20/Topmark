@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.scss';
+import { useState } from 'react';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 import Add from './pages/add/Add.jsx';
@@ -26,8 +27,11 @@ import {
 import BecomeSeller from './components/becomeSeller/BecomeSeller.jsx';
 import BecomeSeller2 from './components/becomeSeller2/BecomeSeller2.jsx';
 
+import { useState } from 'react';
+
+const queryClient = new QueryClient(); 
+
 function App() {
-  const queryClient = new QueryClient();
   const Layout = () => {
     return (
       <QueryClientProvider client={queryClient} key={55}>
@@ -112,3 +116,4 @@ function App() {
 }
 
 export default App;
+
