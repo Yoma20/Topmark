@@ -41,7 +41,7 @@ const Gig = () => {
         <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-8">
           <div className="left flex-1">
             <span className="breadcrumbs uppercase text-gray-500 text-sm">
-              FIVERR &gt; GRAPHICS & DESIGN &gt;
+              TOPMARK &gt; GRAPHICS & DESIGN &gt;
             </span>
             <h1 className="text-3xl font-bold mt-2">{data.title}</h1>
             {isLoadingUser ? (
@@ -180,5 +180,6 @@ const Gig = () => {
     </div>
   );
 };
+
 
 export default Gig;
