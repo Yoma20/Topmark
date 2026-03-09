@@ -57,10 +57,21 @@ const Add = () => {
       queryClient.invalidateQueries(["myGigs"])
     }
   });
-    const handlesubmit=(e)=>{
-        e.preventDefault();
-        mutation.mutate(state);
-        navigate('/mygigs')
+    const mutation = useMutation({
+      mutationFn: (gig) => newRequest.post("/gigs", gig),
+      onSuccess: () => {
+        queryClient.invalidateQueries(["myGigs"]);
+        navigate('/mygigs'); 
+      },
+      onError: (err) => {
+        console.error("Failed to create gig:", err);
+        
+      }
+    });
+    const handlesubmit = (e) => {
+      e.preventDefault();
+      mutation.mutate(state);
+    }
     }
     return ([
         <div className="add">
@@ -96,7 +107,7 @@ const Add = () => {
                             id=""
                             cols="30"
                             rows="16"
-                            placeholder="A brief description to introduce your service to cusmoters"
+                            placeholder="A brief description to introduce your service to customers"
                             onChange={handlechange}
                         ></textarea>
                         <button onClick={handlesubmit}>Create</button>
@@ -104,9 +115,10 @@ const Add = () => {
                     <div className="right">
                         <label htmlFor="">Service Title</label>
                         <input
-                            type="text"
-                            placeholder="e.g. One-page web design"
-                            name="sortTitle"
+                          type="text"
+                          placeholder="e.g. One-page web design"
+                          name="sortTitle"
+                          onChange={handlechange}
                         />
                         <label htmlFor="">Short Description</label>
                         <textarea
@@ -129,7 +141,7 @@ const Add = () => {
                         <input 
                         type="number" 
                         min={1} 
-                        name="revisonNumber" 
+                        name="revisionNumber"
                         onChange={handlechange} 
                         />
                         <label htmlFor="">Add Features</label>
@@ -163,4 +175,5 @@ const Add = () => {
         </div>
     ]);
 }
+
 export default Add;
