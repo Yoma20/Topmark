@@ -123,19 +123,21 @@ const Gig = () => {
                     </div>
                     <div className="item">
                       <span className="title font-semibold text-gray-600">Member since</span>
-                      <span className="desc block text-gray-800">Aug 2022</span>
+                      <span className="desc block text-gray-800">
+                        {dataUser.createdAt ? new Date(dataUser.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
+                      </span>
                     </div>
                     <div className="item">
                       <span className="title font-semibold text-gray-600">Avg. response time</span>
-                      <span className="desc block text-gray-800">4 hours</span>
+                      <span className="desc block text-gray-800">{dataUser.responseTime || 'N/A'}</span>
                     </div>
                     <div className="item">
                       <span className="title font-semibold text-gray-600">Last delivery</span>
-                      <span className="desc block text-gray-800">1 day</span>
+                      <span className="desc block text-gray-800">{dataUser.lastDelivery || 'N/A'}</span>
                     </div>
                     <div className="item">
                       <span className="title font-semibold text-gray-600">Languages</span>
-                      <span className="desc block text-gray-800">English</span>
+                      <span className="desc block text-gray-800">{dataUser.languages || 'English'}</span>
                     </div>
                   </div>
                   <hr className="my-4" />
@@ -158,7 +160,7 @@ const Gig = () => {
               </div>
               <div className="item flex items-center gap-2 mt-2">
                 <img src="/images/recycle.png" alt="" className="w-6 h-6" />
-                <span className="text-gray-700">{data.rivisonNumber} Revisions</span>
+                <span className="text-gray-700">{data.revisionNumber} Revisions</span>
               </div>
             </div>
             <div className="features mt-4">
@@ -183,3 +185,4 @@ const Gig = () => {
 
 
 export default Gig;
+
