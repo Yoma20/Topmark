@@ -1,57 +1,53 @@
-import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import newRequest from "../../utils/newRequest";
 import "./review.scss";
+
 const Review = ({ review }) => {
-  const [like, setlike] = useState(false);
-  const [dislike, setdislike] = useState(false);
-  const { isLoading, error, data } = useQuery(
-    {
-      queryKey: [review.userId],
-      queryFn: () =>
-        newRequest.get(`/users/${review.userId}`).then((res) => {
-          return res.data;
-        }),
-    },
-  );
-  console.log(error);
-  const handlelike=() => {
-    setlike(true);
-  }
-  const handledislike=() => {
-    setdislike(true);
-  }
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+
+  // Django serializer embeds the full student object — no extra fetch needed
+  const student = review.student;
+
   return (
     <div className="review">
-      {isLoading ? (
-        "loading"
-      ) : error ? (
-        "error"
-      ) : (
-        <div className="user">
-          <img className="pp" src={data.img || "/images/noavtar.jpeg"} alt="" />
-          <div className="info">
-            <span>{data.username}</span>
-            <div className="country">
-              <span>{data.country}</span>
-            </div>
+      <div className="user">
+        <img
+          className="pp"
+          src={student?.img || "/images/noavtar.jpeg"}
+          alt={student?.username || "Reviewer"}
+        />
+        <div className="info">
+          <span>{student?.username || "Anonymous"}</span>
+          <div className="country">
+            <span>{student?.country || ""}</span>
           </div>
         </div>
-      )}
-      <div className="stars">
-        {Array(review.star)
-          .fill()
-          .map((item, i) => (
-            <img src="/images/star.png" alt="" key={i} />
-          ))}
-        <span>{review.star}</span>
       </div>
-      <p>{review.desc}</p>
+
+      {/* review.rating replaces review.star */}
+      <div className="stars">
+        {Array(review.rating).fill().map((_, i) => (
+          <img src="/images/star.png" alt="★" key={i} />
+        ))}
+        <span>{review.rating}</span>
+      </div>
+
+      {/* review.comment replaces review.desc */}
+      <p>{review.comment}</p>
+
       <div className="helpful">
         <span>Helpful?</span>
-        {<img src={like?'/images/like.png':'/images/likeColor.png'} alt="" onClick={handlelike} />}
+        <img
+          src={liked ? "/images/like.png" : "/images/likeColor.png"}
+          alt="like"
+          onClick={() => setLiked(true)}
+        />
         <span>Yes</span>
-        <img src={dislike?'/images/dislike.png':'/images/dislike_color.png'} alt="" onClick={handledislike} />
+        <img
+          src={disliked ? "/images/dislike.png" : "/images/dislike_color.png"}
+          alt="dislike"
+          onClick={() => setDisliked(true)}
+        />
         <span>No</span>
       </div>
     </div>

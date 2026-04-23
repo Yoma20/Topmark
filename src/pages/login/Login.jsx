@@ -11,14 +11,14 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // ✅ Pick up success message passed from Register redirect
+    
     const successMessage = location.state?.message || null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         try {
-            const res = await newRequest.post('/auth/login', { username, password });
+            const res = await newRequest.post('/users/login/', { username, password });
             localStorage.setItem("currentUser", JSON.stringify(res.data));
             navigate('/');
         } catch (err) {

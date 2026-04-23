@@ -26,8 +26,9 @@ const GigCard = ({ item }) => {
                     <div className="star">
                         <img src="/images/star.png" alt="" />
                         <span>
-                            {!isNaN(item.totalStars / item.starNumber) &&
-                                Math.round(item.totalStars / item.starNumber)}
+                            {item.expert?.rating > 0
+                                ? parseFloat(item.expert.rating).toFixed(1)
+                                : "New"}
                         </span>
                     </div>
                 </div>

@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 import Add from './pages/add/Add.jsx';
-import Message from './pages/message/Message.jsx';
-import Messages from './pages/messages/Messages.jsx';
+import MessagingPage from "./pages/MessagingPage";
+import MessagingPage from './pages/MessagingPage/MessagingPage.jsx';
 import Orders from "./pages/orders/Orders.jsx";
 import MyGigs from "./pages/myGigs/MyGigs.jsx";
 import Gig from "./pages/gig/Gig.jsx";
@@ -13,6 +13,7 @@ import Gigs from "./pages/gigs/Gigs.jsx";
 import Home from './pages/home/Home.jsx';
 import Pay from './pages/pay/Pay.jsx';
 import Success from './pages/success/Success.jsx';
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -74,12 +75,8 @@ function App() {
           element: <Add />
         },
         {
-          path: "/messages",
-          element: <Messages />
-        },
-        {
-          path: "/message/:id",
-          element: <Message />
+          path: "/messaging",
+          element: {<MessagingPage currentUser={currentUser} />}
         },
         {
           path: "/login",
@@ -105,6 +102,7 @@ function App() {
           path: "/becomeSeller2",
           element: <BecomeSeller2 />
         },
+        
       ]
     }
   ]);
