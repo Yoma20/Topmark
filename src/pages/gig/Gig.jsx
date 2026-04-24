@@ -3,6 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 const StarRating = ({ rating }) => {
