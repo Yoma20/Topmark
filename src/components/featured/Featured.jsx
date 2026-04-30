@@ -13,23 +13,23 @@ function Featured() {
       <div className="featured">
         <div className="container">
           <div className="left">
-            <h1>
-              Find the perfect <span>freelance</span> <br></br>
-              <span>services</span> for your business
+          <h1>
+              Find the perfect <span>academic</span> <br></br>
+              <span>expert</span> for your assignment
             </h1>
             <div className="search">
               <div className="searchInput">
                 <img src="/images/search.png" alt="" />
-                <input type="text" placeholder='Try "building mobile app"' onChange={e=>setinput(e.target.value)} />
+                <input type="text" placeholder='Try "nursing care plan" or "law essay APA"' onChange={e=>setinput(e.target.value)} />
               </div>
               <button onClick={handlesubmit}>Search</button>
             </div>
             <div className="popular">
               <span>Popular:</span>
-              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>Web Design</button>
-              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>WordPress</button>
-              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>Logo Design</button>
-              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>AI Services</button>
+              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>Law Essay</button>
+              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>Nursing Care Plan</button>
+              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>Cybersecurity Report</button>
+              <button onClick={e=>navigate(`gigs?search=${e.target.innerHTML}`)}>Dissertation Help</button>
             </div>
           </div>
         </div>

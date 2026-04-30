@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+
 import './navbar.scss'
-import { motion } from "framer-motion";
-import { GraduationCap, BookOpen, Users, MessageSquare, Star, Search, Briefcase, Award, Code, LineChart, Film, Music, DollarSign, Brain, Smile, BarChart2, Camera, Palette } from "lucide-react"; // Imported new icons
-import { twMerge } from "tailwind-merge";
-import { useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+
 import AuthContext from '../../AuthContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
@@ -48,7 +46,7 @@ const Navbar = () => {
             <div className="container">
                 <div className="logo">
                     <Link to="/" className="flex items-center space-x-2">
-                        <GraduationCap className="cap" />
+                    <img src="/images/logos.png" alt="TopMark" style={{ height: '55px', width: 'auto', verticalAlign: 'middle' }} />
                         <span className="text-2xl">TopMark</span>
                     </Link>
                 </div>
@@ -59,9 +57,10 @@ const Navbar = () => {
                     </div>
                 </div>}
                 <div className="links">
-                    <span onClick={()=>navigate('/becomeseller')}>TopMark Business</span>
-                    <span className="tooltip ">Explore
-                    </span>
+                    
+                <span className="explore-btn" onClick={() => navigate('/gigs')}>
+                Explore Experts
+                </span>
                     <span>
                         <img src='/images/language.png' alt='' width={'18px'} height={'16px'}
                             style={{ marginRight: '10px' }}>
@@ -70,7 +69,9 @@ const Navbar = () => {
                     </span>
                     <Link to='/login' className='link' key={333}><span>Sign in</span></Link>
 
-                    {!current_user?.isSeller && <span onClick={e => navigate('/becomeSeller')}>Become a Seller</span>}
+                    {current_user?.user_type !== 'expert' && !current_user && (
+                        <span onClick={() => navigate('/becomeSeller')}>Become an Expert</span>
+                    )}
                     {!current_user && <button className='join' onClick={e => navigate(`/register`)}>Join</button>}
                     {
                         current_user && (
@@ -79,14 +80,12 @@ const Navbar = () => {
                                 <span>{current_user?.username}</span>
                                 {open && (
                                     <div className="options">
-                                        {
-                                            current_user.isSeller && (
-                                                <>
-                                                    <Link className='link' key={555} to='/mygigs'>Gigs</Link>
-                                                    <Link className='link' key={999} to='/add'>Add New Gig</Link>
-                                                </>
-                                            )
-                                        }
+                                        {current_user.user_type === 'expert' && (
+  <>
+                                            <Link to='/mygigs'>My Gigs</Link>
+                                            <Link to='/add'>Add New Gig</Link>
+                                        </>
+                                        )}
                                         <Link className='link' key={9996} to='/orders'>Orders</Link>
                                         <Link className='link' key={9995} to='/messages'>Messages</Link>
                                         <Link className='link' key={9993} onClick={handleLogout}>Logout</Link>
@@ -102,33 +101,15 @@ const Navbar = () => {
                 <>
                     <hr />
                     <div className="menu">
-                        <Link key={9983} className='link menulink' to='/'>
-                            Graphics & Design
-                        </Link>
-                        <Link key={9883} className='link menulink' to='/'>
-                            Video & Animation
-                        </Link>
-                        <Link key={9988} className='link menulink' to='/'>
-                            Writing & Translation
-                        </Link>
-                        <Link key={9981} className='link menulink' to='/'>
-                            AI Services
-                        </Link>
-                        <Link key={9982} className='link menulink' to='/'>
-                            Digital Marketing
-                        </Link>
-                        <Link key={9903} className='link menulink' to='/'>
-                            Music & Audio
-                        </Link>
-                        <Link key={99883} className='link menulink' to='/'>
-                            Programming & Tech
-                        </Link>
-                        <Link key={99083} className='link menulink' to='/'>
-                            Business
-                        </Link>
-                        <Link key={93983} className='link menulink' to='/'>
-                            Lifestyle
-                        </Link>
+                        <Link className='link menulink' to='/gigs?search=Law'>Law & Legal</Link>
+                        <Link className='link menulink' to='/gigs?search=Nursing'>Nursing</Link>
+                        <Link className='link menulink' to='/gigs?search=Cybersecurity'>Cybersecurity</Link>
+                        <Link className='link menulink' to='/gigs?search=Biology'>Biology</Link>
+                        <Link className='link menulink' to='/gigs?search=History'>History</Link>
+                        <Link className='link menulink' to='/gigs?search=Data Science'>Data Science</Link>
+                        <Link className='link menulink' to='/gigs?search=Computer Science'>Computer Science</Link>
+                        <Link className='link menulink' to='/gigs?search=Business'>Business</Link>
+                        <Link className='link menulink' to='/gigs?search=Essay Writing'>Essay Writing</Link>
                     </div>
                     <hr />
                 </>

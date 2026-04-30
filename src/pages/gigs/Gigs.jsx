@@ -4,6 +4,7 @@ import GigCard from '../../components/GigCard/GigCard';
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const Gigs = () => {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,9 @@ const Gigs = () => {
   const minRef = useRef();
   const maxRef = useRef();
   const { search } = useLocation();
+
+  const params = new URLSearchParams(search);
+  const category = params.get("cat") || "";
 
   const { isLoading, error, data, refetch } = useQuery({
     queryKey: ['gigs', sort],
@@ -22,8 +26,20 @@ const Gigs = () => {
 
   useEffect(() => { refetch(); }, [sort]);
 
+  const pageTitle = category
+    ? `${category} Experts for Hire — Topmark`
+    : "Browse Academic Experts — Topmark";
+
+  const pageDescription = category
+    ? `Find verified ${category} experts on Topmark. Compare packages, read reviews, and get quality help fast.`
+    : "Browse hundreds of verified academic experts on Topmark. Tutoring, essay writing, programming, data science and more.";
+
   return (
     <div className="gigs">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+      </Helmet>
       <div className="container">
         <span className="breadcrumbs">TOPMARK &gt; BROWSE GIGS</span>
         <h1>Find an Expert</h1>
@@ -40,7 +56,7 @@ const Gigs = () => {
             <span className="sortType">
               {sort === "sales" ? "Best Selling" : "Newest"}
             </span>
-            <img src="/images/down.png" alt="" onClick={() => setOpen(!open)} />
+            <img src="/images/down.png" alt="toggle sort options" onClick={() => setOpen(!open)} />
             {open && (
               <div className="rightMenu">
                 {sort === "sales"

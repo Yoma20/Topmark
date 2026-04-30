@@ -590,3 +590,187 @@ body {
       font-size: 0.875rem; // sm
     }
   }
+
+  // ── Mobile Home ───────────────────────────────────────────
+  @media (max-width: 768px) {
+    .home {
+      .featured {
+        .container {
+          width: 100%;
+          padding: 40px 20px;
+  
+          .left {
+            h1 { font-size: 1.8rem; }
+  
+            .search {
+              flex-direction: column;
+              gap: 8px;
+  
+              .searchInput {
+                width: 100%;
+                input { width: 100%; }
+              }
+  
+              button { width: 100%; }
+            }
+  
+            .popular {
+              flex-wrap: wrap;
+              gap: 8px;
+            }
+          }
+        }
+      }
+  
+      .features {
+        padding: 40px 20px;
+  
+        .container {
+          width: 100%;
+          flex-direction: column;
+          gap: 40px;
+  
+          .item {
+            &:last-child { display: none; } // hide image on mobile
+          }
+        }
+      }
+  
+      .explore {
+        .container {
+          width: 100%;
+          padding: 20px;
+  
+          .items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+          }
+        }
+      }
+  
+      .categories {
+        .container {
+          width: 100%;
+          padding: 20px;
+  
+          .categories-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .home {
+  
+      // Fix all containers to be full width
+      .container {
+        width: 100% !important;
+        padding: 20px 16px !important;
+        box-sizing: border-box;
+      }
+  
+      // Featured / hero section
+      .featured {
+        .container {
+          .left {
+            width: 100%;
+  
+            h1 {
+              font-size: 1.6rem;
+              line-height: 1.3;
+            }
+  
+            .search {
+              flex-direction: column;
+              width: 100%;
+  
+              .searchInput {
+                width: 100%;
+                input { width: 100%; box-sizing: border-box; }
+              }
+  
+              button { width: 100%; }
+            }
+  
+            .popular {
+              flex-wrap: wrap;
+              gap: 6px;
+              button { font-size: 12px; }
+            }
+          }
+  
+          // Hide the hero image/right side on mobile
+          .right { display: none; }
+        }
+      }
+  
+      // Features dark section
+      .features {
+        padding: 40px 16px !important;
+  
+        .container {
+          flex-direction: column !important;
+          gap: 24px !important;
+  
+          .item {
+            width: 100% !important;
+  
+            // Hide the image item on mobile
+            &:last-child { display: none !important; }
+  
+            h1 { font-size: 1.4rem; }
+            p { font-size: 14px; }
+          }
+        }
+      }
+  
+      // Explore / subject quick links
+      .explore {
+        .container {
+          .items {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+            width: 100%;
+  
+            .item {
+              font-size: 12px;
+              text-align: center;
+            }
+          }
+        }
+      }
+  
+      // Category cards grid
+      .categories {
+        .container {
+          .categories-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px;
+          }
+        }
+      }
+  
+      // Second slide / project cards
+      .secondslide {
+        overflow: hidden;
+        width: 100%;
+      }
+    }
+  }
+  
+  // Very small screens
+  @media (max-width: 420px) {
+    .home {
+      .featured .container .left {
+        h1 { font-size: 1.2rem; }
+      }
+  
+      .explore .container .items {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+  }

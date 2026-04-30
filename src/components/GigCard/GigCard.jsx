@@ -14,17 +14,17 @@ const GigCard = ({ item }) => {
                 })
             })
     return ([
-        <Link to={`/gig/${item._id}`} className="link">
-            <div className="gigCard ">
-                <img src={item.cover} alt="" />
+        <Link to={`/gig/${item._id}`} className="link" key={item._id}>
+            <div className="gigCard">
+                <img src={item.cover} alt={`${item.title || item.desc} — Topmark`} />
                 <div className="info">
                     {isLoading ? "loading" : error ? "something wrong" : <div className="user">
-                        <img src={data.img || '/images/noavtar.jpeg'} alt="" />
+                        <img src={data.img || '/images/noavtar.jpeg'} alt={`${data.username} profile photo`} />
                         <span>{data.username}</span>
                     </div>}
                     <p>{item.desc}</p>
                     <div className="star">
-                        <img src="/images/star.png" alt="" />
+                        <img src="/images/star.png" alt="star rating" />
                         <span>
                             {item.expert?.rating > 0
                                 ? parseFloat(item.expert.rating).toFixed(1)
@@ -34,9 +34,9 @@ const GigCard = ({ item }) => {
                 </div>
                 <hr />
                 <div className="details">
-                    <img src="/images/heart.png" alt="" />
+                    <img src="/images/heart.png" alt="save to favourites" />
                     <div className="price">
-                        <span>STARING AT</span>
+                        <span>STARTING AT</span>
                         <h2>$ {item.price}<sup>99</sup></h2>
                     </div>
                 </div>

@@ -1,10 +1,11 @@
+import { useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
-import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const StarRating = ({ rating }) => {
   const value = parseFloat(rating);
@@ -59,8 +60,52 @@ const Gig = () => {
   if (isLoading) return <div className="loader"></div>;
   if (error) return <h4 style={{ color: 'red', textAlign: 'center' }}>Something went wrong</h4>;
 
+  const pageTitle = data.title
+    ? `${data.title} by ${data.expert_username} — Topmark`
+    : "Expert Service — Topmark";
+
+  const pageDescription = data.description
+    ? data.description.slice(0, 155)
+    : `Hire ${data.expert_username} on Topmark for expert academic help.`;
+
+  const lowestPrice = data.packages?.length
+    ? Math.min(...data.packages.map(p => p.price))
+    : null;
+
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": data.title,
+    "description": data.description,
+    "provider": {
+      "@type": "Person",
+      "name": data.expert_username
+    },
+    "offers": lowestPrice ? {
+      "@type": "Offer",
+      "priceCurrency": "USD",
+      "price": lowestPrice,
+      "availability": "https://schema.org/InStock"
+    } : undefined,
+    "aggregateRating": data.expert_rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": data.expert_rating,
+      "bestRating": "5"
+    } : undefined
+  };
+
   return (
     <div className="gig">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <script type="application/ld+json">
+          {JSON.stringify(schemaMarkup)}
+        </script>
+      </Helmet>
+
       <div className="container">
         <div className="left">
           <span className="breadcrumbs">TOPMARK &gt; {data.category_name || 'GIGS'}</span>
@@ -74,7 +119,9 @@ const Gig = () => {
           {data.images?.length > 0 && (
             <Slider {...sliderSettings} className="slider">
               {data.images.map((img, i) => (
-                <div key={i}><img src={img} alt="" /></div>
+                <div key={i}>
+                  <img src={img} alt={`${data.title} — sample work ${i + 1}`} />
+                </div>
               ))}
             </Slider>
           )}
@@ -82,7 +129,6 @@ const Gig = () => {
           <h2>About This Gig</h2>
           <p>{data.description}</p>
 
-          {/* Pricing table */}
           <h2>Packages</h2>
           <div className="packages">
             {data.packages?.map((pkg) => (
@@ -124,18 +170,18 @@ const Gig = () => {
               <p>{selectedPackage.description}</p>
               <div className="details">
                 <div className="item">
-                  <img src="/images/clock.png" alt="" />
+                  <img src="/images/clock.png" alt="delivery time" />
                   <span>{selectedPackage.delivery_days} days delivery</span>
                 </div>
                 <div className="item">
-                  <img src="/images/recycle.png" alt="" />
+                  <img src="/images/recycle.png" alt="revisions" />
                   <span>{selectedPackage.revision_number} revisions</span>
                 </div>
               </div>
               <ul className="features">
                 {selectedPackage.features.map((f, i) => (
                   <li key={i}>
-                    <img src="/images/greencheck.png" alt="" />{f}
+                    <img src="/images/greencheck.png" alt="included" />{f}
                   </li>
                 ))}
               </ul>
