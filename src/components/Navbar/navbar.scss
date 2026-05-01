@@ -448,50 +448,56 @@
   @media (max-width: 768px) {
     .navbar {
       .container {
-        width: 100%;
-        padding: 12px 16px;
+        width: 100%;           
+        max-width: 1400px;     
+        padding: 20px 20px;
   
         .logo {
           img { height: 36px !important; }
         }
   
         .navbarsearch {
-          display: none; 
+          width: 100%;
+          input { width: 100%; }
         }
   
         .links {
-          gap: 8px;
-          font-size: 13px;
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 8px; 
+            white-space: nowrap;
+            
   
           
           span:has(img) { display: none; }
-          .become-seller { display: none; }
   
           .explore-btn {
-            padding: 6px 10px;
-            font-size: 0.75rem;
-          }
-  
-          button.join {
             padding: 6px 12px;
-            font-size: 13px;
+            font-size: 0.78rem;
           }
         }
       }
   
       .menu {
         width: 100%;
-        padding: 8px 16px;
+        max-width: 1400px;
+        padding: 10px 20px;
+        display: flex;
+        flex-wrap: nowrap;
         overflow-x: auto;
+        overflow-y: hidden;
         justify-content: flex-start;
-        gap: 16px;
+        gap: 20px;
+        -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+  
         &::-webkit-scrollbar { display: none; }
   
         .menulink {
           white-space: nowrap;
           flex-shrink: 0;
-          font-size: 12px;
+          font-size: 13px;
         }
       }
     }

@@ -7,7 +7,7 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    // Improves Core Web Vitals by splitting large chunks
+    
     rollupOptions: {
       output: {
         manualChunks: {

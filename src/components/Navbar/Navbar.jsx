@@ -69,15 +69,10 @@ const Navbar = () => {
                     </span>
                     <Link to='/login' className='link' key={333}><span>Sign in</span></Link>
 
-                    {!current_user && (
-    <>
-                            <Link to='/login' className='link'><span>Sign in</span></Link>
-                            <button className='join' onClick={() => navigate('/register')}>Join</button>
-                        </>
-                    )}
                     {current_user?.user_type !== 'expert' && !current_user && (
-                        <span className="become-seller" onClick={() => navigate('/becomeSeller')}>Become an Expert</span>
+                        <span onClick={() => navigate('/becomeSeller')}>Become an Expert</span>
                     )}
+                    {!current_user && <button className='join' onClick={e => navigate(`/register`)}>Join</button>}
                     {
                         current_user && (
                             <div className="user" onClick={() => setopen(!open)}>
