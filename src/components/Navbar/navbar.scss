@@ -1,4 +1,4 @@
-// ─── Base Navbar ─────────────────────────────────────────────────────────────
+// ─── Base Navbar ──────────────────────────────────────────────────────────────
 .navbar {
     display: flex;
     flex-direction: column;
@@ -8,190 +8,218 @@
     position: sticky;
     top: 0;
     z-index: 999;
-    transition: 2s ease-in;
+    transition: box-shadow 0.3s ease;
 
     &.active {
         background: white;
         color: black;
-        animation-name: animated_active_navbar;
-        animation-duration: 120s;
-        animation-iteration-count: infinite;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 
-        span:hover {
-            color: #107a49;
-        }
+        span:hover { color: #107a49; }
     }
 
-    // ─── Container ───────────────────────────────────────────────────────────
+    // ─── Main Container ───────────────────────────────────────────────────────
     .container {
         width: 100%;
         max-width: 1400px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 16px 24px;
+        padding: 14px 24px;
+        position: relative;
+    }
 
-        // ─── Logo ─────────────────────────────────────────────────────────
-        .logo {
-            font-size: 34px;
-            font-weight: bold;
-            color: #107a49;
-            flex-shrink: 0;
+    // ─── Logo ─────────────────────────────────────────────────────────────────
+    .logo {
+        flex-shrink: 0;
 
-            .dot { color: #107a49; }
-        }
-
-        // ─── Search Bar (desktop, shows on scroll) ────────────────────────
-        .navbarsearch {
-            display: flex;
-            flex: 1;
-            max-width: 420px;
-            margin: 0 24px;
-            border: none;
-
-            input {
-                width: 100%;
-                outline: none;
-                border-radius: 5px 0 0 5px;
-                border: 1px solid black;
-                padding: 8px 12px;
-                font-size: 14px;
-
-                &::placeholder {
-                    color: gray;
-                    font-size: 14px;
-                }
-            }
-
-            .search {
-                width: 50px;
-                background: #000;
-                border-radius: 0 5px 5px 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-
-                img {
-                    width: 17px;
-                }
-            }
-        }
-
-        // ─── Desktop Links ────────────────────────────────────────────────
-        .links {
+        .logo-link {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        img {
+            height: 48px;
+            width: auto;
+            vertical-align: middle;
+        }
+    }
+
+    // ─── Search Bar (desktop, on scroll) ──────────────────────────────────────
+    .navbarsearch {
+        display: flex;
+        flex: 1;
+        max-width: 420px;
+        margin: 0 24px;
+
+        input {
+            width: 100%;
+            outline: none;
+            border-radius: 5px 0 0 5px;
+            border: 1px solid #ccc;
+            padding: 9px 14px;
+            font-size: 14px;
+
+            &::placeholder { color: #aaa; font-size: 14px; }
+            &:focus { border-color: #107a49; }
+        }
+
+        .search {
+            width: 48px;
+            background: #107a49;
+            border-radius: 0 5px 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            &:hover { background: #0d6640; }
+
+            img { width: 17px; filter: brightness(10); }
+        }
+    }
+
+    // ─── Desktop Links ─────────────────────────────────────────────────────────
+    .links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-weight: 500;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 15px;
+
+        .become-expert-link {
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
             font-weight: 500;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 16px;
+            transition: color 0.2s;
+            &:hover { color: #107a49; }
+        }
 
-            // "Become an Expert" — hide on smaller desktops if needed
-            .become-expert-link {
-                color: black;
-                cursor: pointer;
-                white-space: nowrap;
-                &:hover { color: #107a49; }
-            }
+        .signin-link {
+            color: #333;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+            &:hover { color: #107a49; }
+        }
 
-            button {
-                color: white;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                border: 1px solid #107a49;
-                background-color: #107a49;
-                font-size: 15px;
-                font-weight: 600;
+        button.join {
+            color: white;
+            padding: 9px 22px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1.5px solid #107a49;
+            background-color: #107a49;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
 
-                &:hover {
-                    color: #107a49;
-                    background-color: #fafafa;
-                    border-color: #107a49;
-                    transition: all .2s ease-in-out;
-                }
-            }
-
-            .join {
-                font-size: 15px;
-                font-weight: 600;
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            }
-
-            // ─── Logged-in User ───────────────────────────────────────────
-            .user {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                cursor: pointer;
-                position: relative;
-
-                img {
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 50%;
-                    object-fit: cover;
-                }
-
-                .options {
-                    position: absolute;
-                    top: 50px;
-                    right: 0;
-                    padding: 20px;
-                    background-color: white;
-                    border-radius: 10px;
-                    border: 1px solid lightgray;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    color: gray;
-                    width: 200px;
-                    font-weight: 300;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-                    z-index: 1000;
-
-                    a { color: gray; text-decoration: none; &:hover { color: #107a49; } }
-                }
+            &:hover {
+                background-color: white;
+                color: #107a49;
             }
         }
 
-        // ─── Hamburger (hidden on desktop) ────────────────────────────────
-        .hamburger {
-            display: none;
-            flex-direction: column;
+        // Logged-in user dropdown
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
-            gap: 5px;
-            padding: 4px;
-            flex-shrink: 0;
+            position: relative;
 
-            span {
-                display: block;
-                width: 24px;
-                height: 2.5px;
-                background: #107a49;
-                border-radius: 2px;
-                transition: all 0.3s ease;
+            img {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #eee;
             }
 
-            // Animate to X when open
-            &.open span:nth-child(1) {
-                transform: translateY(7.5px) rotate(45deg);
-            }
-            &.open span:nth-child(2) {
-                opacity: 0;
-            }
-            &.open span:nth-child(3) {
-                transform: translateY(-7.5px) rotate(-45deg);
+            span { font-weight: 500; color: #333; }
+
+            .options {
+                position: absolute;
+                top: 48px;
+                right: 0;
+                padding: 12px 0;
+                background-color: white;
+                border-radius: 10px;
+                border: 1px solid #eee;
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                width: 200px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+                z-index: 1000;
+
+                a, .logout-option {
+                    padding: 10px 20px;
+                    color: #444;
+                    text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 400;
+                    display: block;
+                    cursor: pointer;
+                    transition: background 0.15s, color 0.15s;
+
+                    &:hover {
+                        background: #f5faf7;
+                        color: #107a49;
+                    }
+                }
+
+                .logout-option { color: #e53e3e; &:hover { background: #fff5f5; color: #c53030; } }
             }
         }
     }
 
-    // ─── Desktop Category Menu ────────────────────────────────────────────────
-    hr {
+    // ─── Hamburger (hidden on desktop) ────────────────────────────────────────
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+        padding: 6px 4px;
+        flex-shrink: 0;
+
+        span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #222;
+            border-radius: 2px;
+            transition: all 0.25s ease;
+        }
+
+        &.open {
+            span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+            span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+            span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        }
+    }
+
+    // ─── Mobile right (hidden on desktop) ─────────────────────────────────────
+    .mobile-right { display: none; }
+
+    // ─── Backdrop ─────────────────────────────────────────────────────────────
+    .menu-backdrop {
+        display: none;
+    }
+
+    // ─── Mobile menu (hidden on desktop) ──────────────────────────────────────
+    .mobile-menu { display: none; }
+
+    // ─── Desktop Category Bar ─────────────────────────────────────────────────
+    .nav-hr {
         width: 100%;
         height: 0;
-        border: 0.5px solid rgb(225, 225, 225);
+        border: none;
+        border-top: 1px solid #ebebeb;
     }
 
     .menu {
@@ -200,73 +228,65 @@
         padding: 10px 24px;
         display: flex;
         justify-content: space-between;
-        font-weight: 300;
-        color: gray;
+        font-weight: 400;
+        color: #666;
         font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
 
         .menulink {
             white-space: nowrap;
+            text-decoration: none;
+            color: #555;
+            padding-bottom: 4px;
+            transition: color 0.15s, border-bottom 0.15s;
+
             &:hover {
-                border-bottom: 3px solid #107a49;
-                transition-duration: 0.11s;
+                color: #107a49;
+                border-bottom: 2px solid #107a49;
             }
         }
     }
-
-    // ─── Mobile Menu Overlay ──────────────────────────────────────────────────
-    .mobile-menu {
-        display: none; // shown via media query
-    }
 }
 
-// ─── Explore Button (shared desktop + mobile) ─────────────────────────────────
+// ─── Explore Button ────────────────────────────────────────────────────────────
 .explore-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     background: #107a49;
     color: #fff !important;
-    padding: 10px 16px;
+    padding: 9px 18px;
     border-radius: 5px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 14px;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
     white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+    border: none;
 
-    &:hover {
-        background: #19a463;
-        transform: scale(1.04);
-    }
-    &:active {
-        transform: scale(0.97);
-    }
+    &:hover { background: #0d6640; transform: scale(1.02); }
+    &:active { transform: scale(0.97); }
 }
 
-// ─── Utility ──────────────────────────────────────────────────────────────────
-.cap { color: #107a49; }
-
+// ─── Utilities ────────────────────────────────────────────────────────────────
 .text-2xl {
+    font-size: 1.4rem;
     font-weight: 700;
     color: #107a49;
 }
 
-.become-seller {
-    color: #107a49;
-    font-weight: 400;
-}
+.become-seller { color: #107a49; font-weight: 400; }
 
 // ─── Keyframes ────────────────────────────────────────────────────────────────
 @keyframes animated_active_navbar {
-    0%   { color: black; background: #fff; }
-    100% { color: black; background: #fff; }
+    0%, 100% { background: #fff; color: black; }
 }
 
-// ─── Modal styles (unchanged) ─────────────────────────────────────────────────
+// ─── Modal (unchanged) ────────────────────────────────────────────────────────
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0,0,0,0.55);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -281,168 +301,266 @@
     width: 100%;
     max-width: 420px;
     position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 
     .modal-close {
         position: absolute;
-        top: 16px;
-        right: 16px;
-        background: none;
-        border: none;
-        font-size: 1.1rem;
-        cursor: pointer;
+        top: 16px; right: 16px;
+        background: none; border: none;
+        font-size: 1.1rem; cursor: pointer;
         color: #777;
         &:hover { color: #111; }
     }
 
-    h2 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #1f1f1f;
-        text-align: center;
-        margin-bottom: 4px;
-    }
-
-    .modal-subtitle {
-        font-size: 0.85rem;
-        color: #777;
-        text-align: center;
-        margin-bottom: 20px;
-    }
+    h2 { font-size: 1.3rem; font-weight: 700; color: #1f1f1f; text-align: center; margin-bottom: 4px; }
+    .modal-subtitle { font-size: 0.85rem; color: #777; text-align: center; margin-bottom: 20px; }
 }
 
-// ─── MOBILE ───────────────────────────────────────────────────────────────────
+
+// ─── MOBILE (≤ 768px) ─────────────────────────────────────────────────────────
 @media (max-width: 768px) {
     .navbar {
         .container {
-            padding: 12px 16px;
+            padding: 10px 16px;
 
-            // Shrink logo image on mobile
-            .logo img {
-                height: 38px !important;
-            }
+            // Hamburger visible on mobile
+            .hamburger { display: flex; }
 
-            // Hide search bar on mobile (not enough space)
-            .navbarsearch {
-                display: none;
-            }
+            // Logo — stays left but slightly smaller
+            .logo img { height: 38px; }
+            .text-2xl { font-size: 1.2rem; }
 
-            // Hide desktop links on mobile
-            .links {
-                display: none;
-            }
+            // Hide search bar
+            .navbarsearch { display: none; }
 
-            // Show hamburger on mobile
-            .hamburger {
+            // Hide desktop links
+            .links { display: none; }
+
+            // Show mobile right (Join / avatar)
+            .mobile-right {
                 display: flex;
+                align-items: center;
+                flex-shrink: 0;
+
+                .mobile-join-btn {
+                    color: white;
+                    padding: 7px 16px;
+                    border-radius: 5px;
+                    border: 1.5px solid #107a49;
+                    background-color: #107a49;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    &:hover { background: white; color: #107a49; }
+                }
+
+                .mobile-user {
+                    position: relative;
+                    cursor: pointer;
+
+                    img {
+                        width: 34px;
+                        height: 34px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        border: 2px solid #eee;
+                    }
+
+                    .options {
+                        position: absolute;
+                        top: 44px;
+                        right: 0;
+                        padding: 10px 0;
+                        background: white;
+                        border-radius: 10px;
+                        border: 1px solid #eee;
+                        display: flex;
+                        flex-direction: column;
+                        width: 180px;
+                        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+                        z-index: 1000;
+
+                        a, .logout-option {
+                            padding: 10px 18px;
+                            font-size: 14px;
+                            color: #444;
+                            text-decoration: none;
+                            display: block;
+                            cursor: pointer;
+                            &:hover { background: #f5faf7; color: #107a49; }
+                        }
+                        .logout-option { color: #e53e3e; &:hover { color: #c53030; background: #fff5f5; } }
+                    }
+                }
             }
         }
 
-        // Hide desktop category menu on mobile
-        .menu {
-            display: none;
+        // Hide desktop category bar on mobile
+        .menu { display: none; }
+        .nav-hr { display: none; }
+
+        // ── Backdrop ──────────────────────────────────────────────────────────
+        .menu-backdrop {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 998;
+            top: 60px; // below navbar
         }
 
-        // ─── Mobile Menu Overlay ──────────────────────────────────────────
+        // ── Mobile menu panel ──────────────────────────────────────────────────
         .mobile-menu {
             display: flex;
             flex-direction: column;
-            width: 100%;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 80%;
+            max-width: 300px;
+            height: calc(100vh - 60px);
             background: white;
-            padding: 16px 20px 20px;
-            gap: 16px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            border-top: 1px solid #f0f0f0;
-            animation: slideDown 0.2s ease-out;
+            z-index: 999;
+            padding: 24px 20px;
+            gap: 0;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            animation: slideRight 0.25s ease-out;
 
-            .mobile-explore {
-                width: fit-content;
-            }
-
-            .mobile-link {
-                font-size: 16px;
-                font-weight: 500;
-                color: #222;
-                text-decoration: none;
-                padding: 4px 0;
-                cursor: pointer;
-
-                &:hover { color: #107a49; }
-            }
-
-            .logout {
-                color: #e53e3e;
-                cursor: pointer;
-                font-size: 16px;
-                font-weight: 500;
-                &:hover { color: #c53030; }
-            }
-
-            .mobile-join {
-                width: fit-content;
-                padding: 10px 24px;
-                font-size: 15px;
-                font-weight: 600;
-                color: white;
-                background: #107a49;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-
-                &:hover { background: #19a463; }
-            }
-
-            .mobile-user-info {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding-bottom: 4px;
-                border-bottom: 1px solid #f0f0f0;
-
-                img {
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 50%;
-                    object-fit: cover;
-                }
-
-                span {
-                    font-weight: 600;
-                    font-size: 15px;
-                    color: #222;
-                }
-            }
-
-            .mobile-divider {
-                border: none;
-                border-top: 1px solid #eee;
-                margin: 0;
-            }
-
-            // Categories section inside mobile menu
-            .mobile-categories {
+            // ── Auth buttons ──────────────────────────────────────────────────
+            .mobile-auth {
                 display: flex;
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
+                margin-bottom: 8px;
 
-                .mobile-link {
+                .mobile-btn-primary {
+                    width: 100%;
+                    padding: 12px;
+                    background: #107a49;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
                     font-size: 15px;
-                    font-weight: 400;
-                    color: gray;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    &:hover { background: #0d6640; }
                 }
+
+                .mobile-btn-secondary {
+                    width: 100%;
+                    padding: 11px;
+                    background: white;
+                    color: #107a49;
+                    border: 1.5px solid #107a49;
+                    border-radius: 6px;
+                    font-size: 15px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    &:hover { background: #f0faf5; }
+                }
+
+                .mobile-btn-ghost {
+                    width: 100%;
+                    padding: 11px;
+                    background: transparent;
+                    color: #555;
+                    border: 1.5px solid #ddd;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    &:hover { border-color: #107a49; color: #107a49; }
+                }
+            }
+
+            // ── Logged-in user section ─────────────────────────────────────────
+            .mobile-user-section {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+
+                .mobile-user-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 0 0 16px;
+                    margin-bottom: 8px;
+                    border-bottom: 1px solid #f0f0f0;
+
+                    img {
+                        width: 42px;
+                        height: 42px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        border: 2px solid #eee;
+                    }
+
+                    .mobile-user-text {
+                        display: flex;
+                        flex-direction: column;
+
+                        .mobile-username {
+                            font-size: 15px;
+                            font-weight: 600;
+                            color: #222;
+                        }
+                        .mobile-user-type {
+                            font-size: 12px;
+                            color: #888;
+                            text-transform: capitalize;
+                        }
+                    }
+                }
+            }
+
+            // ── Nav links ──────────────────────────────────────────────────────
+            .mobile-nav-link {
+                display: block;
+                padding: 13px 0;
+                font-size: 15px;
+                font-weight: 500;
+                color: #333;
+                text-decoration: none;
+                border-bottom: 1px solid #f5f5f5;
+                cursor: pointer;
+                transition: color 0.15s;
+
+                &:hover { color: #107a49; }
+                &.logout { color: #e53e3e; &:hover { color: #c53030; } }
+            }
+
+            // ── Divider ────────────────────────────────────────────────────────
+            .mobile-menu-divider {
+                height: 1px;
+                background: #ebebeb;
+                margin: 16px 0;
+            }
+
+            // ── Explore button ─────────────────────────────────────────────────
+            .mobile-explore-btn {
+                width: 100%;
+                padding: 12px;
+                background: #107a49;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s;
+                &:hover { background: #0d6640; }
             }
         }
     }
 }
 
-// Slide-down animation for mobile menu
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+// Slide from left animation
+@keyframes slideRight {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
