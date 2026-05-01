@@ -99,19 +99,7 @@ const Home = () => {
                         <button className="btn btn-outline">Learn More</button>
                     </div>
                 </div>
-
-                {/* FIX #3: Scroll cue chevron at the bottom of the hero */}
-                <div className="scroll-cue" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                </div>
-
-                {/* FIX #4: photography-section / tag cloud removed from here — moved below hero */}
-            </section>
-
-            {/* FIX #4: Tag cloud now lives *below* the hero as its own standalone row */}
-            <div className="tag-cloud-row">
+                <div className="tag-cloud-row">
                 <h2 className="tag-cloud-title">You might be interested in Essay and Research</h2>
                 <div className="tags-container">
                     <div className="tag-row">
@@ -128,6 +116,20 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+                
+
+                {/* FIX #3: Scroll cue chevron at the bottom of the hero */}
+                <div className="scroll-cue" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </div>
+
+                {/* FIX #4: photography-section / tag cloud removed from here — moved below hero */}
+            </section>
+
+            {/* FIX #4: Tag cloud now lives *below* the hero as its own standalone row */}
+            
 
             {/* ── CATEGORIES ── */}
             {/* FIX: class → className; padding handled in SCSS with clamp */}
