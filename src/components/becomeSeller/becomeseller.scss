@@ -1,71 +1,343 @@
-.becomeseller {
+// becomeseller.scss — Expert Onboarding Intro
+
+$green: #1dbf73;
+$green-dark: #17a360;
+$green-light: rgba(29, 191, 115, 0.1);
+$dark: #111827;
+$mid: #374151;
+$muted: #6b7280;
+$border: #e5e7eb;
+$bg-alt: #f8faf9;
+$white: #ffffff;
+
+.become-expert {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: $dark;
+  background: $white;
+}
+
+// ── Hero ────────────────────────────────────────────────────────────────
+.be-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px 60px;
+  background: linear-gradient(160deg, #f0fdf7 0%, #fff 60%);
+  border-bottom: 1px solid $border;
+
+  &__badge {
+    display: inline-block;
+    background: $green-light;
+    color: $green-dark;
+    border: 1px solid rgba(29, 191, 115, 0.3);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  &__title {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: $dark;
+    margin: 0 0 20px;
+    max-width: 780px;
+    letter-spacing: -0.02em;
+  }
+
+  &__accent {
+    color: $green;
+  }
+
+  &__sub {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.1rem;
+    color: $muted;
+    max-width: 540px;
+    line-height: 1.7;
+    margin: 0 0 36px;
+  }
+
+  &__cta {
     display: flex;
-    justify-content: flex-start;
-    padding: 10px 90px;
+    gap: 16px;
     align-items: center;
-    align-content: center;
     flex-wrap: wrap;
-    .container {
-        width: 1400px;
-        display: flex;
-        align-items: center;
-        gap: 100px;
+    justify-content: center;
+    margin-bottom: 56px;
+  }
+}
 
-        .item {
-            display: flex;
-            flex-direction: column;
-            gap: 0px;
+// ── Stats ────────────────────────────────────────────────────────────────
+.be-stats {
+  display: flex;
+  gap: 0;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  max-width: 700px;
+  width: 100%;
+}
 
-            &:first-child {
-                flex: 3;
-            }
+.be-stat {
+  flex: 1;
+  padding: 24px 20px;
+  text-align: center;
+  border-right: 1px solid $border;
 
-            &:last-child {  
-                background-color: black;
-            }
+  &:last-child {
+    border-right: none;
+  }
 
-            h1 {
-                font-weight: 500;
-                margin-bottom: 10px;
-            }
+  &__value {
+    display: block;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: $green;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
 
-            p {
-                font-size: 18px;
-                font-weight: 300;
-                color: rgb(61, 61, 61);
-                line-height: 28px;
-                letter-spacing: 1px;
-            }
+  &__label {
+    display: block;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+}
 
-            .title {
-                margin-top: 5px;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                font-weight: 500;
-                font-size: 18px;
+// ── Sections ────────────────────────────────────────────────────────────
+.be-section {
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 
-                img {
-                    width: 35px;
-                    height: 35px;
-                }
-            }
+  &--alt {
+    background: $bg-alt;
+    max-width: 100%;
+    padding: 80px 24px;
 
-            video {
-                width: 720px;
-            }
-        }
-       
-    } button {
-            width: fit-content;
-            height: 50px;
-            border: none;
-            background-color: #1dbf73;
-            color: white;
-            align-self: flex-end;
-            cursor: pointer;
-            font-weight: 400;
-            font-size: large;
-            border-radius: 1px;
-          }
+    > * {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 56px;
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: $dark;
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 1rem;
+      color: $muted;
+      margin: 0;
+    }
+  }
+}
+
+// ── Steps ────────────────────────────────────────────────────────────────
+.be-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+}
+
+.be-step {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 16px;
+  padding: 32px 28px;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+  }
+
+  &__num {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: $green;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    background: $green-light;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $green;
+    margin-bottom: 18px;
+  }
+
+  &__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $dark;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  &__desc {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.9rem;
+    color: $muted;
+    line-height: 1.65;
+    margin: 0;
+  }
+}
+
+// ── Perks ────────────────────────────────────────────────────────────────
+.be-perks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.be-perk {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 28px 24px;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  }
+
+  &__icon {
+    font-size: 1.8rem;
+    margin-bottom: 14px;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $dark;
+    margin: 0 0 8px;
+  }
+
+  &__desc {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    color: $muted;
+    line-height: 1.65;
+    margin: 0;
+  }
+}
+
+// ── Final CTA ────────────────────────────────────────────────────────────
+.be-cta-footer {
+  text-align: center;
+  padding: 80px 24px;
+  background: linear-gradient(135deg, $dark 0%, #1a3028 100%);
+  color: $white;
+
+  h2 {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0 0 36px;
+  }
+}
+
+// ── Buttons ──────────────────────────────────────────────────────────────
+.be-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  padding: 12px 24px;
+  text-decoration: none;
+  border: 2px solid transparent;
+
+  &--primary {
+    background: $green;
+    color: $white;
+    border-color: $green;
+
+    &:hover {
+      background: $green-dark;
+      border-color: $green-dark;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(29, 191, 115, 0.35);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: $mid;
+    border-color: $border;
+
+    &:hover {
+      border-color: $mid;
+      color: $dark;
+    }
+  }
+
+  &--lg {
+    padding: 15px 36px;
+    font-size: 1.05rem;
+  }
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .be-stats {
+    flex-wrap: wrap;
+    .be-stat {
+      min-width: 50%;
+      border-bottom: 1px solid $border;
+      &:nth-child(odd) { border-right: 1px solid $border; }
+      &:nth-child(even) { border-right: none; }
+    }
+  }
+
+  .be-hero__cta {
+    flex-direction: column;
+    width: 100%;
+    .be-btn { width: 100%; justify-content: center; }
+  }
 }

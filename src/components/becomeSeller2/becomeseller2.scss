@@ -1,92 +1,646 @@
-.becomeseller2 {
+// becomeseller2.scss — Expert Registration Form
+
+$green: #1dbf73;
+$green-dark: #17a360;
+$green-light: rgba(29, 191, 115, 0.1);
+$dark: #111827;
+$mid: #374151;
+$muted: #6b7280;
+$border: #e5e7eb;
+$bg: #f8faf9;
+$white: #ffffff;
+
+// ── Page wrapper ─────────────────────────────────────────────────────────────
+.bs2-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg;
+  padding: 32px 16px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+// ── Split card ───────────────────────────────────────────────────────────────
+.bs2-card {
+  display: flex;
+  width: 100%;
+  max-width: 960px;
+  background: $white;
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: 600px;
+}
+
+// ── Left panel ───────────────────────────────────────────────────────────────
+.bs2-panel {
+  flex: 0 0 340px;
+  background: linear-gradient(160deg, #0d2b1e 0%, #1a3a28 100%);
+  padding: 48px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  color: $white;
+  position: relative;
+  overflow: hidden;
+
+  // decorative circle
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    right: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(29, 191, 115, 0.08);
+    pointer-events: none;
+  }
+
+  &__logo {
     display: flex;
-    justify-content: flex-start;
-    padding: 10px 90px;
     align-items: center;
-    align-content: center;
-    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 36px;
 
-    .container {
-        width: 1400px;
-        display: flex;
-        align-items: center;
-        gap: 100px;
+    span {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: $green;
+      letter-spacing: -0.02em;
+    }
+  }
 
-        .item {
-            display: flex;
-            flex-direction: column;
-            gap: 0px;
+  h2 {
+    font-size: 1.55rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: $white;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
 
-            &:first-child {
-                flex: initial;
+  > p {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.65;
+    margin: 0 0 36px;
+  }
 
-            }
+  &__back {
+    margin-top: auto;
+    padding-top: 32px;
 
-            img {
-                width: 343px;
-                height: 502px;
-                margin-bottom: 40px;
-                border-radius: 5px;
-            }
-        }
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.15s;
 
-        .item2 {
-            width: 49pc;
-            background-color: #fffefe;
+      &:hover {
+        color: $white;
+      }
+    }
+  }
+}
 
-            .header_item2 {
-                display: flex;
-                flex-direction: column;
-                gap: 1px;
-                margin: 0;
-                background-color: white;
+// ── Checklist ────────────────────────────────────────────────────────────────
+.bs2-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
-                h1 {
-                    font-weight: 500;
-                    margin: 0;
-                }
-            }
+.bs2-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 
-            .title {
-                margin-top: 5px;
-                display: flex;
-                align-items: center;
-                gap: 20px;
-                font-weight: 500;
-                font-size: 18px;
+  svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
 
-                .item {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    background: #fff;
-                    gap: 10px;
+  span {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.5;
+  }
+}
 
-                    img {
-                        width: 40px;
-                        height: 48px;
-                        display: flex;
-                        margin: auto;
-                        flex-direction: row-reverse;
-                    }
-                }
+// ── Right form panel ─────────────────────────────────────────────────────────
+.bs2-form-panel {
+  flex: 1;
+  padding: 48px 44px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
-            }
-        }
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: $dark;
+    margin: 0 0 24px;
+    letter-spacing: -0.025em;
+  }
+}
 
+// ── Progress ─────────────────────────────────────────────────────────────────
+.bs2-progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
 
+  &__step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $muted;
+    font-size: 0.82rem;
+    font-weight: 600;
+
+    &.active {
+      color: $dark;
+
+      .bs2-progress__dot {
+        background: $green;
+        color: $white;
+        border-color: $green;
+      }
     }
 
-    button {
-        width: fit-content;
-        height: 50px;
-        border: none;
-        background-color: #1dbf73;
-        color: white;
-        align-self: flex-end;
-        cursor: pointer;
-        font-weight: 400;
-        font-size: large;
-        margin: 30px;
+    &.done {
+      color: $green;
+
+      .bs2-progress__dot {
+        background: $green;
+        color: $white;
+        border-color: $green;
+      }
     }
+  }
+
+  &__dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid $border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $muted;
+    transition: all 0.2s;
+  }
+
+  &__line {
+    flex: 1;
+    height: 2px;
+    background: $border;
+    margin: 0 12px;
+  }
+}
+
+// ── Step 2 sub ───────────────────────────────────────────────────────────────
+.bs2-step2-sub {
+  font-size: 0.92rem;
+  color: $muted;
+  margin: -16px 0 24px;
+  line-height: 1.6;
+}
+
+// ── Google button ─────────────────────────────────────────────────────────────
+.bs2-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  background: $white;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $mid;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  margin-bottom: 20px;
+
+  &:hover:not(:disabled) {
+    background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ── Divider ──────────────────────────────────────────────────────────────────
+.bs2-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;
+  color: #aaa;
+  font-size: 0.82rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $border;
+  }
+}
+
+// ── Fields ───────────────────────────────────────────────────────────────────
+.bs2-field {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $mid;
+    margin-bottom: 6px;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid $border;
+    border-radius: 9px;
+    font-size: 0.93rem;
+    color: $dark;
+    background: #fafafa;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: vertical;
+
+    &::placeholder {
+      color: #b0b7c3;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
+      background: $white;
+    }
+  }
+
+  textarea {
+    min-height: 110px;
+  }
+}
+
+.bs2-char-count {
+  display: block;
+  font-size: 0.75rem;
+  color: $muted;
+  text-align: right;
+  margin-top: 4px;
+}
+
+// ── Password toggle ───────────────────────────────────────────────────────────
+.bs2-pw-wrap {
+  position: relative;
+
+  input {
+    padding-right: 44px !important;
+  }
+}
+
+.bs2-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0;
+
+  &:hover { color: $mid; }
+}
+
+// ── Select ────────────────────────────────────────────────────────────────────
+.bs2-select-wrap {
+  position: relative;
+
+  select {
+    width: 100%;
+    padding: 10px 38px 10px 14px;
+    border: 1.5px solid $border;
+    border-radius: 9px;
+    font-size: 0.93rem;
+    color: $dark;
+    background: #fafafa;
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
+      background: $white;
+    }
+  }
+}
+
+.bs2-select-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: $muted;
+}
+
+// ── Tag preview ───────────────────────────────────────────────────────────────
+.bs2-tag-preview {
+  margin: -8px 0 16px;
+}
+
+.bs2-tag {
+  display: inline-block;
+  background: $green-light;
+  color: $green-dark;
+  border: 1px solid rgba(29, 191, 115, 0.3);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+// ── Tips box ──────────────────────────────────────────────────────────────────
+.bs2-tips {
+  background: #f0fdf4;
+  border: 1px solid rgba(29, 191, 115, 0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $green-dark;
+    margin-bottom: 8px;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 18px;
+
+    li {
+      font-size: 0.82rem;
+      color: #2d6a4f;
+      line-height: 1.65;
+    }
+  }
+}
+
+// ── Checkbox ─────────────────────────────────────────────────────────────────
+.bs2-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  color: $mid;
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: $green;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  label {
+    cursor: pointer;
+    line-height: 1.5;
+
+    a {
+      color: $green;
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
+
+// ── Status messages ───────────────────────────────────────────────────────────
+.bs2-status {
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  margin-bottom: 14px;
+  text-align: center;
+
+  &--error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+
+  &--success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+.bs2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  padding: 12px 20px;
+  border: 2px solid transparent;
+  font-family: inherit;
+
+  &--primary {
+    background: $green;
+    color: $white;
+    border-color: $green;
+    width: 100%;
+
+    &:hover:not(:disabled) {
+      background: $green-dark;
+      border-color: $green-dark;
+      box-shadow: 0 6px 20px rgba(29, 191, 115, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: $mid;
+    border-color: $border;
+
+    &:hover {
+      border-color: $mid;
+      color: $dark;
+    }
+  }
+}
+
+.bs2-btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+
+  .bs2-btn--primary {
+    flex: 1;
+  }
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+.bs2-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.88rem;
+  color: $muted;
+
+  a {
+    color: $green;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// ── Link button ───────────────────────────────────────────────────────────────
+.bs2-link-btn {
+  background: none;
+  border: none;
+  color: $green;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── OTP Card ─────────────────────────────────────────────────────────────────
+.bs2-otp-card {
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $dark;
+    margin: 0 0 12px;
+  }
+}
+
+.bs2-otp-icon {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+}
+
+.bs2-otp-sub {
+  font-size: 0.9rem;
+  color: $muted;
+  margin: 0 0 32px;
+  line-height: 1.6;
+}
+
+.bs2-otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.bs2-otp-box {
+  width: 48px;
+  height: 56px;
+  border: 2px solid $border;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  color: $dark;
+  background: #fafafa;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    outline: none;
+    border-color: $green;
+    box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.15);
+    background: $white;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .bs2-card {
+    flex-direction: column;
+    border-radius: 16px;
+  }
+
+  .bs2-panel {
+    flex: none;
+    padding: 32px 28px;
+
+    &::after { display: none; }
+
+    &__back { margin-top: 24px; padding-top: 0; }
+  }
+
+  .bs2-form-panel {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bs2-btn-row {
+    flex-direction: column-reverse;
+    .bs2-btn--outline { width: 100%; }
+  }
 }
