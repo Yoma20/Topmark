@@ -1,238 +1,284 @@
-//=================================================================
-// VARIABLES
-//=================================================================
-// Define colors, fonts, and other reusable values here.
-// This makes it easy to customize the look and feel.
-//=================================================================
-
-$primary-color: #6a5af9;
-$primary-color-dark: #5a4fcf;
-$secondary-color: #f2f2f7;
-$background-color: #f8f9fa;
-$text-color: #333;
-$text-color-light: #666;
-$border-color: #ddd;
-$error-color: #e74c3c;
-$success-color: #2ecc71;
-$white-color: #fff;
-
-$font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-  Helvetica, Arial, sans-serif;
-$border-radius: 8px;
-$box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-$transition-speed: 0.2s ease-in-out;
-
-//=================================================================
-// MAIN CONTAINER & FORM STYLES
-// This section centers the form on the page and styles the
-// main form element.
-//=================================================================
+// register.scss
 
 .register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background-color: $background-color;
-  font-family: $font-family;
-  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f8fa;
+  padding: 24px 16px;
+}
 
-  form {
-    background: $white-color;
-    padding: 2.5rem;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    width: 100%;
-    max-width: 450px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem; // Creates space between form elements
+.register-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 460px;
 
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 0.5rem;
-      color: $text-color;
-    }
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #1a1a2e;
   }
 }
 
-//=================================================================
-// FORM FIELD STYLES
-// Styles for the individual input fields, including labels
-// and inputs for text, email, and password.
-//=================================================================
-
-.field {
+// ── Google button ─────────────────────────────────────────────────────────────
+.google-btn {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 1.5px solid #dadce0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #3c4043;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  margin-bottom: 16px;
 
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: $text-color-light;
+  &:hover:not(:disabled) {
+    background: #f8f9fa;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   }
 
-  input {
-    padding: 0.75rem 1rem;
-    border: 1px solid $border-color;
-    border-radius: $border-radius;
-    font-size: 1rem;
-    transition: border-color $transition-speed, box-shadow $transition-speed;
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ── Divider ───────────────────────────────────────────────────────────────────
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #aaa;
+  font-size: 0.85rem;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+}
+
+// ── Form fields ───────────────────────────────────────────────────────────────
+.field {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #111;
+    background: #fafafa;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
 
     &:focus {
       outline: none;
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+      border-color: #1dbf73;
+      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
+      background: #fff;
     }
   }
 }
 
-//=================================================================
-// CHECKBOX GROUP
-// Specific styles for the "Terms and Service" checkbox
-// to ensure proper alignment.
-//=================================================================
+// ── Password with eye toggle ──────────────────────────────────────────────────
+.password-wrapper {
+  position: relative;
 
+  input {
+    padding-right: 44px !important;
+  }
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0;
+
+  &:hover {
+    color: #374151;
+  }
+}
+
+// ── Checkbox ──────────────────────────────────────────────────────────────────
 .checkbox-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: -0.5rem; // Adjust spacing
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #374151;
+  margin-bottom: 16px;
 
-  input[type='checkbox'] {
-    width: 1rem;
-    height: 1rem;
-    accent-color: $primary-color;
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #1dbf73;
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
   label {
-    font-size: 0.875rem;
-    color: $text-color-light;
+    cursor: pointer;
 
     a {
-      color: $primary-color;
+      color: #1dbf73;
       text-decoration: none;
       font-weight: 500;
-      transition: color $transition-speed;
 
       &:hover {
-        color: $primary-color-dark;
         text-decoration: underline;
       }
     }
   }
 }
 
-//=================================================================
-// STATUS MESSAGES
-// Styles for displaying success or error messages to the user.
-//=================================================================
 
-.status-message {
-  padding: 0.75rem 1rem;
-  border-radius: $border-radius;
-  text-align: center;
-  font-weight: 500;
-  font-size: 0.9rem;
-
-  &.error {
-    background-color: rgba($error-color, 0.1);
-    color: $error-color;
-    border: 1px solid rgba($error-color, 0.2);
-  }
-
-  &.success {
-    background-color: rgba($success-color, 0.1);
-    color: $success-color;
-    border: 1px solid rgba($success-color, 0.2);
-  }
-}
-
-//=================================================================
-// BUTTON & SPINNER
-// Styles for the main submission button, including its
-// loading state and the animated spinner.
-//=================================================================
-
-button[type='submit'] {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.875rem;
-  background-color: $primary-color;
-  color: $white-color;
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background: #1dbf73;
+  color: #fff;
   border: none;
-  border-radius: $border-radius;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color $transition-speed, box-shadow $transition-speed;
+  transition: background 0.15s;
+  margin-top: 4px;
 
   &:hover:not(:disabled) {
-    background-color: $primary-color-dark;
-    box-shadow: 0 2px 8px rgba($primary-color, 0.3);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.3);
+    background: #19a463;
   }
 
   &:disabled {
-    background-color: lighten($primary-color, 15%);
+    opacity: 0.6;
     cursor: not-allowed;
   }
+}
 
-  .spinner {
-    animation: spin 1s linear infinite;
+.status-message {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  margin-bottom: 14px;
+  text-align: center;
+
+  &.error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+
+  &.success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
   }
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-//=================================================================
-// FOOTER
-// Styles for the "Already have an account?" link at the bottom.
-//=================================================================
 
 .footer {
   text-align: center;
-  font-size: 0.875rem;
-  color: $text-color-light;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #6b7280;
 
   a {
-    color: $primary-color;
-    text-decoration: none;
+    color: #1dbf73;
     font-weight: 600;
+    text-decoration: none;
 
     &:hover {
       text-decoration: underline;
-      color: $primary-color-dark;
     }
   }
 }
 
-//=================================================================
-// RESPONSIVE DESIGN
-// Adjustments for smaller screens to ensure the form looks
-// good on mobile devices.
-//=================================================================
 
-@media (max-width: 500px) {
-  .register-container {
-    padding: 15px;
-    form {
-      padding: 1.5rem;
-    }
+.verify-icon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.verify-sub {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.92rem;
+  margin-bottom: 28px;
+}
+
+.otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.otp-box {
+  width: 48px;
+  height: 56px;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #111;
+  background: #fafafa;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    outline: none;
+    border-color: #1dbf73;
+    box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.15);
+    background: #fff;
+  }
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #1dbf73;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
   }
 }
