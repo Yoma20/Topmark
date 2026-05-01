@@ -14,7 +14,7 @@ const Navbar = () => {
         window.scrollY > 0 ? setactive(true) : setactive(false);
     }
     const isActive1 = () => {
-        window.scrollY > 50 ? setactive1(true) : setactive1(false);
+        window.scrollY > 10 ? setactive1(true) : setactive1(false);
     }
     useEffect(() => {
         window.addEventListener('scroll', isActive);
