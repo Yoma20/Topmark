@@ -372,7 +372,6 @@ body {
     font-size: 1.25rem;
     margin-bottom: 2rem;
     opacity: 0.9;
-    max-width: 42rem;
     margin-left: auto;
     margin-right: auto;
 }
@@ -447,7 +446,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 1.75rem;
+    margin: 4%;
 }
 
 .hero .popular-label {
@@ -476,7 +475,7 @@ body {
 .hero .hero-buttons {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 3rem;
     margin-top: 0.5rem;
 }
 
@@ -549,8 +548,8 @@ body {
 .tag-cloud-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 1.25rem;
+    color: #fff;
+    margin: 4%;
 }
 
 .tags-container {
