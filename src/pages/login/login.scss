@@ -1,43 +1,229 @@
 .login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 40px 16px;
+  margin-bottom: 50px;
+
+  form {
+    width: 360px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 50px;
-    form {
-      width: 360px;
+    flex-direction: column;
+    gap: 16px;
+
+    h1 {
+      color: gray;
+      margin-bottom: 8px;
+    }
+
+    label {
+      color: gray;
+      font-size: 18px;
+    }
+
+    input,
+    textarea {
+      padding: 20px;
+      border: 1px solid rgb(216, 214, 214);
+      border-radius: 4px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: #1dbf73;
+      }
+    }
+
+    // ── Primary submit button ──────────────────────────────────────────────
+    button[type="submit"],
+    .btn-submit {
+      border: none;
+      padding: 20px;
+      color: white;
+      font-weight: 500;
+      font-size: 18px;
+      background-color: #1dbf73;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: opacity 0.2s;
+
+      &:hover:not(:disabled) {
+        opacity: 0.88;
+      }
+
+      &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+    }
+
+    span {
+      color: red;
+      font-size: 12px;
+    }
+
+    // ── Status messages ────────────────────────────────────────────────────
+    .status-message {
+      font-size: 14px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      line-height: 1.5;
+
+      &.error {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
+
+      &.success {
+        background: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+      }
+    }
+
+    // ── Google button ──────────────────────────────────────────────────────
+    .google-btn {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
-  
-      h1 {
-        color: gray;
-        margin-bottom: 20px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 13px 20px;
+      border: 1px solid rgb(216, 214, 214);
+      border-radius: 4px;
+      background: white;
+      color: #374151;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+
+      &:hover:not(:disabled) {
+        background: #f9fafb;
+        border-color: #9ca3af;
       }
-  
-      label {
-        color: gray;
-        font-size: 18px;
+
+      &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
       }
-  
-      input,
-      textarea {
-        padding: 20px;
-        border: 1px solid rgb(216, 214, 214);
+    }
+
+    // ── Divider ────────────────────────────────────────────────────────────
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #9ca3af;
+      font-size: 13px;
+
+      &::before,
+      &::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgb(216, 214, 214);
       }
-  
-      button {
+    }
+
+    // ── Password field with eye toggle ─────────────────────────────────────
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      input {
+        width: 100%;
+        padding-right: 52px;
+        box-sizing: border-box;
+      }
+
+      .eye-btn {
+        position: absolute;
+        right: 14px;
+        background: none;
         border: none;
-        padding: 20px;
-        color: white;
-        font-weight: 500;
-        font-size: 18px;
-        background-color: #1dbf73;
+        padding: 4px;
         cursor: pointer;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        font-size: unset;
+        font-weight: unset;
+
+        &:hover {
+          color: #374151;
+        }
       }
-  
-      span{
-        color: red;
-        font-size: 12px;
+    }
+
+    // ── OTP verification screen ────────────────────────────────────────────
+    .verify-icon {
+      font-size: 40px;
+      text-align: center;
+    }
+
+    .verify-sub {
+      color: #6b7280;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.6;
+      margin: 0;
+
+      strong {
+        color: #374151;
+      }
+    }
+
+    .otp-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .otp-box {
+      width: 44px;
+      height: 52px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      border: 1.5px solid rgb(216, 214, 214);
+      border-radius: 6px;
+      padding: 0;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: #1dbf73;
+        outline: none;
+      }
+    }
+
+    // ── Footer links ───────────────────────────────────────────────────────
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0;
+
+      a,
+      .link-btn {
+        color: #1dbf73;
+        font-weight: 500;
+        text-decoration: none;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        font-size: inherit;
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }
+}
