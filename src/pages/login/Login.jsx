@@ -4,12 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import './login.scss';
 import newRequest from "../../utils/newRequest";
 
-// ─── If you have a global UserContext, import it here ─────────────────────────
-// import { UserContext } from "../../context/UserContext";
-// Then inside Login: const { setCurrentUser } = useContext(UserContext);
-// And in saveAndRedirect, call setCurrentUser(userData) BEFORE navigate("/")
 
-// ─── Reusable OTP screen ──────────────────────────────────────────────────────
 function VerifyEmail({ userId, email, onVerified }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
@@ -43,7 +38,7 @@ function VerifyEmail({ userId, email, onVerified }) {
     setLoading(true);
     setError("");
     try {
-      const res = await newRequest.post("/api/users/verify-email/", { user_id: userId, otp: code });
+      const res = await newRequest.post("/users/verify-email/", { user_id: userId, otp: code });
       onVerified(res.data);
     } catch (err) {
       setError(err?.response?.data?.error || "Invalid or expired code.");
@@ -57,7 +52,7 @@ function VerifyEmail({ userId, email, onVerified }) {
   const handleResend = async () => {
     setResent(false);
     try {
-      await newRequest.post("/api/users/resend-otp/", { user_id: userId });
+      await newRequest.post("/users/resend-otp/", { user_id: userId });
       setResent(true);
       setOtp(["", "", "", "", "", ""]);
       document.getElementById("otp-0")?.focus();
@@ -213,7 +208,7 @@ const Login = () => {
     setError(null);
     setLoading(true);
     try {
-      const res = await newRequest.post("/api/users/google-auth/", {
+      const res = await newRequest.post("/users/google-auth/", {
         credential: response.credential,
       });
       saveAndRedirect(res.data);
@@ -243,7 +238,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await newRequest.post('/api/users/login/', {
+      const res = await newRequest.post('/users/login/', {
         username,
         password,
         // Send Turnstile token to backend for server-side verification

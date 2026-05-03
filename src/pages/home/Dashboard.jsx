@@ -8,18 +8,18 @@ import GigCard from "../../components/GigCard/GigCard";
 import "./Dashboard.scss";
 
 const CATEGORIES = [
-  { emoji: "⚖️", label: "Law & Legal",     search: "Law" },
-  { emoji: "🏥", label: "Nursing",          search: "Nursing" },
-  { emoji: "🔒", label: "Cybersecurity",    search: "Cybersecurity" },
-  { emoji: "🧬", label: "Biology",          search: "Biology" },
-  { emoji: "📜", label: "History",          search: "History" },
-  { emoji: "📊", label: "Data Science",     search: "Data Science" },
-  { emoji: "💻", label: "Computer Science", search: "Computer Science" },
-  { emoji: "📈", label: "Business",         search: "Business" },
-  { emoji: "🧠", label: "Psychology",       search: "Psychology" },
-  { emoji: "✍️", label: "Essay Writing",    search: "Essay Writing" },
-  { emoji: "🧪", label: "Chemistry",        search: "Chemistry" },
-  { emoji: "➗", label: "Mathematics",      search: "Mathematics" },
+  { icon: "/images/law.png",             label: "Law & Legal",     search: "Law" },
+  { icon: "/images/nursing.png",         label: "Nursing",         search: "Nursing" },
+  { icon: "/images/cybersecurity.png",   label: "Cybersecurity",   search: "Cybersecurity" },
+  { icon: "/images/biology.png",         label: "Biology",         search: "Biology" },
+  { icon: "/images/history.png",         label: "History",         search: "History" },
+  { icon: "/images/data-science.png",    label: "Data Science",    search: "Data Science" },
+  { icon: "/images/computer-science.png",label: "Computer Science",search: "Computer Science" },
+  { icon: "/images/business.png",        label: "Business",        search: "Business" },
+  { icon: "/images/psychology.png",      label: "Psychology",      search: "Psychology" },
+  { icon: "/images/essay.png",           label: "Essay Writing",   search: "Essay Writing" },
+  { icon: "/images/chemistry.png",       label: "Chemistry",       search: "Chemistry" },
+  { icon: "/images/mathematics.png",     label: "Mathematics",     search: "Mathematics" },
 ];
 
 // Subject logos using worldvectorlogo / simpleicons style SVG colors
@@ -139,7 +139,11 @@ export default function Dashboard() {
                 className="dashboard-cat__icon"
                 style={{ background: CATEGORY_COLORS[i] + "18", border: `1.5px solid ${CATEGORY_COLORS[i]}30` }}
               >
-                <span>{cat.emoji}</span>
+                <img 
+                  src={cat.icon} 
+                  alt={cat.label}
+                  style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+                />
               </div>
               <span className="dashboard-cat__label">{cat.label}</span>
             </div>
@@ -209,22 +213,38 @@ export default function Dashboard() {
           </div>
           <div className="dashboard-expert-tools">
             <div className="tool-card" onClick={() => navigate("/mygigs")}>
-              <span>📋</span>
+            <img 
+              src="/images/gigs.png" 
+              alt="manage your gigs" 
+              style={{ width: '36px', height: '36px' }}
+            />
               <h3>My Gigs</h3>
               <p>Manage your service listings</p>
             </div>
             <div className="tool-card" onClick={() => navigate("/orders")}>
-              <span>📦</span>
+            <img 
+              src="/images/orders.png" 
+              alt="add new order" 
+              style={{ width: '36px', height: '36px' }}
+            />
               <h3>My Orders</h3>
               <p>View and manage student orders</p>
             </div>
             <div className="tool-card" onClick={() => navigate("/messages")}>
-              <span>💬</span>
+            <img 
+              src="/images/messages.png" 
+              alt="chat" 
+              style={{ width: '36px', height: '36px' }}
+            />
               <h3>Messages</h3>
               <p>Chat with your students</p>
             </div>
             <div className="tool-card" onClick={() => navigate("/add")}>
-              <span>➕</span>
+            <img 
+              src="/images/gig.png" 
+              alt="add new gig" 
+              style={{ width: '36px', height: '36px' }}
+            />
               <h3>Add New Gig</h3>
               <p>Create a new service listing</p>
             </div>

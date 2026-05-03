@@ -7,7 +7,6 @@ const newRequest = axios.create({
   withCredentials: false,
 });
 
-// Attach token to every request
 newRequest.interceptors.request.use((config) => {
   const user = localStorage.getItem("currentUser");
   if (user) {
@@ -19,7 +18,6 @@ newRequest.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally
 newRequest.interceptors.response.use(
   (res) => res,
   (err) => {
