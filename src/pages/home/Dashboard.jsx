@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import AuthContext from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import GigCard from "../../components/GigCard/GigCard";
-import "./dashboard.scss";
+import "./Dashboard.scss";
 
 const CATEGORIES = [
   { emoji: "⚖️", label: "Law & Legal",     search: "Law" },
