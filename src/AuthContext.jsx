@@ -1,51 +1,38 @@
-import { createContext, useState, useEffect } from 'react';
-import newRequest from './utils/newRequest'; // Assuming you have a utility for API calls
+// src/AuthContext.jsx — Replace entire file
+import { createContext, useState, useCallback } from "react";
 
-export const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Check for user in localStorage on initial load
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem("currentUser");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
     }
+  });
+
+  const login = useCallback((data) => {
+    const userData = {
+      id:        data.user_id ?? data.id,
+      username:  data.username,
+      email:     data.email,
+      token:     data.token,
+      user_type: data.user_type,
+      isSeller:  data.user_type === "expert",
+    };
+    localStorage.setItem("currentUser", JSON.stringify(userData));
+    setUser(userData);
   }, []);
 
-  const login = (userData) => {
-    // Logic for setting user on login
-    setUser(userData);
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-  };
-
-  const logout = async () => {
-    // Logic for logging out, including an API call
-    try {
-      await newRequest.post('/users/logout/');
-    } catch (err) {
-      console.log(err);
-    }
+  const logout = useCallback(() => {
+    localStorage.removeItem("currentUser");
     setUser(null);
-    localStorage.removeItem('currentUser');
-  };
-
-  const updateUser = (updatedUser) => {
-    // Logic for updating the user object in state and localStorage
-    setUser(updatedUser);
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-  };
-
-  const value = {
-    user,
-    login,
-    logout,
-    updateUser,
-  };
+  }, []);
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

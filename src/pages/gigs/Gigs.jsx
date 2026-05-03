@@ -20,7 +20,7 @@ const Gigs = () => {
     queryKey: ['gigs', sort],
     queryFn: () =>
       newRequest.get(
-        `/gigs/${search ? search + '&' : '?'}min=${minRef.current?.value || ''}&max=${maxRef.current?.value || ''}&sort=${sort}`
+        `/gigs/?${search ? search.slice(1) + '&' : ''}min=${minRef.current?.value || ''}&max=${maxRef.current?.value || ''}&sort=${sort}`
       ).then((res) => res.data),
   });
 
@@ -36,10 +36,7 @@ const Gigs = () => {
 
   return (
     <div className="gigs">
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-      </Helmet>
+      
       <div className="container">
         <span className="breadcrumbs">TOPMARK &gt; BROWSE GIGS</span>
         <h1>Find an Expert</h1>

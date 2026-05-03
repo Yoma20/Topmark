@@ -144,114 +144,36 @@
 
             .options {
                 position: absolute;
-                top: calc(100% + 10px);
+                top: 48px;
                 right: 0;
-                background: #fff;
-                border-radius: 14px;
-                width: 240px;
-                box-shadow:
-                    0 4px 6px -1px rgba(0,0,0,0.07),
-                    0 10px 30px -5px rgba(0,0,0,0.13),
-                    0 0 0 1px rgba(0,0,0,0.05);
+                padding: 12px 0;
+                background-color: white;
+                border-radius: 10px;
+                border: 1px solid #eee;
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                width: 200px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
                 z-index: 1000;
-                overflow: hidden;
-                animation: dropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-                transform-origin: top right;
 
-                // Header: avatar + name + email
-                .options-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    padding: 14px 16px;
-
-                    .options-avatar-img {
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 50%;
-                        object-fit: cover;
-                        flex-shrink: 0;
-                        border: 2px solid #eee;
-                    }
-
-                    .options-avatar-initials {
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 50%;
-                        background: linear-gradient(135deg, #1dbf73, #0a9e5c);
-                        color: #fff;
-                        font-size: 14px;
-                        font-weight: 700;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        flex-shrink: 0;
-                    }
-
-                    .options-user-info {
-                        display: flex;
-                        flex-direction: column;
-                        min-width: 0;
-
-                        .options-username {
-                            font-size: 14px;
-                            font-weight: 700;
-                            color: #111;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-
-                        .options-email {
-                            font-size: 12px;
-                            color: #888;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            margin-top: 1px;
-                        }
-                    }
-                }
-
-                // Divider
-                .options-divider {
-                    height: 1px;
-                    background: #f0f0f0;
-                    margin: 0;
-                }
-
-                // Nav links
-                a {
-                    padding: 10px 16px;
-                    color: #333;
+                a, .logout-option {
+                    padding: 10px 20px;
+                    color: #444;
                     text-decoration: none;
                     font-size: 14px;
-                    font-weight: 500;
+                    font-weight: 400;
                     display: block;
                     cursor: pointer;
-                    transition: background 0.12s, color 0.12s;
+                    transition: background 0.15s, color 0.15s;
 
                     &:hover {
-                        background: #f5fdf9;
+                        background: #f5faf7;
                         color: #107a49;
                     }
                 }
 
-                // Sign out
-                .logout-option {
-                    display: block;
-                    padding: 10px 16px;
-                    font-size: 14px;
-                    font-weight: 500;
-                    color: #e53e3e;
-                    cursor: pointer;
-                    transition: background 0.12s;
-
-                    &:hover {
-                        background: #fff5f5;
-                        color: #c53030;
-                    }
-                }
+                .logout-option { color: #e53e3e; &:hover { background: #fff5f5; color: #c53030; } }
             }
         }
     }
@@ -446,41 +368,28 @@
 
                     .options {
                         position: absolute;
-                        top: calc(100% + 8px);
+                        top: 44px;
                         right: 0;
-                        background: #fff;
-                        border-radius: 14px;
-                        width: 220px;
-                        box-shadow:
-                            0 4px 6px -1px rgba(0,0,0,0.07),
-                            0 10px 30px -5px rgba(0,0,0,0.13),
-                            0 0 0 1px rgba(0,0,0,0.05);
+                        padding: 10px 0;
+                        background: white;
+                        border-radius: 10px;
+                        border: 1px solid #eee;
+                        display: flex;
+                        flex-direction: column;
+                        width: 180px;
+                        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
                         z-index: 1000;
-                        overflow: hidden;
-                        animation: dropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-                        transform-origin: top right;
 
-                        a {
-                            padding: 10px 16px;
+                        a, .logout-option {
+                            padding: 10px 18px;
                             font-size: 14px;
-                            font-weight: 500;
-                            color: #333;
+                            color: #444;
                             text-decoration: none;
                             display: block;
                             cursor: pointer;
-                            transition: background 0.12s, color 0.12s;
-                            &:hover { background: #f5fdf9; color: #107a49; }
+                            &:hover { background: #f5faf7; color: #107a49; }
                         }
-                        .logout-option {
-                            display: block;
-                            padding: 10px 16px;
-                            font-size: 14px;
-                            font-weight: 500;
-                            color: #e53e3e;
-                            cursor: pointer;
-                            transition: background 0.12s;
-                            &:hover { color: #c53030; background: #fff5f5; }
-                        }
+                        .logout-option { color: #e53e3e; &:hover { color: #c53030; background: #fff5f5; } }
                     }
                 }
             }
@@ -647,37 +556,6 @@
             }
         }
     }
-}
-
-
-// ── Dropdown animation ─────────────────────────────────────────────────────────
-@keyframes dropdownIn {
-    from { opacity: 0; transform: scale(0.95) translateY(-6px); }
-    to   { opacity: 1; transform: scale(1)    translateY(0);    }
-}
-
-// ── Avatar initials (no profile photo) ────────────────────────────────────────
-.avatar-initials {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #1dbf73, #0a9e5c);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-}
-
-// ── Navbar caret chevron ───────────────────────────────────────────────────────
-.user-caret {
-    color: #666;
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-    &.user-caret--up { transform: rotate(180deg); }
 }
 
 // Slide from left animation
