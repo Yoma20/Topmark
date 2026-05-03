@@ -9,7 +9,7 @@ function MyGigs() {
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["myGigs"],
-    queryFn: () => newRequest.get(`/gigs/mine/`).then((res) => res.data),
+    queryFn: () => newRequest.get(`/gigs/mine/`).then((res) => res.data?.results ?? res.data),
   });
 
   const mutation = useMutation({

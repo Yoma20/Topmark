@@ -21,7 +21,7 @@ const Gigs = () => {
     queryFn: () =>
       newRequest.get(
         `/gigs/?${search ? search.slice(1) + '&' : ''}min=${minRef.current?.value || ''}&max=${maxRef.current?.value || ''}&sort=${sort}`
-      ).then((res) => res.data),
+      ).then((res) => res.data?.results ?? res.data),
   });
 
   useEffect(() => { refetch(); }, [sort]);

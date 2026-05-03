@@ -36,13 +36,13 @@ export default function Dashboard() {
   // Fetch recommended gigs
   const { data: gigs, isLoading } = useQuery({
     queryKey: ["dashboard-gigs"],
-    queryFn: () => newRequest.get("/gigs/?sort=sales").then(r => r.data),
+    queryFn: () => newRequest.get("/gigs/?sort=sales").then(r => r.data?.results ?? r.data),
   });
 
   // Fetch orders
   const { data: orders } = useQuery({
     queryKey: ["dashboard-orders"],
-    queryFn: () => newRequest.get("/gigs/orders/").then(r => r.data),
+    queryFn: () => newRequest.get("/gigs/orders/").then(r => r.data?.results ?? r.data),
     enabled: !!user,
   });
 
