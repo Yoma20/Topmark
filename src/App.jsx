@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
+import AuthContext from './AuthContext.jsx';
 import './App.scss';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
@@ -24,7 +25,7 @@ import { HelmetProvider } from 'react-helmet-async';
 const queryClient = new QueryClient();
 
 function App() {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+  const { user: currentUser } = useContext(AuthContext);
 
   const Layout = () => {
     return (

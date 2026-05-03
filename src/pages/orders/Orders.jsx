@@ -8,7 +8,7 @@ const Orders = () => {
   const navigate = useNavigate();
   const { isLoading, error, data } = useQuery({
     queryKey: ['orders'],
-    queryFn: () => newRequest.get(`/gigs/orders/`).then((res) => res.data),
+    queryFn: () => newRequest.get(`/gigs/orders/`).then((res) => res.data?.results ?? res.data),
   });
 
   const handleContact = async (order) => {
