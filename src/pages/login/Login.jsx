@@ -43,7 +43,7 @@ function VerifyEmail({ userId, email, onVerified }) {
     setLoading(true);
     setError("");
     try {
-      const res = await newRequest.post("/users/verify-email/", { user_id: userId, otp: code });
+      const res = await newRequest.post("/api/users/verify-email/", { user_id: userId, otp: code });
       onVerified(res.data);
     } catch (err) {
       setError(err?.response?.data?.error || "Invalid or expired code.");
@@ -57,7 +57,7 @@ function VerifyEmail({ userId, email, onVerified }) {
   const handleResend = async () => {
     setResent(false);
     try {
-      await newRequest.post("/users/resend-otp/", { user_id: userId });
+      await newRequest.post("/api/users/resend-otp/", { user_id: userId });
       setResent(true);
       setOtp(["", "", "", "", "", ""]);
       document.getElementById("otp-0")?.focus();
@@ -161,7 +161,7 @@ const Login = () => {
       if (window.turnstile && turnstileRef.current && !turnstileRef.current.dataset.rendered) {
         turnstileRef.current.dataset.rendered = "true";
         window.turnstile.render(turnstileRef.current, {
-          // ⚠️  Replace with your actual Cloudflare Turnstile Site Key
+          
           sitekey: import.meta.env.VITE_CF_TURNSTILE_SITE_KEY || "1x00000000000000000000AA",
           callback: (token) => setCfToken(token),
           "expired-callback": () => setCfToken(null),
@@ -182,16 +182,12 @@ const Login = () => {
     }
   }, []);
 
-  // ── Google Sign-In ─────────────────────────────────────────────────────────
-  // FIX: Google One Tap requires the client ID to be initialized.
-  // In your public/index.html (or index.jsx), add:
-  //   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  // Then initialize in your root component or here:
+
   useEffect(() => {
     const initGoogle = () => {
       if (!window.google?.accounts?.id) return;
       window.google.accounts.id.initialize({
-        // ⚠️  Replace with your Google OAuth Client ID
+        
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
         callback: (response) => {
           window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
@@ -217,7 +213,7 @@ const Login = () => {
     setError(null);
     setLoading(true);
     try {
-      const res = await newRequest.post("/users/google-auth/", {
+      const res = await newRequest.post("/api/users/google-auth/", {
         credential: response.credential,
       });
       saveAndRedirect(res.data);
@@ -247,7 +243,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await newRequest.post('/users/login/', {
+      const res = await newRequest.post('/api/users/login/', {
         username,
         password,
         // Send Turnstile token to backend for server-side verification

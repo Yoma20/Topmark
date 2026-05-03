@@ -1,21 +1,19 @@
 import './navbar.scss'
-import React, { useEffect, useState, useContext } from 'react';
-import AuthContext from '../../AuthContext';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import newRequest from '../../utils/newRequest';
 
 const Navbar = () => {
-    const [active, setactive] = useState(false);
-    const [active1, setactive1] = useState(false);
-    const [open, setopen] = useState(false);
+    const [active, setactive]   = useState(false);   // scroll > 0  → search bar + shadow
+    const [active1, setactive1] = useState(false);   // scroll > 10 → category bar (original logic)
+    const [open, setopen]       = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const { pathname } = useLocation();
+    const dropdownRef  = useRef(null);
 
-    const isActive = () => {
-        window.scrollY > 0 ? setactive(true) : setactive(false);
-    }
-    const isActive1 = () => {
-        window.scrollY > 10 ? setactive1(true) : setactive1(false);
-    }
+    // ── Scroll listeners — original thresholds kept exactly ──────────────────
+    const isActive  = () => window.scrollY > 0  ? setactive(true)  : setactive(false);
+    const isActive1 = () => window.scrollY > 10 ? setactive1(true) : setactive1(false);
 
     useEffect(() => {
         window.addEventListener('scroll', isActive);
@@ -23,55 +21,83 @@ const Navbar = () => {
         return () => {
             window.removeEventListener('scroll', isActive);
             window.removeEventListener('scroll', isActive1);
-        }
+        };
     }, []);
 
+    // Close everything on route change
     useEffect(() => {
         setMenuOpen(false);
         setopen(false);
     }, [pathname]);
 
-    // Prevent body scroll when mobile menu is open
+    // Prevent body scroll while mobile menu is open
     useEffect(() => {
         document.body.style.overflow = menuOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [menuOpen]);
 
-    const { user: current_user, logout } = useContext(AuthContext);
+    // Close dropdown on outside click
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setopen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+
+    // ── User state — reads localStorage, syncs with Login/Register instantly ─
+    const [currentUser, setCurrentUser] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('currentUser')) || null; }
+        catch { return null; }
+    });
+
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === 'currentUser') {
+                try { setCurrentUser(e.newValue ? JSON.parse(e.newValue) : null); }
+                catch { setCurrentUser(null); }
+            }
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
+
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        try {
-            await logout();
-            navigate("/");
-        } catch (err) {
-            console.log(err);
-        }
-    }
+        try { await newRequest.post('/users/logout/'); } catch { /* clear anyway */ }
+        localStorage.removeItem('currentUser');
+        window.dispatchEvent(new StorageEvent('storage', { key: 'currentUser', newValue: null }));
+        setopen(false);
+        navigate('/');
+    };
 
-    const [input, setinput] = useState("");
-    const handlesubmit = () => {
-        navigate(`gigs?search=${input}`);
-    }
+    const [input, setinput] = useState('');
+    const handlesubmit = () => navigate(`/gigs?search=${input}`);
+
+    // Helpers
+    const initials = (name = '') => name.slice(0, 2).toUpperCase() || 'U';
+    const isExpert  = currentUser?.isSeller || currentUser?.user_type === 'expert';
 
     return (
-        <div className={active || pathname !== "/" ? "navbar active" : "navbar"}>
+        <div className={active || pathname !== '/' ? 'navbar active' : 'navbar'}>
 
             {/* ── MAIN CONTAINER ── */}
             <div className="container">
 
-                {/* LEFT: Hamburger (mobile only) */}
+                {/* Hamburger (mobile) */}
                 <div
                     className={`hamburger ${menuOpen ? 'open' : ''}`}
                     onClick={() => setMenuOpen(!menuOpen)}
                     aria-label="Toggle menu"
                 >
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </div>
 
-                {/* LOGO */}
+                {/* LOGO — class structure unchanged */}
                 <div className="logo">
                     <Link to="/" className="logo-link">
                         <img src="/images/logos.png" alt="TopMark" />
@@ -79,13 +105,14 @@ const Navbar = () => {
                     </Link>
                 </div>
 
-                {/* SEARCH BAR — desktop, shows on scroll */}
+                {/* SEARCH BAR — desktop, appears on scroll */}
                 {active && (
                     <div className="navbarsearch">
                         <input
                             type="text"
                             placeholder='What service are you looking for today?'
                             onChange={e => setinput(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handlesubmit()}
                         />
                         <div className="search" onClick={handlesubmit}>
                             <img src="/images/search.png" alt="search" />
@@ -99,7 +126,8 @@ const Navbar = () => {
                         Explore Experts
                     </span>
 
-                    {!current_user && (
+                    {/* ── GUEST ── */}
+                    {!currentUser && (
                         <>
                             <span className="become-expert-link" onClick={() => navigate('/becomeSeller')}>
                                 Become an Expert
@@ -109,45 +137,89 @@ const Navbar = () => {
                         </>
                     )}
 
-                    {current_user && (
-                        <div className="user" onClick={() => setopen(!open)}>
-                            <img src={current_user.img || '/images/noavtar.jpeg'} alt="" />
-                            <span>{current_user?.username}</span>
+                    {/* ── LOGGED IN ── */}
+                    {currentUser && (
+                        <div className="user" ref={dropdownRef} onClick={() => setopen(!open)}>
+                            {currentUser.img
+                                ? <img src={currentUser.img} alt="" />
+                                : <span className="avatar-initials">{initials(currentUser.username)}</span>
+                            }
+                            <span>{currentUser.username}</span>
+                            <svg
+                                className={`user-caret ${open ? 'user-caret--up' : ''}`}
+                                width="11" height="11" viewBox="0 0 12 12" fill="none"
+                                aria-hidden="true"
+                            >
+                                <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.6"
+                                    strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+
                             {open && (
-                                <div className="options">
-                                    {current_user.user_type === 'expert' && (
+                                <div className="options" onClick={e => e.stopPropagation()}>
+
+                                    {/* Header: avatar + name + email */}
+                                    <div className="options-header">
+                                        {currentUser.img
+                                            ? <img src={currentUser.img} alt="" className="options-avatar-img" />
+                                            : <span className="options-avatar-initials">{initials(currentUser.username)}</span>
+                                        }
+                                        <div className="options-user-info">
+                                            <span className="options-username">{currentUser.username}</span>
+                                            <span className="options-email">{currentUser.email}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="options-divider" />
+
+                                    <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
+                                    <Link to='/messages' onClick={() => setopen(false)}>Messages</Link>
+
+                                    <div className="options-divider" />
+
+                                    {isExpert ? (
                                         <>
-                                            <Link to='/mygigs'>My Gigs</Link>
-                                            <Link to='/add'>Add New Gig</Link>
+                                            <Link to='/mygigs' onClick={() => setopen(false)}>My Gigs</Link>
+                                            <Link to='/add'    onClick={() => setopen(false)}>Add New Gig</Link>
                                         </>
+                                    ) : (
+                                        <Link to='/becomeSeller' onClick={() => setopen(false)}>Become an Expert</Link>
                                     )}
-                                    <Link to='/orders'>Orders</Link>
-                                    <Link to='/messages'>Messages</Link>
-                                    <span className="logout-option" onClick={handleLogout}>Logout</span>
+
+                                    <Link to='/settings' onClick={() => setopen(false)}>Account Settings</Link>
+
+                                    <div className="options-divider" />
+
+                                    <span className="logout-option" onClick={handleLogout}>Sign out</span>
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
 
-                {/* RIGHT: Mobile — Join button or avatar always visible */}
+                {/* Mobile right — Join button or avatar */}
                 <div className="mobile-right">
-                    {!current_user ? (
+                    {!currentUser ? (
                         <button className='mobile-join-btn' onClick={() => navigate('/register')}>Join</button>
                     ) : (
                         <div className="user mobile-user" onClick={() => setopen(!open)}>
-                            <img src={current_user.img || '/images/noavtar.jpeg'} alt="" />
+                            {currentUser.img
+                                ? <img src={currentUser.img} alt="" />
+                                : <span className="avatar-initials avatar-initials--sm">{initials(currentUser.username)}</span>
+                            }
                             {open && (
                                 <div className="options">
-                                    {current_user.user_type === 'expert' && (
+                                    <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
+                                    <Link to='/messages' onClick={() => setopen(false)}>Messages</Link>
+                                    {isExpert ? (
                                         <>
-                                            <Link to='/mygigs'>My Gigs</Link>
-                                            <Link to='/add'>Add New Gig</Link>
+                                            <Link to='/mygigs' onClick={() => setopen(false)}>My Gigs</Link>
+                                            <Link to='/add'    onClick={() => setopen(false)}>Add New Gig</Link>
                                         </>
+                                    ) : (
+                                        <Link to='/becomeSeller' onClick={() => setopen(false)}>Become an Expert</Link>
                                     )}
-                                    <Link to='/orders'>Orders</Link>
-                                    <Link to='/messages'>Messages</Link>
-                                    <span className="logout-option" onClick={handleLogout}>Logout</span>
+                                    <Link to='/settings' onClick={() => setopen(false)}>Account Settings</Link>
+                                    <span className="logout-option" onClick={handleLogout}>Sign out</span>
                                 </div>
                             )}
                         </div>
@@ -160,72 +232,70 @@ const Navbar = () => {
                 <>
                     <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
                     <div className="mobile-menu">
-
-                        {!current_user ? (
+                        {!currentUser ? (
                             <div className="mobile-auth">
-                                <button
-                                    className="mobile-btn-primary"
-                                    onClick={() => { navigate('/register'); setMenuOpen(false); }}
-                                >
+                                <button className="mobile-btn-primary"
+                                    onClick={() => { navigate('/register'); setMenuOpen(false); }}>
                                     Join TopMark
                                 </button>
-                                <button
-                                    className="mobile-btn-secondary"
-                                    onClick={() => { navigate('/login'); setMenuOpen(false); }}
-                                >
+                                <button className="mobile-btn-secondary"
+                                    onClick={() => { navigate('/login'); setMenuOpen(false); }}>
                                     Sign in
                                 </button>
-                                <button
-                                    className="mobile-btn-ghost"
-                                    onClick={() => { navigate('/becomeSeller'); setMenuOpen(false); }}
-                                >
+                                <button className="mobile-btn-ghost"
+                                    onClick={() => { navigate('/becomeSeller'); setMenuOpen(false); }}>
                                     Become an Expert
                                 </button>
                             </div>
                         ) : (
                             <div className="mobile-user-section">
                                 <div className="mobile-user-info">
-                                    <img src={current_user.img || '/images/noavtar.jpeg'} alt="" />
+                                    {currentUser.img
+                                        ? <img src={currentUser.img} alt="" />
+                                        : <span className="avatar-initials">{initials(currentUser.username)}</span>
+                                    }
                                     <div className="mobile-user-text">
-                                        <span className="mobile-username">{current_user.username}</span>
-                                        <span className="mobile-user-type">{current_user.user_type}</span>
+                                        <span className="mobile-username">{currentUser.username}</span>
+                                        <span className="mobile-user-type">
+                                            {currentUser.user_type || (isExpert ? 'Expert' : 'Student')}
+                                        </span>
                                     </div>
                                 </div>
-                                {current_user.user_type === 'expert' && (
+                                <Link className="mobile-nav-link" to='/orders'   onClick={() => setMenuOpen(false)}>My Orders</Link>
+                                <Link className="mobile-nav-link" to='/messages' onClick={() => setMenuOpen(false)}>Messages</Link>
+                                {isExpert ? (
                                     <>
                                         <Link className="mobile-nav-link" to='/mygigs' onClick={() => setMenuOpen(false)}>My Gigs</Link>
-                                        <Link className="mobile-nav-link" to='/add' onClick={() => setMenuOpen(false)}>Add New Gig</Link>
+                                        <Link className="mobile-nav-link" to='/add'    onClick={() => setMenuOpen(false)}>Add New Gig</Link>
                                     </>
+                                ) : (
+                                    <Link className="mobile-nav-link" to='/becomeSeller' onClick={() => setMenuOpen(false)}>Become an Expert</Link>
                                 )}
-                                <Link className="mobile-nav-link" to='/orders' onClick={() => setMenuOpen(false)}>Orders</Link>
-                                <Link className="mobile-nav-link" to='/messages' onClick={() => setMenuOpen(false)}>Messages</Link>
-                                <span
-                                    className="mobile-nav-link logout"
-                                    onClick={() => { handleLogout(); setMenuOpen(false); }}
-                                >
-                                    Logout
+                                <Link className="mobile-nav-link" to='/settings' onClick={() => setMenuOpen(false)}>Account Settings</Link>
+                                <span className="mobile-nav-link logout"
+                                    onClick={() => { handleLogout(); setMenuOpen(false); }}>
+                                    Sign out
                                 </span>
                             </div>
                         )}
-
                         <div className="mobile-menu-divider" />
-
-                        <button
-                            className="mobile-explore-btn"
-                            onClick={() => { navigate('/gigs'); setMenuOpen(false); }}
-                        >
+                        <button className="mobile-explore-btn"
+                            onClick={() => { navigate('/gigs'); setMenuOpen(false); }}>
                             Explore Experts
                         </button>
                     </div>
                 </>
             )}
 
-            {/* ── DESKTOP CATEGORY BAR ── */}
-            {(active1 || pathname !== "/") && (
+            {/* ── CATEGORY BAR — original scroll-gate restored ────────────────
+                Shows when: scrolled past 10px  OR  not on the homepage.
+                Hidden on the homepage until the user scrolls (original behaviour).
+            ── */}
+            {(active1 || pathname !== '/') && (
                 <>
                     <hr className="nav-hr" />
                     <div className="menu">
-                        <Link className='link menulink' to='/gigs?search=Law'>Law & Legal</Link>
+                        <Link className='link menulink' to='/gigs?search=Law'>Law &amp; Legal</Link>
                         <Link className='link menulink' to='/gigs?search=Nursing'>Nursing</Link>
                         <Link className='link menulink' to='/gigs?search=Cybersecurity'>Cybersecurity</Link>
                         <Link className='link menulink' to='/gigs?search=Biology'>Biology</Link>
@@ -240,6 +310,6 @@ const Navbar = () => {
             )}
         </div>
     );
-}
+};
 
 export default Navbar;

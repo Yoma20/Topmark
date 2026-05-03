@@ -19,12 +19,11 @@
   flex: 0 0 42%;
   position: relative;
   overflow: hidden;
-  background-color: #1a0a0f;
-  // Use a real image — replace the gradient with your photo:
-  //   background-image: url("/images/auth-hero.webp");
-  //   background-size: cover;
-  //   background-position: center top;
-  background-image: linear-gradient(145deg, #2d0b18 0%, #6b1a2a 50%, #3d0e1e 100%);
+  background-image:
+    linear-gradient(to right,  #7fc4a1 .5px, #0000000d .5px),
+    linear-gradient(to bottom, #9be9cb .5px, #0000000d .5px),
+    linear-gradient(to bottom right, #15803d, #0a7537);
+  background-size: 400px 400px;
 
   @media (max-width: 768px) {
     display: none;
@@ -32,9 +31,7 @@
 }
 
 .auth-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.6) 100%);
+  display: none; /* removed — overlay not needed with the grid pattern */
 }
 
 .auth-hero-content {
