@@ -100,15 +100,30 @@
       ]
     }
     </script>
+
+    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <div id="g_id_onload"
-      data-client_id="653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com"
-      data-callback="handleGoogleSignIn"
-      data-auto_prompt="false">
-    </div>
+
+    <script>
+      
+      function handleGoogleSignIn(response) {
+        window.dispatchEvent(
+          new CustomEvent("google-signin", { detail: response })
+        );
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+
+    
+    <div
+      id="g_id_onload"
+      data-client_id="653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com"
+      data-callback="handleGoogleSignIn"
+      data-auto_prompt="false"
+    ></div>
+
     <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>

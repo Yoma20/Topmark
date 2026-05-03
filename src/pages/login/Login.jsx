@@ -1,10 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useContext, useRef } from "react";
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
 import './login.scss';
 import newRequest from "../../utils/newRequest";
 
-// ─── Reusable OTP screen (same as in Register.jsx) ───────────────────────────
+// ─── If you have a global UserContext, import it here ─────────────────────────
+// import { UserContext } from "../../context/UserContext";
+// Then inside Login: const { setCurrentUser } = useContext(UserContext);
+// And in saveAndRedirect, call setCurrentUser(userData) BEFORE navigate("/")
+
+// ─── Reusable OTP screen ──────────────────────────────────────────────────────
 function VerifyEmail({ userId, email, onVerified }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
@@ -60,45 +65,43 @@ function VerifyEmail({ userId, email, onVerified }) {
   };
 
   return (
-    <div className="login">
-      <form onSubmit={(e) => { e.preventDefault(); handleVerify(); }}>
-        <div className="verify-icon">📧</div>
-        <h1>Verify your email</h1>
-        <p className="verify-sub">
-          We sent a new 6-digit code to <strong>{email}</strong>
-        </p>
-
-        <div className="otp-row" onPaste={handlePaste}>
-          {otp.map((digit, i) => (
-            <input
-              key={i}
-              id={`otp-${i}`}
-              className="otp-box"
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleChange(e.target.value, i)}
-              onKeyDown={(e) => handleKeyDown(e, i)}
-              autoFocus={i === 0}
-            />
-          ))}
-        </div>
-
-        {error && <div className="status-message error">{error}</div>}
-        {resent && <div className="status-message success">New code sent!</div>}
-
-        <button type="submit" className="btn-submit" disabled={loading}>
-          {loading ? "Verifying…" : "Verify Email"}
-        </button>
-
-        <p className="footer">
-          Didn't get it?{" "}
-          <button type="button" className="link-btn" onClick={handleResend}>
-            Resend code
+    <div className="auth-page">
+      <div className="auth-form-side otp-only">
+        <div className="auth-form-inner">
+          <div className="verify-icon">📧</div>
+          <h1>Verify your email</h1>
+          <p className="verify-sub">
+            We sent a 6-digit code to <strong>{email}</strong>
+          </p>
+          <div className="otp-row" onPaste={handlePaste}>
+            {otp.map((digit, i) => (
+              <input
+                key={i}
+                id={`otp-${i}`}
+                className="otp-box"
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(e.target.value, i)}
+                onKeyDown={(e) => handleKeyDown(e, i)}
+                autoFocus={i === 0}
+              />
+            ))}
+          </div>
+          {error && <div className="status-message error">{error}</div>}
+          {resent && <div className="status-message success">New code sent!</div>}
+          <button className="btn-submit" onClick={handleVerify} disabled={loading}>
+            {loading ? "Verifying…" : "Verify Email"}
           </button>
-        </p>
-      </form>
+          <p className="footer">
+            Didn't get it?{" "}
+            <button type="button" className="link-btn" onClick={handleResend}>
+              Resend code
+            </button>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -110,26 +113,106 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  // FIX 2: state for unverified users who need OTP
   const [pendingUser, setPendingUser] = useState(null);
+  // Cloudflare Turnstile token
+  const [cfToken, setCfToken] = useState(null);
+  const turnstileRef = useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
   const successMessage = location.state?.message || null;
 
-  // ── FIX 1: normalise the saved user object so .id is always present ────────
-  const saveAndRedirect = (data) => {
-    localStorage.setItem("currentUser", JSON.stringify({
-      id: data.user_id,       // normalise user_id → id
+  // ── FIX: saveAndRedirect dispatches a storage event so the rest of the app
+  //    (Navbar, context, etc.) picks up the new user without a page refresh ──
+  const saveAndRedirect = useCallback((data) => {
+    const userData = {
+      id: data.user_id ?? data.id,
       username: data.username,
       email: data.email,
       token: data.token,
-    }));
-    navigate("/");
-  };
+      isSeller: data.isSeller ?? false,
+    };
+    localStorage.setItem("currentUser", JSON.stringify(userData));
 
-  // ── Google sign-in (FIX 3: added to Login page too) ───────────────────────
+    // Notify every component listening to storage changes (same-tab fix)
+    window.dispatchEvent(new StorageEvent("storage", {
+      key: "currentUser",
+      newValue: JSON.stringify(userData),
+    }));
+
+    // Small delay so state propagates before navigation
+    setTimeout(() => navigate("/"), 50);
+  }, [navigate]);
+
+  // ── Cloudflare Turnstile setup ─────────────────────────────────────────────
+  useEffect(() => {
+    // Load Turnstile script once
+    if (!document.getElementById("cf-turnstile-script")) {
+      const script = document.createElement("script");
+      script.id = "cf-turnstile-script";
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+
+    // Render widget after script loads
+    const renderWidget = () => {
+      if (window.turnstile && turnstileRef.current && !turnstileRef.current.dataset.rendered) {
+        turnstileRef.current.dataset.rendered = "true";
+        window.turnstile.render(turnstileRef.current, {
+          // ⚠️  Replace with your actual Cloudflare Turnstile Site Key
+          sitekey: import.meta.env.VITE_CF_TURNSTILE_SITE_KEY || "1x00000000000000000000AA",
+          callback: (token) => setCfToken(token),
+          "expired-callback": () => setCfToken(null),
+          "error-callback": () => setCfToken(null),
+          theme: "light",
+          size: "normal",
+        });
+      }
+    };
+
+    // If script already loaded
+    if (window.turnstile) {
+      renderWidget();
+    } else {
+      const script = document.getElementById("cf-turnstile-script");
+      script?.addEventListener("load", renderWidget);
+      return () => script?.removeEventListener("load", renderWidget);
+    }
+  }, []);
+
+  // ── Google Sign-In ─────────────────────────────────────────────────────────
+  // FIX: Google One Tap requires the client ID to be initialized.
+  // In your public/index.html (or index.jsx), add:
+  //   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  // Then initialize in your root component or here:
+  useEffect(() => {
+    const initGoogle = () => {
+      if (!window.google?.accounts?.id) return;
+      window.google.accounts.id.initialize({
+        // ⚠️  Replace with your Google OAuth Client ID
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+        callback: (response) => {
+          window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
+        },
+      });
+    };
+
+    if (window.google?.accounts?.id) {
+      initGoogle();
+    } else {
+      // Script loads asynchronously — wait for it
+      const interval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          initGoogle();
+          clearInterval(interval);
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
   const handleGoogleSignIn = useCallback(async (response) => {
     setError(null);
     setLoading(true);
@@ -143,7 +226,7 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // eslint-disable-line
+  }, [saveAndRedirect]);
 
   useEffect(() => {
     const handler = (e) => handleGoogleSignIn(e.detail);
@@ -155,27 +238,42 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    // Cloudflare check — skip in development if no token yet
+    if (!cfToken && import.meta.env.PROD) {
+      setError("Please complete the security check.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await newRequest.post('/users/login/', { username, password });
+      const res = await newRequest.post('/users/login/', {
+        username,
+        password,
+        // Send Turnstile token to backend for server-side verification
+        cf_token: cfToken,
+      });
       saveAndRedirect(res.data);
     } catch (err) {
       const data = err?.response?.data;
 
-      // FIX 2: backend returns 403 { error:'email_not_verified', user_id, email }
-      // instead of showing a confusing error, redirect to OTP screen
       if (data?.error === 'email_not_verified') {
         setPendingUser({ userId: data.user_id, email: data.email });
         return;
       }
 
-      // FIX 2: backend uses 'error' field, not 'message'
       const msg = data?.error
         || data?.message
         || data?.non_field_errors?.join(" ")
         || (typeof data === 'string' ? data : null)
         || "Login failed. Please try again.";
       setError(msg);
+
+      // Reset Turnstile on error
+      if (window.turnstile && turnstileRef.current) {
+        window.turnstile.reset(turnstileRef.current);
+        setCfToken(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -192,75 +290,119 @@ const Login = () => {
     );
   }
 
-  // ── Login form ─────────────────────────────────────────────────────────────
+  // ── Login form (split layout) ──────────────────────────────────────────────
   return (
-    <div className="login">
-      <form onSubmit={handleSubmit}>
-        <h1>Sign in</h1>
+    <div className="auth-page">
+      {/* Left panel — marketing */}
+      <div className="auth-hero-side">
+        <div className="auth-hero-overlay" />
+        <div className="auth-hero-content">
+          <div className="auth-hero-brand">TopMark</div>
+          <h2>Academic help<br />you can trust</h2>
+          <ul className="auth-hero-points">
+            <li>Verified subject-specialist experts</li>
+            <li>Secure escrow — pay only when satisfied</li>
+            <li>24-hour express turnaround available</li>
+          </ul>
+        </div>
+      </div>
 
-        {successMessage && (
-          <div role="status" aria-live="polite" className="status-message success">
-            {successMessage}
-          </div>
-        )}
+      {/* Right panel — form */}
+      <div className="auth-form-side">
+        <div className="auth-form-inner">
+          <p className="auth-top-link">
+            Don't have an account? <Link to="/register">Join here</Link>
+          </p>
 
-        {/* FIX 3: Google sign-in button */}
-        <button
-          type="button"
-          className="google-btn"
-          disabled={loading}
-          onClick={() => window.google?.accounts.id.prompt()}
-        >
-          <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Continue with Google
-        </button>
+          <h1>Sign in to your account</h1>
 
-        <div className="divider"><span>or</span></div>
+          {successMessage && (
+            <div role="status" aria-live="polite" className="status-message success">
+              {successMessage}
+            </div>
+          )}
 
-        <label htmlFor="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          name="username"
-          placeholder="johndoe"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          required
-        />
-
-        <label htmlFor="password">Password</label>
-        <div className="password-wrapper">
-          <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
+          {/* Google */}
           <button
             type="button"
-            className="eye-btn"
-            onClick={() => setShowPassword(v => !v)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="social-btn"
+            disabled={loading}
+            onClick={() => window.google?.accounts.id.prompt()}
           >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continue with Google
           </button>
+
+          <div className="divider"><span>or</span></div>
+
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="field">
+              <label htmlFor="username">Username</label>
+              <input
+                id="username"
+                type="text"
+                name="username"
+                placeholder="johndoe"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <div className="password-wrapper">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="eye-btn"
+                  onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Cloudflare Turnstile widget */}
+            <div className="turnstile-wrap">
+              <div ref={turnstileRef} />
+            </div>
+
+            {error && (
+              <div role="alert" className="status-message error">{error}</div>
+            )}
+
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading || (import.meta.env.PROD && !cfToken)}
+            >
+              {loading ? "Signing in…" : "Sign in"}
+            </button>
+          </form>
+
+          <p className="auth-legal">
+            By signing in, you agree to TopMark's{" "}
+            <Link to="/terms">Terms of Service</Link> and{" "}
+            <Link to="/privacy">Privacy Policy</Link>.
+          </p>
         </div>
-
-        {error && (
-          <div role="alert" className="status-message error">{error}</div>
-        )}
-
-        <button type="submit" className="btn-submit" disabled={loading}>
-          {loading ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

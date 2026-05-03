@@ -1,28 +1,36 @@
 import axios from "axios";
-
+ 
 const newRequest = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://127.0.0.1:8000/api",
-  withCredentials: false,
+  baseURL: import.meta.env.VITE_API_URL || "https://web-production-d2ca9.up.railway.app/api",
+  withCredentials: false, // Token auth — credentials not needed
 });
-
+ 
+// ── Request interceptor — attach token ────────────────────────────────────────
 newRequest.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-  if (token) config.headers.Authorization = `Token ${token}`;
+  try {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (user?.token) {
+      config.headers.Authorization = `Token ${user.token}`;
+    }
+  } catch {
+    // localStorage parse failed — proceed without token
+  }
   return config;
 });
-
+ 
+// ── Response interceptor — clear stale session on 401 ────────────────────────
 newRequest.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem("access_token");
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      // Token is expired or invalid — wipe local state
       localStorage.removeItem("currentUser");
-      window.location.href = "/login";
+      window.dispatchEvent(
+        new StorageEvent("storage", { key: "currentUser", newValue: null })
+      );
     }
-    return Promise.reject(err);
+    return Promise.reject(error);
   }
 );
-
+ 
 export default newRequest;

@@ -1,229 +1,467 @@
-.login {
+// auth.scss — shared styles for Login.jsx and Register.jsx
+// Import this file in BOTH components instead of their separate scss files:
+//   import "../../styles/auth.scss";
+// Then delete the old login.scss and register.scss.
+
+// ── Layout ─────────────────────────────────────────────────────────────────────
+.auth-page {
+  display: flex;
+  min-height: 100vh;
+
+  // OTP-only view (no hero panel)
+  &:has(.otp-only) .auth-hero-side {
+    display: none;
+  }
+}
+
+// ── Left: hero / marketing panel ──────────────────────────────────────────────
+.auth-hero-side {
+  flex: 0 0 42%;
+  position: relative;
+  overflow: hidden;
+  background-color: #1a0a0f;
+  // Use a real image — replace the gradient with your photo:
+  //   background-image: url("/images/auth-hero.webp");
+  //   background-size: cover;
+  //   background-position: center top;
+  background-image: linear-gradient(145deg, #2d0b18 0%, #6b1a2a 50%, #3d0e1e 100%);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.auth-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.6) 100%);
+}
+
+.auth-hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 60px 48px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #fff;
+}
+
+.auth-hero-brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: auto;
+  color: #fff;
+}
+
+.auth-hero-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 28px;
+  color: #fff;
+}
+
+.auth-hero-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 60px;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+
+    &::before {
+      content: "";
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-size: 10px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+}
+
+// ── Right: form panel ─────────────────────────────────────────────────────────
+.auth-form-side {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
-  padding: 40px 16px;
-  margin-bottom: 50px;
+  padding: 48px 24px;
+  background: #fff;
+  overflow-y: auto;
 
-  form {
-    width: 360px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  &.otp-only {
+    flex: 1;
+  }
+}
 
-    h1 {
-      color: gray;
-      margin-bottom: 8px;
-    }
+.auth-form-inner {
+  width: 100%;
+  max-width: 400px;
+}
 
-    label {
-      color: gray;
-      font-size: 18px;
-    }
+// Top "already have an account?" line
+.auth-top-link {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 32px;
+  text-align: right;
 
-    input,
-    textarea {
-      padding: 20px;
-      border: 1px solid rgb(216, 214, 214);
-      border-radius: 4px;
-      font-size: 15px;
+  a {
+    color: #1a1a1a;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover { color: #1dbf73; }
+  }
+}
+
+.auth-form-inner h1 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+// ── Social buttons ─────────────────────────────────────────────────────────────
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  margin-bottom: 4px;
+
+  &:hover:not(:disabled) {
+    background: #f8f9fa;
+    border-color: #9ca3af;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+// ── Divider ────────────────────────────────────────────────────────────────────
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #9ca3af;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+}
+
+// ── Form fields ────────────────────────────────────────────────────────────────
+.field {
+  margin-bottom: 14px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 5px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #111;
+    background: #fafafa;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+
+    &:focus {
       outline: none;
-      transition: border-color 0.2s;
-
-      &:focus {
-        border-color: #1dbf73;
-      }
+      border-color: #1dbf73;
+      box-shadow: 0 0 0 3px rgba(29,191,115,0.12);
+      background: #fff;
     }
 
-    // ── Primary submit button ──────────────────────────────────────────────
-    button[type="submit"],
-    .btn-submit {
-      border: none;
-      padding: 20px;
-      color: white;
-      font-weight: 500;
-      font-size: 18px;
-      background-color: #1dbf73;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: opacity 0.2s;
+    &::placeholder { color: #9ca3af; }
+  }
+}
 
-      &:hover:not(:disabled) {
-        opacity: 0.88;
-      }
+// Standalone input (Login uses these without .field wrapper)
+.auth-form-inner > form > label,
+form > label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 5px;
+}
 
-      &:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-      }
-    }
+.auth-form-inner > form > input[type="text"],
+.auth-form-inner > form > input[type="email"],
+.auth-form-inner > form > input[type="password"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111;
+  background: #fafafa;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 
-    span {
-      color: red;
-      font-size: 12px;
-    }
+  &:focus {
+    outline: none;
+    border-color: #1dbf73;
+    box-shadow: 0 0 0 3px rgba(29,191,115,0.12);
+    background: #fff;
+  }
 
-    // ── Status messages ────────────────────────────────────────────────────
-    .status-message {
-      font-size: 14px;
-      padding: 12px 14px;
-      border-radius: 6px;
-      line-height: 1.5;
+  &::placeholder { color: #9ca3af; }
+}
 
-      &.error {
-        background: #fef2f2;
-        color: #b91c1c;
-        border: 1px solid #fecaca;
-      }
+// ── Password wrapper ───────────────────────────────────────────────────────────
+.password-wrapper {
+  position: relative;
 
-      &.success {
-        background: #f0fdf4;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
-      }
-    }
+  input {
+    padding-right: 44px !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
 
-    // ── Google button ──────────────────────────────────────────────────────
-    .google-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      padding: 13px 20px;
-      border: 1px solid rgb(216, 214, 214);
-      border-radius: 4px;
-      background: white;
-      color: #374151;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  line-height: 1;
 
-      &:hover:not(:disabled) {
-        background: #f9fafb;
-        border-color: #9ca3af;
-      }
+  &:hover { color: #374151; }
+}
 
-      &:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-      }
-    }
+// ── Checkbox ───────────────────────────────────────────────────────────────────
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 14px;
 
-    // ── Divider ────────────────────────────────────────────────────────────
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #9ca3af;
-      font-size: 13px;
+  input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #1dbf73;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
 
-      &::before,
-      &::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: rgb(216, 214, 214);
-      }
-    }
-
-    // ── Password field with eye toggle ─────────────────────────────────────
-    .password-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-
-      input {
-        width: 100%;
-        padding-right: 52px;
-        box-sizing: border-box;
-      }
-
-      .eye-btn {
-        position: absolute;
-        right: 14px;
-        background: none;
-        border: none;
-        padding: 4px;
-        cursor: pointer;
-        color: #9ca3af;
-        display: flex;
-        align-items: center;
-        font-size: unset;
-        font-weight: unset;
-
-        &:hover {
-          color: #374151;
-        }
-      }
-    }
-
-    // ── OTP verification screen ────────────────────────────────────────────
-    .verify-icon {
-      font-size: 40px;
-      text-align: center;
-    }
-
-    .verify-sub {
-      color: #6b7280;
-      font-size: 14px;
-      text-align: center;
-      line-height: 1.6;
-      margin: 0;
-
-      strong {
-        color: #374151;
-      }
-    }
-
-    .otp-row {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 8px 0;
-    }
-
-    .otp-box {
-      width: 44px;
-      height: 52px;
-      text-align: center;
-      font-size: 22px;
+  label {
+    cursor: pointer;
+    a {
+      color: #1dbf73;
       font-weight: 600;
-      border: 1.5px solid rgb(216, 214, 214);
-      border-radius: 6px;
-      padding: 0;
-      transition: border-color 0.2s;
-
-      &:focus {
-        border-color: #1dbf73;
-        outline: none;
-      }
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
     }
+  }
+}
 
-    // ── Footer links ───────────────────────────────────────────────────────
-    .footer {
-      text-align: center;
-      font-size: 14px;
-      color: #6b7280;
-      margin: 0;
+// ── Cloudflare Turnstile ───────────────────────────────────────────────────────
+.turnstile-wrap {
+  margin: 14px 0;
+  display: flex;
+  justify-content: flex-start;
 
-      a,
-      .link-btn {
-        color: #1dbf73;
-        font-weight: 500;
-        text-decoration: none;
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        font-size: inherit;
+  // Turnstile renders its own iframe — no extra styling needed
+}
 
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
+// ── Submit button ──────────────────────────────────────────────────────────────
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background: #1dbf73;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:hover:not(:disabled) { background: #19a463; }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+// ── Status messages ────────────────────────────────────────────────────────────
+.status-message {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 14px;
+
+  &.error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+
+  &.success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+}
+
+// ── Footer / legal ─────────────────────────────────────────────────────────────
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #6b7280;
+
+  a, .link-btn {
+    color: #1dbf73;
+    font-weight: 600;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: inherit;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.auth-legal {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+  line-height: 1.6;
+
+  a {
+    color: #6b7280;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    &:hover { color: #374151; }
+  }
+}
+
+// ── OTP screen ─────────────────────────────────────────────────────────────────
+.verify-icon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.verify-sub {
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+
+  strong { color: #374151; }
+}
+
+.otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.otp-box {
+  width: 48px;
+  height: 56px;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #111;
+  background: #fafafa;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #1dbf73;
+    box-shadow: 0 0 0 3px rgba(29,191,115,0.15);
+    background: #fff;
+  }
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .auth-form-side {
+    padding: 32px 20px;
+    align-items: flex-start;
+  }
+
+  .auth-form-inner h1 {
+    font-size: 1.3rem;
+  }
+
+  .otp-box {
+    width: 42px;
+    height: 50px;
+    font-size: 1.3rem;
   }
 }
