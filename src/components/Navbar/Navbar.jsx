@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
-import './login.scss';
+import './navbar.scss';
 import newRequest from "../../utils/newRequest";
 
-// ─── If you have a global UserContext, import it here ─────────────────────────
-// import { UserContext } from "../../context/UserContext";
-// Then inside Login: const { setCurrentUser } = useContext(UserContext);
-// And in saveAndRedirect, call setCurrentUser(userData) BEFORE navigate("/")
 
-// ─── Reusable OTP screen ──────────────────────────────────────────────────────
 function VerifyEmail({ userId, email, onVerified }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
