@@ -178,8 +178,8 @@ export default function Register() {
     const initGoogle = () => {
       if (!window.google?.accounts?.id) return;
       window.google.accounts.id.initialize({
-        // ⚠️  Replace with your Google OAuth Client ID
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+        
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com",
         callback: (response) => {
           window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
         },
