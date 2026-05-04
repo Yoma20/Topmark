@@ -1,0 +1,168 @@
+.settings {
+    padding: 40px 20px 80px;
+    min-height: 80vh;
+    background: #f7f7f7;
+  
+    .settings-container {
+      max-width: 860px;
+      margin: 0 auto;
+  
+      > h1 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 28px;
+        color: #222;
+      }
+    }
+  
+    /* ── two-column layout ── */
+    .settings-layout {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+  
+    /* ── left nav ── */
+    .settings-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  
+      .nav-item {
+        background: none;
+        border: none;
+        text-align: left;
+        padding: 10px 14px;
+        border-radius: 7px;
+        font-size: .92rem;
+        font-weight: 500;
+        color: #555;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+  
+        &:hover  { background: #f0f0f0; color: #111; }
+        &.active { background: #1dbf73; color: #fff; }
+      }
+    }
+  
+    /* ── panels ── */
+    .settings-panel {
+      display: none;
+      background: #fff;
+      border-radius: 10px;
+      padding: 32px 36px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  
+      &.active { display: block; }
+  
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 22px;
+        color: #222;
+      }
+  
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+  
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: .85rem;
+        font-weight: 600;
+        color: #444;
+  
+        input, textarea {
+          padding: 10px 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          font-size: .93rem;
+          outline: none;
+          transition: border-color .15s;
+          font-family: inherit;
+  
+          &:focus { border-color: #1dbf73; }
+        }
+  
+        textarea { resize: vertical; }
+      }
+  
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+  
+      /* availability toggle */
+      .toggle-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+  
+        input[type="checkbox"] {
+          width: 20px;
+          height: 20px;
+          accent-color: #1dbf73;
+          cursor: pointer;
+        }
+      }
+    }
+  
+    /* ── status messages ── */
+    .msg {
+      font-size: .87rem;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin: 0;
+  
+      &.ok  { background: #e6f9f0; color: #157347; }
+      &.err { background: #fdecea; color: #b71c1c; }
+    }
+  
+    /* ── save button ── */
+    .save-btn {
+      align-self: flex-start;
+      padding: 10px 24px;
+      background: #1dbf73;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: .93rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+      margin-top: 4px;
+  
+      &:hover:not(:disabled) { background: #19a463; }
+      &:disabled { opacity: .6; cursor: not-allowed; }
+    }
+  
+    /* ── responsive ── */
+    @media (max-width: 640px) {
+      .settings-layout {
+        grid-template-columns: 1fr;
+      }
+      .settings-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 8px;
+      }
+      .settings-panel {
+        padding: 22px 18px;
+      }
+      .form-row {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  }

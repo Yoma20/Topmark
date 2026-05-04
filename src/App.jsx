@@ -14,6 +14,7 @@ import Home from './pages/home/Home.jsx';
 import Pay from './pages/pay/Pay.jsx';
 import Success from './pages/success/Success.jsx';
 import Login from './pages/login/Login.jsx';
+import Settings from './pages/settings/Settings.jsx';
 import Register from './pages/register/Register.jsx';
 import BecomeSeller from './components/becomeSeller/BecomeSeller.jsx';
 import BecomeSeller2 from './components/becomeSeller2/BecomeSeller2.jsx';
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
       { path: "/add",       element: <Add /> },
       { path: "/messages",  element: <MessagingPage /> },
       { path: "/login",     element: <Login /> },
+      { path: "/settings", element: <Settings /> },
       { path: "/register",  element: <Register /> },
       { path: "/pay/:id",   element: <Pay /> },
       { path: "/success",   element: <Success /> },
