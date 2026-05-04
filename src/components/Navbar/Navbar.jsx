@@ -1,7 +1,7 @@
 import './navbar.scss'
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import newRequest from '../../utils/newRequest';
+import AuthContext from '../../AuthContext';
 
 const Navbar = () => {
     const [active, setactive]   = useState(false);   // scroll > 0  → search bar + shadow
@@ -48,33 +48,17 @@ const Navbar = () => {
         return () => document.removeEventListener('mousedown', handler);
     }, [open]);
 
-    // ── User state — reads localStorage, syncs with Login/Register instantly ─
-    const [currentUser, setCurrentUser] = useState(() => {
-        try { return JSON.parse(localStorage.getItem('currentUser')) || null; }
-        catch { return null; }
-    });
-
-    useEffect(() => {
-        const onStorage = (e) => {
-            if (e.key === 'currentUser') {
-                try { setCurrentUser(e.newValue ? JSON.parse(e.newValue) : null); }
-                catch { setCurrentUser(null); }
-            }
-        };
-        window.addEventListener('storage', onStorage);
-        return () => window.removeEventListener('storage', onStorage);
-    }, []);
+    
+    const { user: currentUser, logout } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
-    const handleLogout = async () => {
-        try { await newRequest.post('/users/logout/'); } catch { /* clear anyway */ }
-        localStorage.removeItem('currentUser');
-        window.dispatchEvent(new StorageEvent('storage', { key: 'currentUser', newValue: null }));
+    const handleLogout = () => {
+        logout();
         setopen(false);
         navigate('/');
     };
-
+    
     const [input, setinput] = useState('');
     const handlesubmit = () => navigate(`/gigs?search=${input}`);
 
