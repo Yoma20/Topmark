@@ -1,4 +1,4 @@
-// 1.28.50 — Fixed: class→className, SVG camelCase, search bar added, photography-section moved, hero height reduced, scroll cue added
+
 import React, { useState } from "react";
 import './home.scss';
 import Featured from "../../components/featured/Featured";

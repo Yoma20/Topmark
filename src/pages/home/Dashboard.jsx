@@ -1,5 +1,5 @@
 // src/pages/home/Dashboard.jsx
-import { useContext } from "react";
+import { useContext, useState, useState, useEffect, useRef, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import AuthContext from "../../AuthContext";
@@ -28,6 +28,383 @@ const CATEGORY_COLORS = [
   "#d97706","#7c3aed","#0891b2","#dc2626",
   "#7c3aed","#059669","#0891b2","#2563eb",
 ];
+
+function ProfileMenu({ user, navigate, activeOrders, unreadData }) {
+  const [open, setOpen] = useState(false);
+
+  const menuItems = [
+    { icon: "person-outline",        label: "Profile",      path: "/profile" },
+    {
+      icon: "chatbox-outline",
+      label: unreadData?.unread_count > 0
+        ? `Messages (${unreadData.unread_count})`
+        : "Messages",
+      path: "/messages",
+    },
+    {
+      icon: "notifications-outline",
+      label: activeOrders.length > 0
+        ? `Orders (${activeOrders.length})`
+        : "Orders",
+      path: "/orders",
+    },
+    { icon: "cog-outline",           label: "Settings",     path: "/settings" },
+    { icon: "log-out-outline",       label: "Logout",       path: "/logout" },
+  ];
+
+  return (
+    <div className={`dash-nav${open ? " dash-nav--open" : ""}`}>
+      <div className="dash-nav__user-box">
+        <div className="dash-nav__avatar">
+          <img src={user?.img || "/images/noavatar.jpeg"} alt={user?.username} />
+        </div>
+        <span className="dash-nav__username">{user?.username}</span>
+      </div>
+
+      <div className="dash-nav__toggle" onClick={() => setOpen(o => !o)} />
+
+      <ul className="dash-nav__menu">
+        {menuItems.map(item => (
+          <li key={item.label}>
+            <a
+              href="#"
+              onClick={e => { e.preventDefault(); setOpen(false); navigate(item.path); }}
+            >
+              <ion-icon name={item.icon} />
+              {item.label}
+            </a>
+          </li>
+        ))}
+        {user?.user_type === "expert" && (
+          <li>
+            <a href="#" onClick={e => { e.preventDefault(); setOpen(false); navigate("/add"); }}>
+              <ion-icon name="add-circle-outline" />
+              Add New Gig
+            </a>
+          </li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
+const STATIC_SUBJECTS = [
+  "Law & Legal", "Nursing", "Cybersecurity", "Biology", "History",
+  "Data Science", "Computer Science", "Business", "Psychology",
+  "Essay Writing", "Chemistry", "Mathematics",
+];
+ 
+const CATEGORY_FILTERS = [
+  { label: "All",              value: "" },
+  { label: "Law & Legal",      value: "Law" },
+  { label: "Nursing",          value: "Nursing" },
+  { label: "Computer Science", value: "Computer Science" },
+  { label: "Data Science",     value: "Data Science" },
+  { label: "Business",         value: "Business" },
+  { label: "Mathematics",      value: "Mathematics" },
+  { label: "Essay Writing",    value: "Essay Writing" },
+  { label: "Chemistry",        value: "Chemistry" },
+];
+ 
+const RECENT_KEY   = "search_recent";
+const MAX_RECENT   = 6;
+const DEBOUNCE_MS  = 300;
+ 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; }
+  catch { return []; }
+}
+ 
+function saveRecent(term) {
+  const prev = loadRecent();
+  const next  = [term, ...prev.filter(t => t !== term)].slice(0, MAX_RECENT);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  return next;
+}
+ 
+function removeRecent(term) {
+  const next = loadRecent().filter(t => t !== term);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  return next;
+}
+ 
+// ── Component ────────────────────────────────────────────────────────────────
+export default function SearchBar({ initialQuery = "", initialCategory = "" }) {
+  const navigate  = useNavigate();
+ 
+  const [query,       setQuery]       = useState(initialQuery);
+  const [category,    setCategory]    = useState(initialCategory);
+  const [suggestions, setSuggestions] = useState([]);
+  const [recent,      setRecent]      = useState(loadRecent);
+  const [open,        setOpen]        = useState(false);
+  const [loading,     setLoading]     = useState(false);
+  const [activeIdx,   setActiveIdx]   = useState(-1);
+ 
+  const inputRef    = useRef(null);
+  const dropRef     = useRef(null);
+  const debounceRef = useRef(null);
+ 
+  // ── Close dropdown on outside click ───────────────────────────────────────
+  useEffect(() => {
+    function handleClick(e) {
+      if (
+        dropRef.current && !dropRef.current.contains(e.target) &&
+        inputRef.current && !inputRef.current.contains(e.target)
+      ) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+ 
+  // ── Fetch API suggestions (debounced) + merge static fallback ─────────────
+  const fetchSuggestions = useCallback(async (term) => {
+    if (!term.trim()) { setSuggestions([]); return; }
+ 
+    // Static matches first (instant)
+    const staticMatches = STATIC_SUBJECTS.filter(s =>
+      s.toLowerCase().includes(term.toLowerCase())
+    );
+ 
+    setLoading(true);
+    try {
+      const res  = await newRequest.get(`/gigs/?search=${encodeURIComponent(term)}&limit=5`);
+      const data = res.data?.results ?? res.data ?? [];
+ 
+      // Pull unique titles from API results
+      const apiTitles = [...new Set(
+        data.map(g => g.title).filter(Boolean)
+      )].slice(0, 5);
+ 
+      // Merge: API results first, then static subjects not already covered
+      const merged = [
+        ...apiTitles,
+        ...staticMatches.filter(s =>
+          !apiTitles.some(t => t.toLowerCase().includes(s.toLowerCase()))
+        ),
+      ].slice(0, 8);
+ 
+      setSuggestions(merged);
+    } catch {
+      // Fallback to static only on API error
+      setSuggestions(staticMatches.slice(0, 6));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+ 
+  // ── Debounce on query change ───────────────────────────────────────────────
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    if (query.trim()) {
+      debounceRef.current = setTimeout(() => fetchSuggestions(query), DEBOUNCE_MS);
+    } else {
+      setSuggestions([]);
+      setLoading(false);
+    }
+    return () => clearTimeout(debounceRef.current);
+  }, [query, fetchSuggestions]);
+ 
+  // ── Dropdown visibility ────────────────────────────────────────────────────
+  const showDropdown = open && (
+    loading ||
+    suggestions.length > 0 ||
+    (!query.trim() && recent.length > 0)
+  );
+ 
+  // ── Navigate to results ────────────────────────────────────────────────────
+  function goSearch(term = query, cat = category) {
+    const q   = term.trim();
+    if (!q) return;
+    const url = `/gigs?search=${encodeURIComponent(q)}${cat ? `&category=${encodeURIComponent(cat)}` : ""}`;
+    setRecent(saveRecent(q));
+    setOpen(false);
+    setQuery(q);
+    navigate(url);
+  }
+ 
+  // ── Keyboard navigation ────────────────────────────────────────────────────
+  const dropItems = query.trim() ? suggestions : recent;
+ 
+  function handleKeyDown(e) {
+    if (!open) { setOpen(true); return; }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx(i => Math.min(i + 1, dropItems.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx(i => Math.max(i - 1, -1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (activeIdx >= 0 && dropItems[activeIdx]) {
+        goSearch(dropItems[activeIdx]);
+      } else {
+        goSearch();
+      }
+    } else if (e.key === "Escape") {
+      setOpen(false);
+      setActiveIdx(-1);
+    }
+  }
+ 
+  function handleDeleteRecent(e, term) {
+    e.stopPropagation();
+    setRecent(removeRecent(term));
+  }
+ 
+  // ── Render ─────────────────────────────────────────────────────────────────
+  return (
+    <div className="sb">
+ 
+      {/* Category filter pills */}
+      <div className="sb__filters" role="group" aria-label="Category filters">
+        {CATEGORY_FILTERS.map(f => (
+          <button
+            key={f.value}
+            className={`sb__filter-pill${category === f.value ? " sb__filter-pill--active" : ""}`}
+            onClick={() => setCategory(f.value)}
+            type="button"
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+ 
+      {/* Search bar */}
+      <div className="sb__bar-wrap" role="combobox" aria-expanded={showDropdown} aria-haspopup="listbox">
+        <div className="sb__bar">
+          <svg className="sb__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+ 
+          <input
+            ref={inputRef}
+            className="sb__input"
+            type="text"
+            placeholder="Try 'nursing care plan'…"
+            value={query}
+            autoComplete="off"
+            aria-label="Search"
+            aria-autocomplete="list"
+            onChange={e => { setQuery(e.target.value); setOpen(true); setActiveIdx(-1); }}
+            onFocus={() => setOpen(true)}
+            onKeyDown={handleKeyDown}
+          />
+ 
+          {/* Clear button */}
+          {query && (
+            <button
+              className="sb__clear"
+              type="button"
+              aria-label="Clear search"
+              onClick={() => { setQuery(""); setSuggestions([]); inputRef.current?.focus(); }}
+            >
+              ✕
+            </button>
+          )}
+ 
+          {/* Loading spinner */}
+          {loading && <span className="sb__spinner" aria-hidden="true" />}
+ 
+          <button className="sb__btn" type="button" onClick={() => goSearch()}>
+            Search
+          </button>
+        </div>
+ 
+        {/* Dropdown */}
+        {showDropdown && (
+          <ul
+            ref={dropRef}
+            className="sb__drop"
+            role="listbox"
+            aria-label="Search suggestions"
+          >
+            {/* Recent searches (shown when input is empty) */}
+            {!query.trim() && recent.length > 0 && (
+              <>
+                <li className="sb__drop-label">
+                  <span>Recent searches</span>
+                  <button
+                    className="sb__drop-clear-all"
+                    type="button"
+                    onClick={() => { localStorage.removeItem(RECENT_KEY); setRecent([]); }}
+                  >
+                    Clear all
+                  </button>
+                </li>
+                {recent.map((term, i) => (
+                  <li
+                    key={term}
+                    className={`sb__drop-item${activeIdx === i ? " sb__drop-item--active" : ""}`}
+                    role="option"
+                    aria-selected={activeIdx === i}
+                    onMouseEnter={() => setActiveIdx(i)}
+                    onMouseDown={() => goSearch(term)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+                    </svg>
+                    <span>{term}</span>
+                    <button
+                      className="sb__drop-remove"
+                      type="button"
+                      aria-label={`Remove ${term}`}
+                      onMouseDown={e => handleDeleteRecent(e, term)}
+                    >✕</button>
+                  </li>
+                ))}
+              </>
+            )}
+ 
+            {/* Live suggestions */}
+            {query.trim() && (
+              <>
+                {loading && suggestions.length === 0 && (
+                  <li className="sb__drop-label">Searching…</li>
+                )}
+                {suggestions.map((s, i) => (
+                  <li
+                    key={s}
+                    className={`sb__drop-item${activeIdx === i ? " sb__drop-item--active" : ""}`}
+                    role="option"
+                    aria-selected={activeIdx === i}
+                    onMouseEnter={() => setActiveIdx(i)}
+                    onMouseDown={() => goSearch(s)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <span>
+                      {/* Bold the matching portion */}
+                      {s.toLowerCase().includes(query.toLowerCase()) ? (
+                        (() => {
+                          const idx = s.toLowerCase().indexOf(query.toLowerCase());
+                          return (
+                            <>
+                              {s.slice(0, idx)}
+                              <strong>{s.slice(idx, idx + query.length)}</strong>
+                              {s.slice(idx + query.length)}
+                            </>
+                          );
+                        })()
+                      ) : s}
+                    </span>
+                  </li>
+                ))}
+                {!loading && suggestions.length === 0 && (
+                  <li className="sb__drop-label">No suggestions found</li>
+                )}
+              </>
+            )}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -61,63 +438,19 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
 
-      {/* ── Welcome banner ── */}
-      <section className="dashboard-welcome">
-        <div className="dashboard-welcome__inner">
-          <div>
-            <h1>Welcome back, <span>{user?.username}</span> 👋</h1>
-            <p>Find a verified expert for your next assignment</p>
-          </div>
-          <div className="dashboard-welcome__actions">
-            {activeOrders.length > 0 && (
-              <button
-                className="btn-outline"
-                onClick={() => navigate("/orders")}
-              >
-                📋 {activeOrders.length} Active Order{activeOrders.length > 1 ? "s" : ""}
-              </button>
-            )}
-            {unreadData?.unread_count > 0 && (
-              <button
-                className="btn-outline"
-                onClick={() => navigate("/messages")}
-              >
-                💬 {unreadData.unread_count} New Message{unreadData.unread_count > 1 ? "s" : ""}
-              </button>
-            )}
-            {user?.user_type === "expert" && (
-              <button
-                className="btn-primary"
-                onClick={() => navigate("/add")}
-              >
-                + Add New Gig
-              </button>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* ── Profile dropdown nav ── */}
+      <ProfileMenu
+        user={user}
+        navigate={navigate}
+        activeOrders={activeOrders}
+        unreadData={unreadData}
+      />
+      
 
-      {/* ── Quick search ── */}
-      <section className="dashboard-search">
-        <div className="dashboard-search__bar">
-          <span>🔍</span>
-          <input
-            type="text"
-            placeholder='Search for experts — try "nursing care plan" or "law essay APA"'
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value.trim()) {
-                navigate(`/gigs?search=${encodeURIComponent(e.target.value)}`);
-              }
-            }}
-          />
-          <button onClick={(e) => {
-            const input = e.target.closest(".dashboard-search__bar").querySelector("input");
-            if (input.value.trim()) navigate(`/gigs?search=${encodeURIComponent(input.value)}`);
-          }}>
-            Search
-          </button>
-        </div>
-      </section>
+
+      
+
+
 
       {/* ── Categories ── */}
       <section className="dashboard-section">
