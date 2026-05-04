@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import AuthContext from './AuthContext.jsx';
+
+import React from 'react';
 import './App.scss';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
@@ -20,49 +20,63 @@ import BecomeSeller2 from './components/becomeSeller2/BecomeSeller2.jsx';
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
-
+import { useContext } from 'react';
+import AuthContext from './AuthContext.jsx';
 
 const queryClient = new QueryClient();
 
+// Layout reads user from context *inside* the router tree so it re-renders
+// whenever AuthContext changes — this is what was missing before.
+function Layout() {
+  const { user } = useContext(AuthContext);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className='app'>
+        <Navbar />
+        <Outlet context={{ user }} />
+        <hr />
+        <Footer />
+      </div>
+    </QueryClientProvider>
+  );
+}
+
+// HomeOrDashboard also reads from context so the "/" route switches
+// immediately after login without needing a page refresh.
+function HomeOrDashboard() {
+  const { user } = useContext(AuthContext);
+  return user ? <Dashboard /> : <Home />;
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "/",          element: <HomeOrDashboard /> },
+      { path: "/gigs",      element: <Gigs /> },
+      { path: "gig/:id",    element: <Gig /> },
+      { path: "/orders",    element: <Orders /> },
+      { path: "/mygigs",    element: <MyGigs /> },
+      { path: "/add",       element: <Add /> },
+      { path: "/messages",  element: <MessagingPage /> },
+      { path: "/login",     element: <Login /> },
+      { path: "/register",  element: <Register /> },
+      { path: "/pay/:id",   element: <Pay /> },
+      { path: "/success",   element: <Success /> },
+      { path: "/becomeSeller",  element: <BecomeSeller /> },
+      { path: "/becomeSeller2", element: <BecomeSeller2 /> },
+    ]
+  }
+]);
+
 function App() {
-  const { user: currentUser } = useContext(AuthContext);
-
-  const Layout = () => {
-    return (
-      <QueryClientProvider client={queryClient} key={55}>
-        <div className='app'>
-          <Navbar key={3} />
-          <Outlet key={5454} />
-          <hr></hr>
-          <Footer key={6563} />
-        </div>
-      </QueryClientProvider>
-    );
-  };
-
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Layout />,
-      children: [
-        { path: "/", element: currentUser ? <Dashboard /> : <Home /> },
-        { path: "/gigs", element: <Gigs /> },
-        { path: "gig/:id", element: <Gig /> },
-        { path: "/orders", element: <Orders /> },
-        { path: "/mygigs", element: <MyGigs /> },
-        { path: "/add", element: <Add /> },
-        { path: "/messages", element: <MessagingPage currentUser={currentUser} /> },
-        { path: "/login", element: <Login /> },
-        { path: "/register", element: <Register /> },
-        { path: "/pay/:id", element: <Pay /> },
-        { path: "/success", element: <Success /> },
-        { path: "/becomeSeller", element: <BecomeSeller /> },
-        { path: "/becomeSeller2", element: <BecomeSeller2 /> },
-      ]
-    }
-  ]);
-
-  return <RouterProvider router={router} />;
+  return (
+    <HelmetProvider>
+      <RouterProvider router={router} />
+    </HelmetProvider>
+  );
 }
 
 export default App;

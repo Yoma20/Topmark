@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
 import './login.scss';
 import newRequest from "../../utils/newRequest";
+import AuthContext from "../../AuthContext";
 
 
 function VerifyEmail({ userId, email, onVerified }) {
@@ -109,39 +110,23 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pendingUser, setPendingUser] = useState(null);
-  // Cloudflare Turnstile token
   const [cfToken, setCfToken] = useState(null);
   const turnstileRef = useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useContext(AuthContext); // ← use context login, not localStorage directly
   const successMessage = location.state?.message || null;
 
-  // ── FIX: saveAndRedirect dispatches a storage event so the rest of the app
-  //    (Navbar, context, etc.) picks up the new user without a page refresh ──
+  // saveAndRedirect now calls context.login() which updates state immediately,
+  // so App.jsx re-renders and switches to Dashboard without a page refresh.
   const saveAndRedirect = useCallback((data) => {
-    const userData = {
-      id: data.user_id ?? data.id,
-      username: data.username,
-      email: data.email,
-      token: data.token,
-      isSeller: data.isSeller ?? false,
-    };
-    localStorage.setItem("currentUser", JSON.stringify(userData));
+    login(data);          // updates AuthContext state + localStorage in one call
+    navigate("/");
+  }, [login, navigate]);
 
-    // Notify every component listening to storage changes (same-tab fix)
-    window.dispatchEvent(new StorageEvent("storage", {
-      key: "currentUser",
-      newValue: JSON.stringify(userData),
-    }));
-
-    // Small delay so state propagates before navigation
-    setTimeout(() => navigate("/"), 50);
-  }, [navigate]);
-
-  // ── Cloudflare Turnstile setup ─────────────────────────────────────────────
+  // ── Cloudflare Turnstile ───────────────────────────────────────────────────
   useEffect(() => {
-    // Load Turnstile script once
     if (!document.getElementById("cf-turnstile-script")) {
       const script = document.createElement("script");
       script.id = "cf-turnstile-script";
@@ -151,12 +136,10 @@ const Login = () => {
       document.head.appendChild(script);
     }
 
-    // Render widget after script loads
     const renderWidget = () => {
       if (window.turnstile && turnstileRef.current && !turnstileRef.current.dataset.rendered) {
         turnstileRef.current.dataset.rendered = "true";
         window.turnstile.render(turnstileRef.current, {
-          
           sitekey: import.meta.env.VITE_CF_TURNSTILE_SITE_KEY || "1x00000000000000000000AA",
           callback: (token) => setCfToken(token),
           "expired-callback": () => setCfToken(null),
@@ -167,7 +150,6 @@ const Login = () => {
       }
     };
 
-    // If script already loaded
     if (window.turnstile) {
       renderWidget();
     } else {
@@ -177,12 +159,11 @@ const Login = () => {
     }
   }, []);
 
-
+  // ── Google Sign-In ─────────────────────────────────────────────────────────
   useEffect(() => {
     const initGoogle = () => {
       if (!window.google?.accounts?.id) return;
       window.google.accounts.id.initialize({
-        
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
         callback: (response) => {
           window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
@@ -193,12 +174,8 @@ const Login = () => {
     if (window.google?.accounts?.id) {
       initGoogle();
     } else {
-      // Script loads asynchronously — wait for it
       const interval = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          initGoogle();
-          clearInterval(interval);
-        }
+        if (window.google?.accounts?.id) { initGoogle(); clearInterval(interval); }
       }, 200);
       return () => clearInterval(interval);
     }
@@ -208,9 +185,7 @@ const Login = () => {
     setError(null);
     setLoading(true);
     try {
-      const res = await newRequest.post("/users/google-auth/", {
-        credential: response.credential,
-      });
+      const res = await newRequest.post("/users/google-auth/", { credential: response.credential });
       saveAndRedirect(res.data);
     } catch (err) {
       setError(err?.response?.data?.error || "Google sign-in failed. Please try again.");
@@ -230,7 +205,6 @@ const Login = () => {
     e.preventDefault();
     setError(null);
 
-    // Cloudflare check — skip in development if no token yet
     if (!cfToken && import.meta.env.PROD) {
       setError("Please complete the security check.");
       return;
@@ -238,12 +212,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await newRequest.post('/users/login/', {
-        username,
-        password,
-        // Send Turnstile token to backend for server-side verification
-        cf_token: cfToken,
-      });
+      const res = await newRequest.post('/users/login/', { username, password, cf_token: cfToken });
       saveAndRedirect(res.data);
     } catch (err) {
       const data = err?.response?.data;
@@ -260,7 +229,6 @@ const Login = () => {
         || "Login failed. Please try again.";
       setError(msg);
 
-      // Reset Turnstile on error
       if (window.turnstile && turnstileRef.current) {
         window.turnstile.reset(turnstileRef.current);
         setCfToken(null);
@@ -270,7 +238,6 @@ const Login = () => {
     }
   };
 
-  // ── Show OTP screen for unverified users ───────────────────────────────────
   if (pendingUser) {
     return (
       <VerifyEmail
@@ -281,10 +248,9 @@ const Login = () => {
     );
   }
 
-  // ── Login form (split layout) ──────────────────────────────────────────────
   return (
     <div className="auth-page">
-      {/* Left panel — marketing */}
+      {/* Left panel */}
       <div className="auth-hero-side">
         <div className="auth-hero-overlay" />
         <div className="auth-hero-content">
@@ -298,7 +264,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right panel — form */}
+      {/* Right panel */}
       <div className="auth-form-side">
         <div className="auth-form-inner">
           <p className="auth-top-link">
@@ -313,7 +279,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* Google */}
           <button
             type="button"
             className="social-btn"
@@ -369,14 +334,11 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Cloudflare Turnstile widget */}
             <div className="turnstile-wrap">
               <div ref={turnstileRef} />
             </div>
 
-            {error && (
-              <div role="alert" className="status-message error">{error}</div>
-            )}
+            {error && <div role="alert" className="status-message error">{error}</div>}
 
             <button
               type="submit"

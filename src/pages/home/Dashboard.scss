@@ -667,3 +667,174 @@ z-index: 1000;
   }
 }
  
+
+// ── SearchBar (.sb) ───────────────────────────────────────────────────────────
+.sb {
+  width: 100%;
+
+  &__filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  &__filter-pill {
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    white-space: nowrap;
+    &:hover { border-color: #1dbf73; color: #1dbf73; }
+    &--active {
+      border-color: #1dbf73; background: #1dbf73; color: #fff;
+      &:hover { background: #19a463; border-color: #19a463; }
+    }
+  }
+
+  &__bar-wrap { position: relative; }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 6px 6px 6px 16px;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    &:focus-within { border-color: #1dbf73; box-shadow: 0 2px 12px rgba(29,191,115,0.12); }
+  }
+
+  &__icon { width: 18px; height: 18px; color: #aaa; flex-shrink: 0; }
+
+  &__input {
+    flex: 1; border: none; outline: none;
+    font-size: 0.95rem; color: #1f1f1f; background: transparent; min-width: 0;
+    &::placeholder { color: #aaa; }
+  }
+
+  &__clear {
+    background: none; border: none; color: #bbb; font-size: 0.8rem;
+    cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0;
+    transition: color 0.15s;
+    &:hover { color: #666; }
+  }
+
+  &__spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid #e0e0e0; border-top-color: #1dbf73;
+    border-radius: 50%; animation: sb-spin 0.6s linear infinite; flex-shrink: 0;
+  }
+  @keyframes sb-spin { to { transform: rotate(360deg); } }
+
+  &__btn {
+    background: #1dbf73; color: #fff; border: none;
+    padding: 10px 20px; border-radius: 8px; font-size: 0.9rem;
+    font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    transition: background 0.2s;
+    &:hover { background: #19a463; }
+  }
+
+  &__drop {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+    background: #fff; border: 1.5px solid #e8e8e8; border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1); list-style: none;
+    padding: 6px 0; z-index: 200; overflow: hidden;
+    animation: sb-drop-in 0.15s ease;
+  }
+  @keyframes sb-drop-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  &__drop-label {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px 4px; font-size: 0.72rem; font-weight: 700;
+    color: #aaa; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  &__drop-clear-all {
+    background: none; border: none; font-size: 0.75rem; color: #1dbf73;
+    cursor: pointer; padding: 0; font-weight: 500;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__drop-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; cursor: pointer; transition: background 0.1s;
+    font-size: 0.9rem; color: #333;
+    svg { width: 15px; height: 15px; color: #bbb; flex-shrink: 0; }
+    span {
+      flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      strong { color: #1dbf73; font-weight: 600; }
+    }
+    &--active, &:hover { background: #f6fdf9; }
+  }
+
+  &__drop-remove {
+    background: none; border: none; color: #ccc; font-size: 0.72rem;
+    cursor: pointer; padding: 2px 4px; margin-left: auto; flex-shrink: 0;
+    line-height: 1; border-radius: 4px; transition: color 0.15s, background 0.15s;
+    &:hover { color: #888; background: #f0f0f0; }
+  }
+}
+
+// ── Profile dropdown nav ──────────────────────────────────────────────────────
+.dash-nav {
+  position: fixed; top: 20px; right: 20px; width: 120px; height: 60px;
+  display: flex; justify-content: space-between; border-radius: 5px;
+  background: #fff; box-shadow: 0 25px 35px rgba(0,0,0,0.1);
+  overflow: hidden; z-index: 1000;
+  transition: height 0.5s, width 0.5s;
+  transition-delay: 0s, 0.75s;
+
+  &__user-box {
+    position: relative; width: 60px; height: 60px;
+    display: flex; align-items: center; overflow: hidden;
+    transition: 0.5s; transition-delay: 0.5s;
+  }
+  &__username { font-size: 1rem; white-space: nowrap; color: #555; padding-left: 6px; }
+  &__avatar {
+    position: relative; min-width: 60px; height: 60px;
+    background: #fff; border-radius: 50%; overflow: hidden; border: 10px solid #fff;
+    img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+  }
+  &__toggle {
+    position: relative; width: 60px; height: 60px;
+    display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;
+    &::before {
+      content: ""; position: absolute; width: 32px; height: 2px; background: #555;
+      transform: translateY(-10px); box-shadow: 0 10px #555; transition: 0.5s;
+    }
+    &::after {
+      content: ""; position: absolute; width: 32px; height: 2px;
+      background: #555; transform: translateY(10px); transition: 0.5s;
+    }
+  }
+  &__menu {
+    position: absolute; width: 100%; height: calc(100% - 60px);
+    margin-top: 60px; padding: 20px; border-top: 1px solid rgba(0,0,0,0.1); list-style: none;
+    li a {
+      display: flex; align-items: center; gap: 10px; margin: 16px 0;
+      font-size: 1rem; text-decoration: none; color: #555;
+      ion-icon { font-size: 1.5rem; }
+      &:hover { color: #4e65ff; }
+    }
+  }
+  &--open {
+    width: 300px; height: 380px;
+    transition: width 0.5s, height 0.5s; transition-delay: 0s, 0.75s;
+    .dash-nav__user-box { width: calc(100% - 60px); transition-delay: 0s; }
+    .dash-nav__toggle {
+      &::before { transform: translateY(0) rotate(45deg); box-shadow: none; }
+      &::after  { transform: translateY(0) rotate(-45deg); }
+    }
+  }
+}
