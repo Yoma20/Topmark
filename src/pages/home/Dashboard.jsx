@@ -325,12 +325,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
 
-      <ProfileMenu
-        user={user}
-        navigate={navigate}
-        activeOrders={activeOrders}
-        unreadData={unreadData}
-      />
+       
 
       {/* ── Welcome banner ── */}
       <section className="dashboard-welcome">

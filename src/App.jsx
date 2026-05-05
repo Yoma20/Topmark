@@ -1,31 +1,32 @@
-
-import React from 'react';
+import React, { lazy, Suspense, useContext } from 'react';
 import './App.scss';
-import Footer from './components/Footer/Footer.jsx';
-import Navbar from './components/Navbar/Navbar.jsx';
-import Add from './pages/add/Add.jsx';
-import MessagingPage from './pages/MessagingPage.jsx';
-import Orders from "./pages/orders/Orders.jsx";
-import Dashboard from './pages/home/Dashboard.jsx';
-import MyGigs from "./pages/myGigs/MyGigs.jsx";
-import Gig from "./pages/gig/Gig.jsx";
-import Gigs from "./pages/gigs/Gigs.jsx";
-import Home from './pages/home/Home.jsx';
-import Pay from './pages/pay/Pay.jsx';
-import Success from './pages/success/Success.jsx';
-import Login from './pages/login/Login.jsx';
-import Settings from './pages/settings/Settings.jsx';
-import Register from './pages/register/Register.jsx';
-import BecomeSeller from './components/becomeSeller/BecomeSeller.jsx';
-import BecomeSeller2 from './components/becomeSeller2/BecomeSeller2.jsx';
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
-import { useContext } from 'react';
 import AuthContext from './AuthContext.jsx';
 
-const queryClient = new QueryClient();
+// These two are always needed immediately — keep them eager
+import Footer from './components/Footer/Footer.jsx';
+import Navbar from './components/Navbar/Navbar.jsx';
 
+// Everything else — lazy loaded
+const Add           = lazy(() => import('./pages/add/Add.jsx'));
+const MessagingPage = lazy(() => import('./pages/MessagingPage.jsx'));
+const Orders        = lazy(() => import('./pages/orders/Orders.jsx'));
+const Dashboard     = lazy(() => import('./pages/home/Dashboard.jsx'));
+const MyGigs        = lazy(() => import('./pages/myGigs/MyGigs.jsx'));
+const Gig           = lazy(() => import('./pages/gig/Gig.jsx'));
+const Gigs          = lazy(() => import('./pages/gigs/Gigs.jsx'));
+const Home          = lazy(() => import('./pages/home/Home.jsx'));
+const Pay           = lazy(() => import('./pages/pay/Pay.jsx'));
+const Success       = lazy(() => import('./pages/success/Success.jsx'));
+const Login         = lazy(() => import('./pages/login/Login.jsx'));
+const Settings      = lazy(() => import('./pages/settings/Settings.jsx'));
+const Register      = lazy(() => import('./pages/register/Register.jsx'));
+const BecomeSeller  = lazy(() => import('./components/becomeSeller/BecomeSeller.jsx'));
+const BecomeSeller2 = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
+
+const queryClient = new QueryClient();
 
 function Layout() {
   const { user } = useContext(AuthContext);
@@ -34,7 +35,9 @@ function Layout() {
     <QueryClientProvider client={queryClient}>
       <div className='app'>
         <Navbar />
-        <Outlet context={{ user }} />
+        <Suspense fallback={<div className="page-loading">Loading…</div>}>
+          <Outlet context={{ user }} />
+        </Suspense>
         <hr />
         <Footer />
       </div>
@@ -42,8 +45,6 @@ function Layout() {
   );
 }
 
-// HomeOrDashboard also reads from context so the "/" route switches
-// immediately after login without needing a page refresh.
 function HomeOrDashboard() {
   const { user } = useContext(AuthContext);
   return user ? <Dashboard /> : <Home />;
@@ -54,18 +55,18 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { path: "/",          element: <HomeOrDashboard /> },
-      { path: "/gigs",      element: <Gigs /> },
-      { path: "gig/:id",    element: <Gig /> },
-      { path: "/orders",    element: <Orders /> },
-      { path: "/mygigs",    element: <MyGigs /> },
-      { path: "/add",       element: <Add /> },
-      { path: "/messages",  element: <MessagingPage /> },
-      { path: "/login",     element: <Login /> },
-      { path: "/settings", element: <Settings /> },
-      { path: "/register",  element: <Register /> },
-      { path: "/pay/:id",   element: <Pay /> },
-      { path: "/success",   element: <Success /> },
+      { path: "/",              element: <HomeOrDashboard /> },
+      { path: "/gigs",          element: <Gigs /> },
+      { path: "gig/:id",        element: <Gig /> },
+      { path: "/orders",        element: <Orders /> },
+      { path: "/mygigs",        element: <MyGigs /> },
+      { path: "/add",           element: <Add /> },
+      { path: "/messages",      element: <MessagingPage /> },
+      { path: "/login",         element: <Login /> },
+      { path: "/settings",      element: <Settings /> },
+      { path: "/register",      element: <Register /> },
+      { path: "/pay/:id",       element: <Pay /> },
+      { path: "/success",       element: <Success /> },
       { path: "/becomeSeller",  element: <BecomeSeller /> },
       { path: "/becomeSeller2", element: <BecomeSeller2 /> },
     ]

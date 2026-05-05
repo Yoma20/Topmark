@@ -58,7 +58,7 @@ const Navbar = () => {
         setopen(false);
         navigate('/');
     };
-    
+
     const [input, setinput] = useState('');
     const handlesubmit = () => navigate(`/gigs?search=${input}`);
 
@@ -77,6 +77,7 @@ const Navbar = () => {
                     className={`hamburger ${menuOpen ? 'open' : ''}`}
                     onClick={() => setMenuOpen(!menuOpen)}
                     aria-label="Toggle menu"
+                    
                 >
                     <span></span><span></span><span></span>
                 </div>
@@ -170,6 +171,7 @@ const Navbar = () => {
                                     )}
 
                                     <Link to='/settings' onClick={() => setopen(false)}>Account Settings</Link>
+                                    <Link to='/profile' onClick={() => setopen(false)}>My Profile</Link>
 
                                     <div className="options-divider" />
 
