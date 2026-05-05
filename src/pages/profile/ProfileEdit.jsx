@@ -1,6 +1,6 @@
 // src/pages/profile/ProfileEdit.jsx
-import { useState, useContext, useRef, useEffect } from 'react';
-import AuthContext from '../../AuthContext';
+import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../../AuthContext';
 import newRequest from '../../utils/newRequest';
 import './ProfileEdit.scss';
 
@@ -172,7 +172,7 @@ function CertificationsForm({ items, onChange }) {
 
 // ─── Main ProfileEdit ──────────────────────────────────────────────────────────
 export default function ProfileEdit() {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, updateUser, refreshProfile } = useAuth();
   const fileRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -197,23 +197,39 @@ export default function ProfileEdit() {
   const [saved, setSaved]     = useState(false);
   const [error, setError]     = useState(null);
 
-  // Load existing profile on mount
+  const [loadError, setLoadError] = useState(null);
+
+  // Load existing profile on mount — ensure profile row exists first
   useEffect(() => {
-    newRequest.get('/expert-profiles/me/').then(res => {
-      const d = res.data;
-      setForm({
-        displayName:    d.username    || '',
-        title:          d.title       || '',
-        country:        d.country     || 'Kenya',
-        languages:      d.languages   || [],
-        bio:            d.bio         || '',
-        skills:         d.skills      || [],
-        workExp:        d.work_experience  || [],
-        education:      d.education        || [],
-        certifications: d.certifications   || [],
-      });
-      if (d.avatar_url) setAvatarPreview(d.avatar_url);
-    }).catch(() => {/* not an expert or not logged in */});
+    const load = async () => {
+      try {
+        // Creates the ExpertProfile row if it doesn't exist yet (idempotent)
+        await newRequest.post('/expert-profiles/ensure/');
+      } catch {
+        // Non-expert users will 403 here — that's fine, just don't load
+        setLoadError('This page is only available to expert accounts.');
+        return;
+      }
+      try {
+        const res = await newRequest.get('/expert-profiles/me/');
+        const d = res.data;
+        setForm({
+          displayName:    d.username         || '',
+          title:          d.title            || '',
+          country:        d.country          || 'Kenya',
+          languages:      d.languages        || [],
+          bio:            d.bio              || '',
+          skills:         d.skills           || [],
+          workExp:        d.work_experience  || [],
+          education:      d.education        || [],
+          certifications: d.certifications   || [],
+        });
+        if (d.avatar_url) setAvatarPreview(d.avatar_url);
+      } catch {
+        setLoadError('Failed to load your profile. Please refresh and try again.');
+      }
+    };
+    load();
   }, []);
 
   const toggle = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
@@ -272,9 +288,10 @@ export default function ProfileEdit() {
       // 3. Update display name on the user account (different endpoint)
       if (form.displayName && form.displayName !== user?.username) {
         await newRequest.patch('/users/me/', { username: form.displayName });
-        setUser(prev => ({ ...prev, username: form.displayName }));
+        updateUser({ username: form.displayName });
       }
 
+      await refreshProfile(); // sync AuthContext with latest profile data
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
@@ -286,6 +303,12 @@ export default function ProfileEdit() {
       setSaving(false);
     }
   };
+
+  if (loadError) return (
+    <div className="pe-page">
+      <div className="pe-error" style={{ marginTop: 48 }}>{loadError}</div>
+    </div>
+  );
 
   return (
     <div className="pe-page">

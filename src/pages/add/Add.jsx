@@ -18,9 +18,43 @@ const INITIAL_STATE = {
   extras: [],
 };
 
+// Validation rules per step
+const STEP_VALIDATORS = [
+  // Step 0 – Overview
+  (s) => {
+    const errs = {};
+    if (!s.title.trim())             errs.title = "Title is required.";
+    if (!s.category.trim())          errs.category = "Category is required.";
+    if (!s.description.trim())       errs.description = "Description is required.";
+    if (!s.short_title.trim())       errs.short_title = "Short title is required.";
+    if (!s.short_description.trim()) errs.short_description = "Short description is required.";
+    return errs;
+  },
+  // Step 1 – Packages (at least basic must be complete)
+  (s) => {
+    const errs = {};
+    const basic = s.packages.find(p => p.tier === "basic");
+    if (!basic.name.trim())        errs.pkg_name = "Basic package name is required.";
+    if (!basic.price)              errs.pkg_price = "Basic package price is required.";
+    if (!basic.delivery_days)      errs.pkg_days = "Basic package delivery days are required.";
+    return errs;
+  },
+  // Step 2 – Extras (optional, always valid)
+  () => ({}),
+  // Step 3 – Media
+  (s) => {
+    const errs = {};
+    if (!s.cover_image) errs.cover_image = "Please upload a cover image before continuing.";
+    return errs;
+  },
+  // Step 4 – Publish (re-check everything)
+  () => ({}),
+];
+
 const Add = () => {
   const [step, setStep] = useState(0);
   const [state, setState] = useState(INITIAL_STATE);
+  const [errors, setErrors] = useState({});
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -30,8 +64,17 @@ const Add = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setState(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) setErrors(prev => { const n = {...prev}; delete n[e.target.name]; return n; });
+  };
+
+  const goNext = () => {
+    const errs = STEP_VALIDATORS[step](state);
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setErrors({});
+    setStep(s => s + 1);
+  };
 
   const handlePackageChange = (tier, field, value) =>
     setState(prev => ({
@@ -106,28 +149,33 @@ const Add = () => {
               onChange={handleChange}
               value={state.title}
             />
+            {errors.title && <span className="field-error">{errors.title}</span>}
             <span className="char-count">{state.title.length} / 80</span>
           </div>
 
           <div className="field-group">
             <label>Category</label>
             <input name="category" placeholder="e.g. Writing & Translation" onChange={handleChange} value={state.category} />
+            {errors.category && <span className="field-error">{errors.category}</span>}
           </div>
 
           <div className="field-row">
             <div className="field-group">
               <label>Short Title</label>
               <input name="short_title" placeholder="Brief label for your gig card" onChange={handleChange} value={state.short_title} />
+              {errors.short_title && <span className="field-error">{errors.short_title}</span>}
             </div>
             <div className="field-group">
               <label>Short Description</label>
               <textarea name="short_description" rows={3} placeholder="One or two sentences shown in search results" onChange={handleChange} value={state.short_description} />
+              {errors.short_description && <span className="field-error">{errors.short_description}</span>}
             </div>
           </div>
 
           <div className="field-group">
             <label>Full Description</label>
             <textarea name="description" rows={7} placeholder="Describe what you offer, your process, and why buyers should choose you." onChange={handleChange} value={state.description} />
+            {errors.description && <span className="field-error">{errors.description}</span>}
           </div>
 
           <div className="field-group">
@@ -197,6 +245,13 @@ const Add = () => {
               );
             })}
           </div>
+          {(errors.pkg_name || errors.pkg_price || errors.pkg_days) && (
+            <div className="step-errors">
+              {errors.pkg_name && <p className="field-error">{errors.pkg_name}</p>}
+              {errors.pkg_price && <p className="field-error">{errors.pkg_price}</p>}
+              {errors.pkg_days && <p className="field-error">{errors.pkg_days}</p>}
+            </div>
+          )}
         </div>
       );
 
@@ -259,6 +314,7 @@ const Add = () => {
             <button type="button" className="btn-upload" onClick={handleUpload} disabled={uploading}>
               {uploading ? "Uploading…" : "Upload Images"}
             </button>
+            {errors.cover_image && <p className="field-error">{errors.cover_image}</p>}
             {state.cover_image && <p className="upload-success">✓ Images uploaded successfully</p>}
           </div>
         </div>
@@ -316,7 +372,7 @@ const Add = () => {
             <button className="btn-ghost" onClick={() => setStep(s => s - 1)}>← Back</button>
           )}
           {step < STEPS.length - 1 && (
-            <button className="btn-primary" onClick={() => setStep(s => s + 1)}>
+            <button className="btn-primary" onClick={goNext}>
               Continue →
             </button>
           )}
