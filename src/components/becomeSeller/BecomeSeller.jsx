@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import newRequest from '../../utils/newRequest';
-import './becomeseller2.scss';
+import './becomeseller.scss';
 
 // ─── Subjects available ────────────────────────────────────────────────────────
 const SUBJECTS = [
