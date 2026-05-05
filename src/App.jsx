@@ -22,10 +22,10 @@ const Pay           = lazy(() => import('./pages/pay/Pay.jsx'));
 const Success       = lazy(() => import('./pages/success/Success.jsx'));
 const Login         = lazy(() => import('./pages/login/Login.jsx'));
 const Settings      = lazy(() => import('./pages/settings/Settings.jsx'));
-const ExpertDashboard = lazy(() => import('./pages/expertDashboard/ExpertDashboard.jsx'));
 const Register      = lazy(() => import('./pages/register/Register.jsx'));
 const BecomeSeller  = lazy(() => import('./components/becomeSeller/BecomeSeller.jsx'));
 const BecomeSeller2 = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
+const ProfileEdit   = lazy(() => import('./pages/profile/ProfileEdit.jsx')); // ✅ correct name
 
 const queryClient = new QueryClient();
 
@@ -69,9 +69,8 @@ const router = createBrowserRouter([
       { path: "/pay/:id",       element: <Pay /> },
       { path: "/success",       element: <Success /> },
       { path: "/becomeSeller",  element: <BecomeSeller /> },
-      { path: "/profile",       element: <Profile /> },
       { path: "/becomeSeller2", element: <BecomeSeller2 /> },
-      { path: "/expert-dashboard", element: <ExpertDashboard /> },
+      { path: "/profile",       element: <ProfileEdit /> }, // ✅ was <Profile /> — undefined
     ]
   }
 ]);
