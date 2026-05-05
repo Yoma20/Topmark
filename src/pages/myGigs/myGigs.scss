@@ -450,7 +450,7 @@
   .mg-table {
     thead th:nth-child(5),
     tbody td:nth-child(5) {
-      display: none; // hide Status column on mobile
+      display: none; 
     }
   }
 }
@@ -459,7 +459,7 @@
   .mg-table {
     thead th:nth-child(4),
     tbody td:nth-child(4) {
-      display: none; // hide Sales column on small screens
+      display: none;
     }
   }
 }
