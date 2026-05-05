@@ -464,5 +464,3 @@ export default function ProfileEdit() {
     </div>
   );
 }
-setSaved(true);
-setTimeout(() => navigate('/mygigs'), 1500);
