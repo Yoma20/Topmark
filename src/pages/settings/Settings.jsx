@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import "./settings.scss";
 
-/* ─── small helpers ─────────────────────────────────────────── */
+
 const Panel = ({ id, active, children }) => (
   <div className={`settings-panel${active === id ? " active" : ""}`}>
     {children}
@@ -77,7 +77,7 @@ export default function Settings() {
     try {
       const { data } = await newRequest.patch("/users/me/", profile);
       setProfileMsg({ ok: true, text: "Profile saved!" });
-      // keep AuthContext in sync
+      
       setCurrentUser(prev => ({ ...prev, username: data.username, email: data.email }));
     } catch (err) {
       const detail = err?.response?.data;
@@ -90,7 +90,7 @@ export default function Settings() {
     }
   };
 
-  /* ── save password ── */
+  
   const handlePasswordSave = async (e) => {
     e.preventDefault();
     if (pw.next !== pw.confirm) {
@@ -104,7 +104,7 @@ export default function Settings() {
         current_password: pw.current,
         new_password:     pw.next,
       });
-      // rotate the stored token so subsequent requests still work
+      
       if (data.token) {
         const stored = JSON.parse(localStorage.getItem("currentUser") || "{}");
         stored.token = data.token;

@@ -26,8 +26,7 @@ import AuthContext from './AuthContext.jsx';
 
 const queryClient = new QueryClient();
 
-// Layout reads user from context *inside* the router tree so it re-renders
-// whenever AuthContext changes — this is what was missing before.
+
 function Layout() {
   const { user } = useContext(AuthContext);
 
