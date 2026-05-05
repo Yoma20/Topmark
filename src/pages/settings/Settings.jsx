@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../AuthContext";
+import AuthContext from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import "./settings.scss";
 
@@ -18,7 +18,7 @@ const SaveBtn = ({ loading }) => (
 
 /* ─── component ──────────────────────────────────────────────── */
 export default function Settings() {
-  const { currentUser, setCurrentUser } = useContext(AuthContext);
+  const { user: currentUser, login } = useContext(AuthContext);
   const isExpert = currentUser?.user_type === "expert";
 
   const [activePanel, setActivePanel] = useState("profile");
@@ -56,7 +56,7 @@ export default function Settings() {
 
     if (isExpert) {
       newRequest.get("/expert-profiles/").then(({ data }) => {
-        // endpoint returns a list; find the one that matches the current user
+        
         const me = Array.isArray(data)
           ? data.find(p => p.username === currentUser?.username)
           : data;
@@ -78,7 +78,7 @@ export default function Settings() {
       const { data } = await newRequest.patch("/users/me/", profile);
       setProfileMsg({ ok: true, text: "Profile saved!" });
       
-      setCurrentUser(prev => ({ ...prev, username: data.username, email: data.email }));
+      login({ ...currentUser, ...data });
     } catch (err) {
       const detail = err?.response?.data;
       const text = typeof detail === "string"
@@ -109,7 +109,7 @@ export default function Settings() {
         const stored = JSON.parse(localStorage.getItem("currentUser") || "{}");
         stored.token = data.token;
         localStorage.setItem("currentUser", JSON.stringify(stored));
-        setCurrentUser(prev => ({ ...prev, token: data.token }));
+        login({ ...currentUser, token: data.token });
       }
       setPwMsg({ ok: true, text: "Password changed!" });
       setPw({ current: "", next: "", confirm: "" });
