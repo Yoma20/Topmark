@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import AuthContext from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import "./settings.scss";
-
 
 const Panel = ({ id, active, children }) => (
   <div className={`settings-panel${active === id ? " active" : ""}`}>
@@ -16,7 +15,6 @@ const SaveBtn = ({ loading }) => (
   </button>
 );
 
-/* ─── component ──────────────────────────────────────────────── */
 export default function Settings() {
   const { user: currentUser, login } = useContext(AuthContext);
   const isExpert = currentUser?.user_type === "expert";
@@ -25,25 +23,27 @@ export default function Settings() {
 
   /* profile */
   const [profile, setProfile] = useState({
-    username:   "",
-    email:      "",
-    first_name: "",
-    last_name:  "",
+    username: "", email: "", first_name: "", last_name: "",
   });
   const [profileLoading, setProfileLoading] = useState(false);
-  const [profileMsg, setProfileMsg]         = useState(null); // {ok, text}
+  const [profileMsg, setProfileMsg]         = useState(null);
+
+  /* avatar */
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarFile, setAvatarFile]       = useState(null);
+  const fileInputRef = useRef();
 
   /* password */
-  const [pw, setPw]           = useState({ current: "", next: "", confirm: "" });
+  const [pw, setPw]               = useState({ current: "", next: "", confirm: "" });
   const [pwLoading, setPwLoading] = useState(false);
   const [pwMsg, setPwMsg]         = useState(null);
 
-  /* expert availability */
-  const [expertData, setExpertData]         = useState({ available: false, bio: "", field_of_study: "" });
-  const [expertLoading, setExpertLoading]   = useState(false);
-  const [expertMsg, setExpertMsg]           = useState(null);
+  /* expert */
+  const [expertData, setExpertData]       = useState({ available: false, bio: "", field_of_study: "" });
+  const [expertLoading, setExpertLoading] = useState(false);
+  const [expertMsg, setExpertMsg]         = useState(null);
 
-  /* ── load profile on mount ── */
+  /* load on mount */
   useEffect(() => {
     newRequest.get("/users/me/").then(({ data }) => {
       setProfile({
@@ -52,32 +52,45 @@ export default function Settings() {
         first_name: data.first_name ?? "",
         last_name:  data.last_name  ?? "",
       });
+      if (data.profile_picture) setAvatarPreview(data.profile_picture);
     }).catch(console.error);
 
     if (isExpert) {
-      newRequest.get("/expert-profiles/").then(({ data }) => {
-        
-        const me = Array.isArray(data)
-          ? data.find(p => p.username === currentUser?.username)
-          : data;
-        if (me) setExpertData({
-          available:     me.available,
-          bio:           me.bio           ?? "",
-          field_of_study: me.field_of_study ?? "",
+      newRequest.get("/expert-profiles/me/").then(({ data }) => {
+        setExpertData({
+          available:      data.available,
+          bio:            data.bio            ?? "",
+          field_of_study: data.field_of_study ?? "",
         });
       }).catch(console.error);
     }
-  }, [isExpert, currentUser?.username]);
+  }, [isExpert]);
 
-  /* ── save profile ── */
+  /* avatar picker */
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  /* save profile + optional avatar */
   const handleProfileSave = async (e) => {
     e.preventDefault();
     setProfileLoading(true);
     setProfileMsg(null);
     try {
-      const { data } = await newRequest.patch("/users/me/", profile);
+      const formData = new FormData();
+      Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
+      if (avatarFile) formData.append("profile_picture", avatarFile);
+
+      const { data } = await newRequest.patch("/users/me/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       setProfileMsg({ ok: true, text: "Profile saved!" });
-      
+      if (data.profile_picture) setAvatarPreview(data.profile_picture);
+      setAvatarFile(null);
       login({ ...currentUser, ...data });
     } catch (err) {
       const detail = err?.response?.data;
@@ -90,7 +103,6 @@ export default function Settings() {
     }
   };
 
-  
   const handlePasswordSave = async (e) => {
     e.preventDefault();
     if (pw.next !== pw.confirm) {
@@ -104,13 +116,7 @@ export default function Settings() {
         current_password: pw.current,
         new_password:     pw.next,
       });
-      
-      if (data.token) {
-        const stored = JSON.parse(localStorage.getItem("currentUser") || "{}");
-        stored.token = data.token;
-        localStorage.setItem("currentUser", JSON.stringify(stored));
-        login({ ...currentUser, token: data.token });
-      }
+      if (data.token) login({ ...currentUser, token: data.token });
       setPwMsg({ ok: true, text: "Password changed!" });
       setPw({ current: "", next: "", confirm: "" });
     } catch (err) {
@@ -124,7 +130,6 @@ export default function Settings() {
     }
   };
 
-  /* ── save expert availability ── */
   const handleExpertSave = async (e) => {
     e.preventDefault();
     setExpertLoading(true);
@@ -143,13 +148,10 @@ export default function Settings() {
     }
   };
 
-  /* ── render ── */
   return (
     <div className="settings">
       <div className="settings-container">
         <h1>Settings</h1>
-
-        {/* sidebar nav */}
         <div className="settings-layout">
           <nav className="settings-nav">
             {[
@@ -171,36 +173,51 @@ export default function Settings() {
           <Panel id="profile" active={activePanel}>
             <h2>Profile information</h2>
             <form onSubmit={handleProfileSave}>
+
+              {/* Avatar */}
+              <div className="avatar-row">
+                <div
+                  className="avatar-circle"
+                  onClick={() => fileInputRef.current.click()}
+                  title="Click to change photo"
+                >
+                  {avatarPreview
+                    ? <img src={avatarPreview} alt="Profile" />
+                    : <span>{currentUser?.username?.[0]?.toUpperCase() ?? "?"}</span>
+                  }
+                  <div className="avatar-overlay">Change</div>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleAvatarChange}
+                />
+                <p className="avatar-hint">Click your photo to upload a new one</p>
+              </div>
+
               <div className="form-row">
                 <label>First name
-                  <input
-                    value={profile.first_name}
+                  <input value={profile.first_name}
                     onChange={e => setProfile(p => ({ ...p, first_name: e.target.value }))}
-                    placeholder="First name"
-                  />
+                    placeholder="First name" />
                 </label>
                 <label>Last name
-                  <input
-                    value={profile.last_name}
+                  <input value={profile.last_name}
                     onChange={e => setProfile(p => ({ ...p, last_name: e.target.value }))}
-                    placeholder="Last name"
-                  />
+                    placeholder="Last name" />
                 </label>
               </div>
               <label>Username
-                <input
-                  value={profile.username}
+                <input value={profile.username}
                   onChange={e => setProfile(p => ({ ...p, username: e.target.value }))}
-                  placeholder="Username"
-                />
+                  placeholder="Username" />
               </label>
               <label>Email
-                <input
-                  type="email"
-                  value={profile.email}
+                <input type="email" value={profile.email}
                   onChange={e => setProfile(p => ({ ...p, email: e.target.value }))}
-                  placeholder="Email"
-                />
+                  placeholder="Email" />
               </label>
               {profileMsg && (
                 <p className={`msg ${profileMsg.ok ? "ok" : "err"}`}>{profileMsg.text}</p>
@@ -214,32 +231,19 @@ export default function Settings() {
             <h2>Change password</h2>
             <form onSubmit={handlePasswordSave}>
               <label>Current password
-                <input
-                  type="password"
-                  value={pw.current}
+                <input type="password" value={pw.current} required
                   onChange={e => setPw(p => ({ ...p, current: e.target.value }))}
-                  placeholder="Current password"
-                  required
-                />
+                  placeholder="Current password" />
               </label>
               <label>New password
-                <input
-                  type="password"
-                  value={pw.next}
+                <input type="password" value={pw.next} required minLength={8}
                   onChange={e => setPw(p => ({ ...p, next: e.target.value }))}
-                  placeholder="At least 8 characters"
-                  minLength={8}
-                  required
-                />
+                  placeholder="At least 8 characters" />
               </label>
               <label>Confirm new password
-                <input
-                  type="password"
-                  value={pw.confirm}
+                <input type="password" value={pw.confirm} required
                   onChange={e => setPw(p => ({ ...p, confirm: e.target.value }))}
-                  placeholder="Repeat new password"
-                  required
-                />
+                  placeholder="Repeat new password" />
               </label>
               {pwMsg && (
                 <p className={`msg ${pwMsg.ok ? "ok" : "err"}`}>{pwMsg.text}</p>
@@ -248,33 +252,25 @@ export default function Settings() {
             </form>
           </Panel>
 
-          {/* ── Expert tools panel (only visible for experts) ── */}
+          {/* ── Expert tools panel ── */}
           {isExpert && (
             <Panel id="expert" active={activePanel}>
               <h2>Expert tools</h2>
               <form onSubmit={handleExpertSave}>
                 <label className="toggle-row">
                   <span>Available for new orders</span>
-                  <input
-                    type="checkbox"
-                    checked={expertData.available}
-                    onChange={e => setExpertData(p => ({ ...p, available: e.target.checked }))}
-                  />
+                  <input type="checkbox" checked={expertData.available}
+                    onChange={e => setExpertData(p => ({ ...p, available: e.target.checked }))} />
                 </label>
                 <label>Field of study
-                  <input
-                    value={expertData.field_of_study}
+                  <input value={expertData.field_of_study}
                     onChange={e => setExpertData(p => ({ ...p, field_of_study: e.target.value }))}
-                    placeholder="e.g. Computer Science"
-                  />
+                    placeholder="e.g. Computer Science" />
                 </label>
                 <label>Bio
-                  <textarea
-                    rows={4}
-                    value={expertData.bio}
+                  <textarea rows={4} value={expertData.bio}
                     onChange={e => setExpertData(p => ({ ...p, bio: e.target.value }))}
-                    placeholder="Tell students a bit about yourself…"
-                  />
+                    placeholder="Tell students a bit about yourself…" />
                 </label>
                 {expertMsg && (
                   <p className={`msg ${expertMsg.ok ? "ok" : "err"}`}>{expertMsg.text}</p>

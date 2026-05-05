@@ -1,33 +1,23 @@
-// src/pages/MessagingPage.jsx
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
+import AuthContext from "../AuthContext";
 import { getConversations, getUnreadCount } from "../api/messaging";
 import ConversationList from "../components/messaging/ConversationList";
 import ChatWindow from "../components/messaging/ChatWindow";
 import "./MessagingPage.scss";
 
-/**
- * MessagingPage
- *
- * Props:
- *   currentUser  – the logged-in user object, must have { id, username }
- *                  Pull this from your auth context / Redux store.
- *
- * Usage in your router:
- *   <Route path="/messages" element={<MessagingPage currentUser={user} />} />
- */
-export default function MessagingPage({ currentUser }) {
+export default function MessagingPage() {
+  const { user: currentUser } = useContext(AuthContext);
+
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
   const [loadingConvs, setLoadingConvs] = useState(true);
   const [unreadTotal, setUnreadTotal] = useState(0);
-  const [mobileView, setMobileView] = useState("list"); // "list" | "chat"
+  const [mobileView, setMobileView] = useState("list");
 
   const fetchConversations = useCallback(async () => {
     try {
       const data = await getConversations();
       setConversations(data);
-
-      // Keep active conversation in sync if it's updated
       if (activeConv) {
         const updated = data.find((c) => c.id === activeConv.id);
         if (updated) setActiveConv(updated);
@@ -49,26 +39,22 @@ export default function MessagingPage({ currentUser }) {
   }, []);
 
   useEffect(() => {
+    if (!currentUser) return;
     fetchConversations();
     fetchUnread();
-
-    // Refresh conversation list every 5 seconds (lightweight polling)
     const interval = setInterval(() => {
       fetchConversations();
       fetchUnread();
     }, 5000);
     return () => clearInterval(interval);
-  }, []); // eslint-disable-line
+  }, [currentUser]); // eslint-disable-line
 
   const handleSelectConversation = (conv) => {
     setActiveConv(conv);
     setMobileView("chat");
   };
 
-  const handleMessageSent = () => {
-    // Refresh conversation list so last_message + ordering update immediately
-    fetchConversations();
-  };
+  const handleMessageSent = () => fetchConversations();
 
   const handleBackToList = () => {
     setMobileView("list");
@@ -95,12 +81,7 @@ export default function MessagingPage({ currentUser }) {
       </div>
 
       <div className="msg-page__body">
-        {/* Sidebar — hidden on mobile when chat is open */}
-        <aside
-          className={`msg-sidebar ${
-            mobileView === "chat" ? "msg-sidebar--hidden-mobile" : ""
-          }`}
-        >
+        <aside className={`msg-sidebar ${mobileView === "chat" ? "msg-sidebar--hidden-mobile" : ""}`}>
           <ConversationList
             conversations={conversations}
             activeId={activeConv?.id}
@@ -110,13 +91,7 @@ export default function MessagingPage({ currentUser }) {
           />
         </aside>
 
-        {/* Chat area */}
-        <main
-          className={`msg-main ${
-            mobileView === "list" ? "msg-main--hidden-mobile" : ""
-          }`}
-        >
-          {/* Mobile back button */}
+        <main className={`msg-main ${mobileView === "list" ? "msg-main--hidden-mobile" : ""}`}>
           {mobileView === "chat" && (
             <button className="msg-back-btn" onClick={handleBackToList}>
               ← Back
