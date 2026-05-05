@@ -119,7 +119,7 @@ function VerifyEmail({ userId, email, onVerified }) {
 export default function BecomeSeller2() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // 1 = account info, 2 = expert profile
+  const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     username: '',
     email: '',
@@ -207,7 +207,6 @@ export default function BecomeSeller2() {
 
     setLoading(true);
     try {
-      // Register as expert — backend accepts user_type field
       const res = await newRequest.post('/users/register/', {
         username: form.username,
         email: form.email,
@@ -215,7 +214,6 @@ export default function BecomeSeller2() {
         user_type: 'expert',
       });
 
-      // Store field_of_study + bio to update profile after email verification
       sessionStorage.setItem('expert_profile_pending', JSON.stringify({
         field_of_study: form.field_of_study,
         bio: form.bio,
@@ -244,7 +242,6 @@ export default function BecomeSeller2() {
     };
     localStorage.setItem('currentUser', JSON.stringify(userData));
 
-    // Attempt to update expert profile with bio + field_of_study
     const pending = sessionStorage.getItem('expert_profile_pending');
     if (pending && data.token) {
       try {
@@ -253,13 +250,13 @@ export default function BecomeSeller2() {
           headers: { Authorization: `Token ${data.token}` },
         });
       } catch {
-        // Non-critical — profile can be updated in settings later
+        // Non-critical
       } finally {
         sessionStorage.removeItem('expert_profile_pending');
       }
     }
 
-    navigate('/');
+    navigate('/profile');
   };
 
   // ── OTP Screen ─────────────────────────────────────────────────────────────
@@ -277,51 +274,9 @@ export default function BecomeSeller2() {
   return (
     <div className="bs2-page">
       <div className="bs2-card">
-
-        {/* Left panel */}
-        <div className="bs2-panel">
-          <div className="bs2-panel__logo">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <rect width="36" height="36" rx="10" fill="#1dbf73"/>
-              <path d="M10 24 L18 10 L26 24" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              <path d="M13 20 L23 20" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-            </svg>
-            <span>TopMark</span>
-          </div>
-          <h2>Join as an Expert</h2>
-          <p>Help students achieve academic excellence while building a flexible income stream.</p>
-
-          <div className="bs2-checklist">
-            {[
-              'Set your own schedule & availability',
-              'Earn competitive rates per assignment',
-              'Verified, trusted student marketplace',
-              'Secure escrow payment protection',
-              'Expert dashboard & performance insights',
-            ].map((item) => (
-              <div className="bs2-check-item" key={item}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1dbf73" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="bs2-panel__back">
-            <Link to="/becomeSeller">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-              </svg>
-              Back to overview
-            </Link>
-          </div>
-        </div>
-
-        {/* Right panel — form */}
         <div className="bs2-form-panel">
-          {/* Progress */}
+
+          {/* Progress stepper */}
           <div className="bs2-progress">
             <div className={`bs2-progress__step ${step >= 1 ? 'active' : ''} ${step > 1 ? 'done' : ''}`}>
               <div className="bs2-progress__dot">
@@ -481,7 +436,6 @@ export default function BecomeSeller2() {
                 </div>
               </div>
 
-              {/* Subject tags preview */}
               {form.field_of_study && (
                 <div className="bs2-tag-preview">
                   <span className="bs2-tag">{form.field_of_study}</span>
@@ -495,7 +449,7 @@ export default function BecomeSeller2() {
                   name="bio"
                   value={form.bio}
                   onChange={handleChange}
-                  placeholder="Describe your academic background, qualifications, and what makes you an exceptional tutor or expert in your field…"
+                  placeholder="Describe your academic background, qualifications, and what makes you an exceptional expert in your field…"
                   rows={5}
                   required
                 />

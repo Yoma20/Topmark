@@ -327,15 +327,7 @@ export default function Dashboard() {
 
        
 
-      {/* ── Welcome banner ── */}
-      <section className="dashboard-welcome">
-        <div className="dashboard-welcome__inner">
-          <div>
-            <h1>Welcome back, <span>{user?.username}</span> 👋</h1>
-            <p>Find a verified expert for your next assignment</p>
-          </div>
-        </div>
-      </section>
+      
 
       {/* ── Quick search ── */}
       <section className="dashboard-search">

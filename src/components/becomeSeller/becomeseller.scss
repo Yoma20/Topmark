@@ -1,172 +1,72 @@
-// becomeseller2.scss — Expert Registration Form
+// becomeseller.scss — Expert Registration Form (Fiverr-clean style)
 
-$green: #1dbf73;
-$green-dark: #17a360;
-$green-light: rgba(29, 191, 115, 0.1);
-$dark: #111827;
-$mid: #374151;
-$muted: #6b7280;
-$border: #e5e7eb;
-$bg: #f8faf9;
-$white: #ffffff;
+$green:       #1dbf73;
+$green-dark:  #17a360;
+$green-light: rgba(29, 191, 115, 0.10);
+$dark:        #111827;
+$mid:         #374151;
+$muted:       #6b7280;
+$border:      #e5e7eb;
+$bg:          #f5f5f5;
+$white:       #ffffff;
 
-// ── Page wrapper ─────────────────────────────────────────────────────────────
+// ── Page wrapper ──────────────────────────────────────────────────────────────
 .bs2-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: $bg;
-  padding: 32px 16px;
+  padding: 40px 16px;
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-// ── Split card ───────────────────────────────────────────────────────────────
+// ── Card — single centered white box, no dark side panel ──────────────────────
 .bs2-card {
-  display: flex;
   width: 100%;
-  max-width: 960px;
+  max-width: 600px;
   background: $white;
-  border-radius: 20px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.09);
   overflow: hidden;
-  min-height: 600px;
 }
 
-// ── Left panel ───────────────────────────────────────────────────────────────
+// ── Hide the old dark left panel ──────────────────────────────────────────────
 .bs2-panel {
-  flex: 0 0 340px;
-  background: linear-gradient(160deg, #0d2b1e 0%, #1a3a28 100%);
-  padding: 48px 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  color: $white;
-  position: relative;
-  overflow: hidden;
-
-  // decorative circle
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -80px;
-    right: -80px;
-    width: 260px;
-    height: 260px;
-    border-radius: 50%;
-    background: rgba(29, 191, 115, 0.08);
-    pointer-events: none;
-  }
-
-  &__logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 36px;
-
-    span {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: $green;
-      letter-spacing: -0.02em;
-    }
-  }
-
-  h2 {
-    font-size: 1.55rem;
-    font-weight: 800;
-    line-height: 1.25;
-    color: $white;
-    margin: 0 0 12px;
-    letter-spacing: -0.02em;
-  }
-
-  > p {
-    font-size: 0.88rem;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.65;
-    margin: 0 0 36px;
-  }
-
-  &__back {
-    margin-top: auto;
-    padding-top: 32px;
-
-    a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: rgba(255, 255, 255, 0.5);
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: color 0.15s;
-
-      &:hover {
-        color: $white;
-      }
-    }
-  }
+  display: none;
 }
 
-// ── Checklist ────────────────────────────────────────────────────────────────
-.bs2-checklist {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.bs2-check-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-
-  svg {
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  span {
-    font-size: 0.88rem;
-    color: rgba(255, 255, 255, 0.82);
-    line-height: 1.5;
-  }
-}
-
-// ── Right form panel ─────────────────────────────────────────────────────────
+// ── Form panel — full width ───────────────────────────────────────────────────
 .bs2-form-panel {
-  flex: 1;
-  padding: 48px 44px;
-  overflow-y: auto;
+  padding: 44px 48px;
   display: flex;
   flex-direction: column;
 
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.55rem;
     font-weight: 800;
     color: $dark;
-    margin: 0 0 24px;
-    letter-spacing: -0.025em;
+    margin: 0 0 28px;
+    letter-spacing: -0.02em;
   }
 }
 
-// ── Progress ─────────────────────────────────────────────────────────────────
+// ── Progress stepper — clean Fiverr style ─────────────────────────────────────
 .bs2-progress {
   display: flex;
   align-items: center;
-  gap: 0;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 
   &__step {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: $muted;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 600;
+    color: $muted;
 
     &.active {
       color: $dark;
-
       .bs2-progress__dot {
         background: $green;
         color: $white;
@@ -176,7 +76,6 @@ $white: #ffffff;
 
     &.done {
       color: $green;
-
       .bs2-progress__dot {
         background: $green;
         color: $white;
@@ -186,32 +85,33 @@ $white: #ffffff;
   }
 
   &__dot {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     border: 2px solid $border;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: $muted;
+    flex-shrink: 0;
     transition: all 0.2s;
   }
 
   &__line {
     flex: 1;
-    height: 2px;
+    height: 1.5px;
     background: $border;
-    margin: 0 12px;
+    margin: 0 10px;
   }
 }
 
-// ── Step 2 sub ───────────────────────────────────────────────────────────────
+// ── Step 2 subtitle ───────────────────────────────────────────────────────────
 .bs2-step2-sub {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: $muted;
-  margin: -16px 0 24px;
+  margin: -20px 0 24px;
   line-height: 1.6;
 }
 
@@ -222,20 +122,20 @@ $white: #ffffff;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  padding: 11px 16px;
+  padding: 12px 16px;
   border: 1.5px solid $border;
-  border-radius: 10px;
+  border-radius: 8px;
   background: $white;
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: 500;
   color: $mid;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
   margin-bottom: 20px;
 
   &:hover:not(:disabled) {
-    background: #f8f9fa;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #fafafa;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   }
 
   &:disabled {
@@ -249,8 +149,8 @@ $white: #ffffff;
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 0 20px;
-  color: #aaa;
+  margin: 0 0 22px;
+  color: #bbb;
   font-size: 0.82rem;
 
   &::before,
@@ -264,13 +164,13 @@ $white: #ffffff;
 
 // ── Fields ───────────────────────────────────────────────────────────────────
 .bs2-field {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 
   label {
     display: block;
     font-size: 0.85rem;
     font-weight: 700;
-    color: $mid;
+    color: $dark;
     margin-bottom: 6px;
   }
 
@@ -279,26 +179,25 @@ $white: #ffffff;
   input[type='password'],
   textarea {
     width: 100%;
-    padding: 10px 14px;
+    padding: 11px 14px;
     border: 1.5px solid $border;
-    border-radius: 9px;
+    border-radius: 8px;
     font-size: 0.93rem;
     color: $dark;
-    background: #fafafa;
+    background: $white;
     transition: border-color 0.15s, box-shadow 0.15s;
     box-sizing: border-box;
     font-family: inherit;
     resize: vertical;
 
     &::placeholder {
-      color: #b0b7c3;
+      color: #c0c4cc;
     }
 
     &:focus {
       outline: none;
       border-color: $green;
-      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
-      background: $white;
+      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.10);
     }
   }
 
@@ -346,12 +245,12 @@ $white: #ffffff;
 
   select {
     width: 100%;
-    padding: 10px 38px 10px 14px;
+    padding: 11px 38px 11px 14px;
     border: 1.5px solid $border;
-    border-radius: 9px;
+    border-radius: 8px;
     font-size: 0.93rem;
     color: $dark;
-    background: #fafafa;
+    background: $white;
     appearance: none;
     cursor: pointer;
     font-family: inherit;
@@ -361,8 +260,7 @@ $white: #ffffff;
     &:focus {
       outline: none;
       border-color: $green;
-      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
-      background: $white;
+      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.10);
     }
   }
 }
@@ -387,8 +285,8 @@ $white: #ffffff;
   color: $green-dark;
   border: 1px solid rgba(29, 191, 115, 0.3);
   border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.78rem;
+  padding: 4px 14px;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -427,7 +325,7 @@ $white: #ffffff;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   font-size: 0.85rem;
   color: $mid;
 
@@ -456,7 +354,7 @@ $white: #ffffff;
 
 // ── Status messages ───────────────────────────────────────────────────────────
 .bs2-status {
-  border-radius: 9px;
+  border-radius: 8px;
   padding: 10px 14px;
   font-size: 0.86rem;
   margin-bottom: 14px;
@@ -481,12 +379,12 @@ $white: #ffffff;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 9px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.18s;
-  padding: 12px 20px;
+  padding: 13px 20px;
   border: 2px solid transparent;
   font-family: inherit;
 
@@ -499,11 +397,11 @@ $white: #ffffff;
     &:hover:not(:disabled) {
       background: $green-dark;
       border-color: $green-dark;
-      box-shadow: 0 6px 20px rgba(29, 191, 115, 0.3);
+      box-shadow: 0 4px 16px rgba(29, 191, 115, 0.28);
     }
 
     &:disabled {
-      opacity: 0.55;
+      opacity: 0.5;
       cursor: not-allowed;
     }
   }
@@ -530,7 +428,7 @@ $white: #ffffff;
   }
 }
 
-// ── Footer ────────────────────────────────────────────────────────────────────
+// ── Footer text ───────────────────────────────────────────────────────────────
 .bs2-footer {
   text-align: center;
   margin-top: 20px;
@@ -563,10 +461,10 @@ $white: #ffffff;
 .bs2-otp-card {
   background: $white;
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.09);
   padding: 48px 40px;
   width: 100%;
-  max-width: 440px;
+  max-width: 460px;
   text-align: center;
   font-family: 'Helvetica Neue', Arial, sans-serif;
 
@@ -600,47 +498,43 @@ $white: #ffffff;
 .bs2-otp-box {
   width: 48px;
   height: 56px;
-  border: 2px solid $border;
+  border: 1.5px solid $border;
   border-radius: 10px;
   font-size: 1.5rem;
   font-weight: 800;
   text-align: center;
   color: $dark;
-  background: #fafafa;
+  background: $white;
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:focus {
     outline: none;
     border-color: $green;
-    box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.15);
-    background: $white;
+    box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
   }
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
-@media (max-width: 768px) {
-  .bs2-card {
-    flex-direction: column;
-    border-radius: 16px;
-  }
-
-  .bs2-panel {
-    flex: none;
-    padding: 32px 28px;
-
-    &::after { display: none; }
-
-    &__back { margin-top: 24px; padding-top: 0; }
-  }
-
+@media (max-width: 640px) {
   .bs2-form-panel {
     padding: 32px 24px;
+  }
+
+  .bs2-card {
+    border-radius: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .bs2-btn-row {
     flex-direction: column-reverse;
-    .bs2-btn--outline { width: 100%; }
+
+    .bs2-btn--outline {
+      width: 100%;
+    }
+  }
+
+  .bs2-otp-card {
+    padding: 36px 24px;
   }
 }
