@@ -1,53 +1,465 @@
+// src/pages/myGigs/myGigs.scss
+
 .myGigs {
+  min-height: 80vh;
+  background: #f7f8fa;
+  padding: 48px 20px 80px;
+}
+
+// ── Container ─────────────────────────────────────────────────────────────────
+.mg-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.mg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+
+  &__sub {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0;
+
+    strong { color: #111; }
+  }
+
+  &__actions {
     display: flex;
-    justify-content: center;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
 
-    .container {
-        width: 1400px;
-        padding: 50px 0px;
+// ── Buttons ───────────────────────────────────────────────────────────────────
+.mg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
 
-        .title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+  &--primary {
+    background: #1dbf73;
+    color: #fff;
 
-            button {
-                background: #1dbf73;
-                color: white;
-                padding: 10px;
-                border: none;
-                font-weight: 500;
-                cursor: pointer;
-            }
-        }
-
-        table {
-            width: 100%;
-
-            tr {
-                th {
-                    text-align: left;
-                }
-
-                height: 50px;
-
-                td {
-                    img {
-                        width: 50px;
-                        height: 25px;
-                        object-fit: cover;
-
-                    }
-
-                    .delete {
-                        width: 25px;
-                        cursor: pointer;
-                    }
-                }
-                &:nth-child(even){
-                    background-color: #1dbf730f;
-                }
-            }
-        }
+    &:hover {
+      background: #17a862;
+      box-shadow: 0 4px 12px rgba(29, 191, 115, 0.35);
+      transform: translateY(-1px);
     }
+  }
+
+  &--ghost {
+    background: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+
+    &:hover {
+      border-color: #1dbf73;
+      color: #1dbf73;
+    }
+  }
+
+  &--danger {
+    background: #dc2626;
+    color: #fff;
+
+    &:hover { background: #b91c1c; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  &--lg {
+    padding: 14px 28px;
+    font-size: 1rem;
+  }
+}
+
+// ── Stats row ─────────────────────────────────────────────────────────────────
+.mg-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 420px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mg-stat {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  }
+
+  &--accent {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+
+    .mg-stat__value { color: #15803d; }
+  }
+
+  &__value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__sub {
+    font-size: 0.78rem;
+    color: #aaa;
+  }
+}
+
+// ── Table wrapper ─────────────────────────────────────────────────────────────
+.mg-table-wrap {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.mg-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #fafafa;
+    border-bottom: 1px solid #efefef;
+
+    th {
+      text-align: left;
+      padding: 14px 18px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f3f3f3;
+    animation: mg-row-in 0.3s ease both;
+    transition: background 0.12s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: #fafffe; }
+
+    td {
+      padding: 14px 18px;
+      vertical-align: middle;
+      font-size: 0.92rem;
+      color: #333;
+    }
+  }
+}
+
+@keyframes mg-row-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Table cell specifics ──────────────────────────────────────────────────────
+.mg-cover {
+  width: 64px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  border: 1px solid #eee;
+}
+
+.mg-title-link {
+  display: block;
+  font-weight: 600;
+  color: #111;
+  text-decoration: none;
+  margin-bottom: 3px;
+  transition: color 0.12s;
+
+  &:hover { color: #1dbf73; }
+}
+
+.mg-category {
+  display: inline-block;
+  font-size: 0.76rem;
+  color: #888;
+  background: #f3f3f3;
+  border-radius: 4px;
+  padding: 1px 7px;
+}
+
+.mg-price {
+  font-weight: 700;
+  color: #111;
+}
+
+// ── Status badge ──────────────────────────────────────────────────────────────
+.mg-badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &--active {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  &--inactive {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+}
+
+// ── Row action buttons ────────────────────────────────────────────────────────
+.mg-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mg-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, border-color 0.12s, transform 0.1s;
+
+  &:hover {
+    background: #f5f5f5;
+    transform: translateY(-1px);
+  }
+
+  &--danger:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+  }
+}
+
+// ── Footer bar ────────────────────────────────────────────────────────────────
+.mg-footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 4px 0;
+  font-size: 0.88rem;
+  color: #888;
+}
+
+.mg-link {
+  color: #1dbf73;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.mg-empty {
+  background: #fff;
+  border: 2px dashed #e0e0e0;
+  border-radius: 16px;
+  padding: 64px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  &__icon {
+    font-size: 3.5rem;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+  }
+
+  p {
+    color: #777;
+    font-size: 0.95rem;
+    max-width: 340px;
+    margin: 0;
+  }
+
+  .mg-btn { margin-top: 8px; }
+}
+
+// ── Delete confirm modal ──────────────────────────────────────────────────────
+.mg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: mg-fade-in 0.15s ease;
+}
+
+.mg-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  animation: mg-slide-up 0.2s ease;
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 10px;
+  }
+
+  p {
+    color: #666;
+    font-size: 0.92rem;
+    margin: 0 0 24px;
+    line-height: 1.55;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+
+@keyframes mg-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes mg-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Loading & error states ────────────────────────────────────────────────────
+.mg-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 16px;
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.mg-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e8e8e8;
+  border-top-color: #1dbf73;
+  border-radius: 50%;
+  animation: mg-spin 0.7s linear infinite;
+}
+
+@keyframes mg-spin {
+  to { transform: rotate(360deg); }
+}
+
+.mg-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 12px;
+  color: #666;
+  text-align: center;
+
+  span { font-size: 2rem; }
+
+  button {
+    margin-top: 4px;
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+
+    &:hover { border-color: #1dbf73; color: #1dbf73; }
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .mg-table {
+    thead th:nth-child(5),
+    tbody td:nth-child(5) {
+      display: none; // hide Status column on mobile
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .mg-table {
+    thead th:nth-child(4),
+    tbody td:nth-child(4) {
+      display: none; // hide Sales column on small screens
+    }
+  }
 }

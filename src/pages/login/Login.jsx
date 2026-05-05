@@ -118,12 +118,13 @@ const Login = () => {
   const { login } = useContext(AuthContext); // ← use context login, not localStorage directly
   const successMessage = location.state?.message || null;
 
-  // saveAndRedirect now calls context.login() which updates state immediately,
-  // so App.jsx re-renders and switches to Dashboard without a page refresh.
+  
   const saveAndRedirect = useCallback((data) => {
-    login(data);          // updates AuthContext state + localStorage in one call
-    navigate("/");
-  }, [login, navigate]);
+    login(data);
+    const params = new URLSearchParams(location.search);
+    const next = params.get('next') || (data.user_type === 'expert' ? '/expert-dashboard' : '/');
+    navigate(next);
+  }, [login, navigate, location.search]);
 
   // ── Cloudflare Turnstile ───────────────────────────────────────────────────
   useEffect(() => {

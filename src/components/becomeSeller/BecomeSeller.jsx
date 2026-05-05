@@ -407,7 +407,8 @@ export default function BecomeSeller2() {
               </button>
 
               <p className="bs2-footer">
-                Already have an account? <Link to="/login">Log in</Link>
+                Already have an account?{' '}
+                <Link to="/login?next=/expert-dashboard">Log in as Expert</Link>
               </p>
             </>
           ) : (
