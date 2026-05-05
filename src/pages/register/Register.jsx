@@ -38,7 +38,7 @@ function VerifyEmail({ userId, email, onVerified }) {
     setLoading(true);
     setError("");
     try {
-      const res = await newRequest.post("/api/users/verify-email/", { user_id: userId, otp: code });
+      const res = await newRequest.post("/users/verify-email/", { user_id: userId, otp: code });
       onVerified(res.data);
     } catch (err) {
       setError(err?.response?.data?.error || "Invalid or expired code.");
@@ -52,7 +52,7 @@ function VerifyEmail({ userId, email, onVerified }) {
   const handleResend = async () => {
     setResent(false);
     try {
-      await newRequest.post("/api/users/resend-otp/", { user_id: userId });
+      await newRequest.post("/users/resend-otp/", { user_id: userId });
       setResent(true);
       setOtp(["", "", "", "", "", ""]);
       document.getElementById("otp-0")?.focus();
@@ -203,7 +203,7 @@ export default function Register() {
     setError(null);
     setLoading(true);
     try {
-      const res = await newRequest.post("/api/users/google-auth/", {
+      const res = await newRequest.post("/users/google-auth/", {
         credential: response.credential,
       });
       handleVerified(res.data);
@@ -258,7 +258,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      const res = await newRequest.post("/api/users/register/", {
+      const res = await newRequest.post("/users/register/", {
         username: form.username,
         email: form.email,
         password: form.password,

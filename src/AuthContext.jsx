@@ -1,4 +1,4 @@
-// src/AuthContext.jsx — Replace entire file
+
 import { createContext, useState, useCallback } from "react";
 
 const AuthContext = createContext(null);
