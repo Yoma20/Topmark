@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import './add.scss';
 import upload from '../../utils/upload.js';
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -58,9 +58,8 @@ const Add = () => {
 
   const [step, setStep] = useState(0);
 
-  // ← single useState with localStorage restore
   const [state, setState] = useState(() => {
-    const saved = localStorage.getItem(draftKey);
+    const saved = localStorage.getItem(`add_gig_draft_${user?.id}`);
     return saved ? JSON.parse(saved) : INITIAL_STATE;
   });
 
@@ -71,7 +70,7 @@ const Add = () => {
   const [featureInput, setFeatureInput] = useState({ basic: '', standard: '', premium: '' });
   const [extraInput, setExtraInput] = useState({ name: '', description: '', price: '', extra_days: 0 });
 
-  // ← save draft on every state change
+  // Save draft on every state change
   useEffect(() => {
     localStorage.setItem(draftKey, JSON.stringify(state));
   }, [state, draftKey]);
@@ -79,20 +78,75 @@ const Add = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const handleChange = (e) => {
+    setState(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) setErrors(prev => { const n = {...prev}; delete n[e.target.name]; return n; });
+  };
 
+  const goNext = () => {
+    const errs = STEP_VALIDATORS[step](state);
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setErrors({});
+    setStep(s => s + 1);
+  };
 
-  const handleSubmit = () => mutation.mutate(state);
+  const handlePackageChange = (tier, field, value) =>
+    setState(prev => ({
+      ...prev,
+      packages: prev.packages.map(p => p.tier === tier ? { ...p, [field]: value } : p),
+    }));
 
-  const tiers = ['basic', 'standard', 'premium'];
+  const addFeature = (tier) => {
+    const val = featureInput[tier].trim();
+    if (!val) return;
+    setState(prev => ({
+      ...prev,
+      packages: prev.packages.map(p =>
+        p.tier === tier ? { ...p, features: [...p.features, val] } : p
+      ),
+    }));
+    setFeatureInput(prev => ({ ...prev, [tier]: '' }));
+  };
+
+  const removeFeature = (tier, feat) =>
+    setState(prev => ({
+      ...prev,
+      packages: prev.packages.map(p =>
+        p.tier === tier ? { ...p, features: p.features.filter(f => f !== feat) } : p
+      ),
+    }));
+
+  const addExtra = () => {
+    if (!extraInput.name || !extraInput.price) return;
+    setState(prev => ({ ...prev, extras: [...prev.extras, { ...extraInput }] }));
+    setExtraInput({ name: '', description: '', price: '', extra_days: 0 });
+  };
+
+  const handleUpload = async () => {
+    setUploading(true);
+    try {
+      const cover_image = await upload(singleFile);
+      const images = await Promise.all([...files].map(upload));
+      setState(prev => ({ ...prev, cover_image, images }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: (gig) => newRequest.post("/gigs/create/", gig),
     onSuccess: () => {
-      localStorage.removeItem("add_gig_draft");
+      localStorage.removeItem(draftKey);
       queryClient.invalidateQueries(["myGigs"]);
       navigate('/mygigs');
     },
   });
+
+  const handleSubmit = () => mutation.mutate(state);
+
+  const tiers = ['basic', 'standard', 'premium'];
 
   // ── Step panels ──────────────────────────────────────────────
   const renderStep = () => {
