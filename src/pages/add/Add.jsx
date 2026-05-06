@@ -79,15 +79,7 @@ const Add = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // ← single mutation with localStorage clear on success
-  const mutation = useMutation({
-    mutationFn: (gig) => newRequest.post("/gigs/create/", gig),
-    onSuccess: () => {
-      localStorage.removeItem(draftKey);
-      queryClient.invalidateQueries(["myGigs"]);
-      navigate('/mygigs');
-    },
-  });
+
 
   const handleSubmit = () => mutation.mutate(state);
 
