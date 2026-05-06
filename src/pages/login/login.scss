@@ -127,7 +127,7 @@
     text-decoration: underline;
     text-underline-offset: 2px;
 
-    &:hover { color: #1dbf73; }
+    &:hover { color: #1a9e60 ; }
   }
 }
 
@@ -216,7 +216,7 @@
 
     &:focus {
       outline: none;
-      border-color: #1dbf73;
+      border-color: #1a9e60 ;
       box-shadow: 0 0 0 3px rgba(29,191,115,0.12);
       background: #fff;
     }
@@ -251,7 +251,7 @@ form > label {
 
   &:focus {
     outline: none;
-    border-color: #1dbf73;
+    border-color: #1a9e60 ;
     box-shadow: 0 0 0 3px rgba(29,191,115,0.12);
     background: #fff;
   }
@@ -299,7 +299,7 @@ form > label {
   input[type="checkbox"] {
     width: 15px;
     height: 15px;
-    accent-color: #1dbf73;
+    accent-color: #1a9e60 ;
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -307,7 +307,7 @@ form > label {
   label {
     cursor: pointer;
     a {
-      color: #1dbf73;
+      color: #1a9e60 ;
       font-weight: 600;
       text-decoration: none;
       &:hover { text-decoration: underline; }
@@ -328,7 +328,7 @@ form > label {
 .btn-submit {
   width: 100%;
   padding: 12px;
-  background: #1dbf73;
+  background: #1a9e60 ;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -373,7 +373,7 @@ form > label {
   color: #6b7280;
 
   a, .link-btn {
-    color: #1dbf73;
+    color: #1a9e60 ;
     font-weight: 600;
     text-decoration: none;
     background: none;
@@ -439,7 +439,7 @@ form > label {
 
   &:focus {
     outline: none;
-    border-color: #1dbf73;
+    border-color: #1a9e60 ;
     box-shadow: 0 0 0 3px rgba(29,191,115,0.15);
     background: #fff;
   }

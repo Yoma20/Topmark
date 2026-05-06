@@ -40,8 +40,8 @@
     &:hover { color: #374151; }
 
     &.done {
-      color: #1dbf73;
-      .step-num { background: #1dbf73; color: white; }
+      color: #1a9e60 ;
+      .step-num { background: #1a9e60 ; color: white; }
     }
 
     &.active {
@@ -111,7 +111,7 @@
 
     &:focus {
       outline: none;
-      border-color: #1dbf73;
+      border-color: #1a9e60 ;
       box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.12);
       background: white;
     }
@@ -171,7 +171,7 @@
 
     &:focus {
       outline: none;
-      border-color: #1dbf73;
+      border-color: #1a9e60 ;
       box-shadow: 0 0 0 3px rgba(29,191,115,0.1);
     }
   }
@@ -232,7 +232,7 @@
   .btn-add-feat {
     width: 32px;
     height: 32px;
-    background: #1dbf73;
+    background: #1a9e60 ;
     color: white;
     border: none;
     border-radius: 7px;
@@ -263,7 +263,7 @@
     font-size: 12px;
     color: #374151;
 
-    .feat-check { color: #1dbf73; font-size: 11px; }
+    .feat-check { color: #1a9e60 ; font-size: 11px; }
 
     button {
       margin-left: auto;
@@ -298,7 +298,7 @@
 
     &:focus {
       outline: none;
-      border-color: #1dbf73;
+      border-color: #1a9e60 ;
       box-shadow: 0 0 0 3px rgba(29,191,115,0.1);
     }
   }
@@ -369,7 +369,7 @@
 
   .file-name {
     font-size: 12px;
-    color: #1dbf73;
+    color: #1a9e60 ;
     font-weight: 500;
   }
 
@@ -392,7 +392,7 @@
 
   .upload-success {
     font-size: 13px;
-    color: #1dbf73;
+    color: #1a9e60 ;
     font-weight: 500;
     margin: 0;
   }
@@ -442,7 +442,7 @@
 .btn-publish {
   width: 100%;
   padding: 16px;
-  background: #1dbf73;
+  background: #1a9e60 ;
   color: white;
   border: none;
   border-radius: 10px;
