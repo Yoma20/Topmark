@@ -108,6 +108,16 @@ const Add = () => {
     setExtraInput({ name: '', description: '', price: '', extra_days: 0 });
   };
 
+  useEffect(() => {
+    localStorage.setItem("add_gig_draft", JSON.stringify(state));
+  }, [state]);
+  
+  // Restore from localStorage on mount
+  const [state, setState] = useState(() => {
+    const saved = localStorage.getItem("add_gig_draft");
+    return saved ? JSON.parse(saved) : INITIAL_STATE;
+  });
+
   const handleUpload = async () => {
     setUploading(true);
     try {
@@ -132,6 +142,15 @@ const Add = () => {
   const handleSubmit = () => mutation.mutate(state);
 
   const tiers = ['basic', 'standard', 'premium'];
+
+  const mutation = useMutation({
+    mutationFn: (gig) => newRequest.post("/gigs/create/", gig),
+    onSuccess: () => {
+      localStorage.removeItem("add_gig_draft");
+      queryClient.invalidateQueries(["myGigs"]);
+      navigate('/mygigs');
+    },
+  });
 
   // ── Step panels ──────────────────────────────────────────────
   const renderStep = () => {
