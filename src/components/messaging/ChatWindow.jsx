@@ -1,17 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import newRequest from "../../../utils/newRequest";
+import newRequest from "../../utils/newRequest";
 import OfferCard from "../offerCard/OfferCard";
 import SendOfferModal from "../offerCard/SendOfferModal";
 
-/**
- * ChatWindow
- *
- * Props:
- *   conversation     – full conversation object from API (or null)
- *   currentUserId    – logged-in user id
- *   currentUserType  – "expert" | "student"
- *   onMessageSent    – parent callback to refetch conversations list
- */
+
 const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSent }) => {
   const [messages, setMessages] = useState([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);

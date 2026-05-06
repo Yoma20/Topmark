@@ -1,5 +1,5 @@
 import { useState } from "react";
-import newRequest from "../../../utils/newRequest";
+import newRequest from "../../utils/newRequest";
 import "./SendOfferModal.scss";
 
 /**
