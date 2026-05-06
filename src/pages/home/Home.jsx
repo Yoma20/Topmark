@@ -214,43 +214,43 @@ const Home = () => {
                     <h1>You need it, we've got it</h1>
                     <div className="items">
                         <div className="item" onClick={() => navigate(`gigs?cat=Graphics & Design`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/graphics-design.d32a2f8.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/graphics-design.d32a2f8.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Graphics &amp; Design</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Digital Marketing`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/online-marketing.74e221b.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/online-marketing.74e221b.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Digital Marketing</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Writing & Translation`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/writing-translation.32ebe2e.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/writing-translation.32ebe2e.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Writing &amp; Translation</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Video & Animation`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/video-animation.f0d9d71.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/video-animation.f0d9d71.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Video &amp; Animation</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Music & Audio`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/music-audio.320af20.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/music-audio.320af20.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Music &amp; Audio</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Programming & Tech`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/programming.9362366.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/programming.9362366.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Programming &amp; Tech</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Business`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/business.bbdf319.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/business.bbdf319.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Business</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Lifestyle`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/lifestyle.745b575.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/lifestyle.745b575.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Lifestyle</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Data`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/data.718910f.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/data.718910f.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Data</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Photography`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/photography.01cf943.svg" alt="" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/photography.01cf943.svg" alt="" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Photography</span>
                         </div>
                     </div>
@@ -263,10 +263,10 @@ const Home = () => {
                         <h1>TopMark <em><span style={{ fontWeight: '300' }}>for Students.</span></em></h1>
                         <h1>Academic help you can <em>trust</em></h1>
                         <p>Every expert is verified by subject. Every payment is protected by escrow. Every order is rated on rubric adherence, timeliness and communication.</p>
-                        <div className="title"><img src="/images/check.png" alt="check" />Verified subject-specialist experts</div>
-                        <div className="title"><img src="/images/check.png" alt="check" />Secure escrow — pay only when satisfied</div>
-                        <div className="title"><img src="/images/check.png" alt="check" />Rubric-adherence scoring on every order</div>
-                        <div className="title"><img src="/images/check.png" alt="check" />24-hour express turnaround available</div>
+                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy"/>Verified subject-specialist experts</div>
+                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy" />Secure escrow — pay only when satisfied</div>
+                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy" />Rubric-adherence scoring on every order</div>
+                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy" />24-hour express turnaround available</div>
                         <button>Get Started Free</button>
                     </div>
                     <div className="item">
@@ -287,7 +287,7 @@ const Home = () => {
                         <button className="logo_button"><strong>Become an Expert</strong></button>
                     </div>
                     <div className="right">
-                        <img src="/images/logomaker.webp" alt="" />
+                        <img src="/images/logomaker.webp" alt="" width={40} height={40} loading="lazy" />
                     </div>
                 </div>
             </div>

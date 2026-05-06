@@ -73,19 +73,19 @@ const Navbar = () => {
             <div className="container">
 
                 {/* Hamburger (mobile) */}
-                <div
+                <button
                     className={`hamburger ${menuOpen ? 'open' : ''}`}
                     onClick={() => setMenuOpen(!menuOpen)}
                     aria-label="Toggle menu"
                     
                 >
                     <span></span><span></span><span></span>
-                </div>
+                </button>
 
                 {/* LOGO — class structure unchanged */}
                 <div className="logo">
                     <Link to="/" className="logo-link">
-                        <img src="/images/logos.png" alt="TopMark" />
+                        <img src="/images/logos.webp" alt="TopMark" width={32} height={38} />
                         <span className="text-2xl">TopMark</span>
                     </Link>
                 </div>

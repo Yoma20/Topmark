@@ -408,7 +408,7 @@ export default function BecomeSeller2() {
 
               <p className="bs2-footer">
                 Already have an account?{' '}
-                <Link to="/login?next=/expert-dashboard">Log in as Expert</Link>
+                <Link to="/login?next=/MyGigs">Log in as Expert</Link>
               </p>
             </>
           ) : (
