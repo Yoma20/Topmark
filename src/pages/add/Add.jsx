@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import './add.scss';
 import upload from '../../utils/upload.js';
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
@@ -25,7 +25,7 @@ const STEP_VALIDATORS = [
   (s) => {
     const errs = {};
     if (!s.title.trim())             errs.title = "Title is required.";
-    if (!s.category.trim())          errs.category = "Category is required.";
+    if (!s.category)              errs.category = "Category is required.";
     if (!s.description.trim())       errs.description = "Description is required.";
     if (!s.short_title.trim())       errs.short_title = "Short title is required.";
     if (!s.short_description.trim()) errs.short_description = "Short description is required.";
@@ -77,6 +77,12 @@ const Add = () => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  // Fetch categories from backend
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => newRequest.get("/gigs/categories/").then(r => r.data),
+  });
 
   const handleChange = (e) => {
     setState(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -144,7 +150,21 @@ const Add = () => {
     },
   });
 
-  const handleSubmit = () => mutation.mutate(state);
+  const handleSubmit = () => {
+    const payload = {
+      ...state,
+      category: state.category ? Number(state.category) : null,
+      packages: state.packages
+        .filter(p => p.name.trim())
+        .map(p => ({
+          ...p,
+          price: Number(p.price),
+          delivery_days: Number(p.delivery_days),
+          revision_number: Number(p.revision_number),
+        })),
+    };
+    mutation.mutate(payload);
+  };
 
   const tiers = ['basic', 'standard', 'premium'];
 
@@ -170,7 +190,19 @@ const Add = () => {
 
           <div className="field-group">
             <label>Category</label>
-            <input name="category" placeholder="e.g. Writing & Translation" onChange={handleChange} value={state.category} />
+            <select name="category" onChange={handleChange} value={state.category}>
+              <option value="">Select a category</option>
+              {categoriesData?.map(cat => (
+                <optgroup key={cat.id} label={cat.name}>
+                  {cat.subcategories?.length > 0
+                    ? cat.subcategories.map(sub => (
+                        <option key={sub.id} value={sub.id}>{sub.name}</option>
+                      ))
+                    : <option value={cat.id}>{cat.name}</option>
+                  }
+                </optgroup>
+              ))}
+            </select>
             {errors.category && <span className="field-error">{errors.category}</span>}
           </div>
 
