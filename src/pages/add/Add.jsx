@@ -58,10 +58,7 @@ const Add = () => {
 
   const [step, setStep] = useState(0);
 
-  const [state, setState] = useState(() => {
-    const saved = localStorage.getItem(`add_gig_draft_${user?.id}`);
-    return saved ? JSON.parse(saved) : INITIAL_STATE;
-  });
+  const [state, setState] = useState(INITIAL_STATE);
 
   const [errors, setErrors] = useState({});
   const [singleFile, setSingleFile] = useState(undefined);
@@ -70,7 +67,7 @@ const Add = () => {
   const [featureInput, setFeatureInput] = useState({ basic: '', standard: '', premium: '' });
   const [extraInput, setExtraInput] = useState({ name: '', description: '', price: '', extra_days: 0 });
 
-  // Save draft on every state change
+  
   useEffect(() => {
     localStorage.setItem(draftKey, JSON.stringify(state));
   }, [state, draftKey]);
@@ -78,7 +75,7 @@ const Add = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Fetch categories from backend
+  
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
     queryFn: () => newRequest.get("/gigs/categories/").then(r => r.data.results ?? r.data),

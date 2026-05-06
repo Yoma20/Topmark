@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import './gigs.scss';
 import GigCard from '../../components/GigCard/GigCard';
 import { useQuery } from "@tanstack/react-query";
@@ -16,15 +16,15 @@ const Gigs = () => {
   const params = new URLSearchParams(search);
   const category = params.get("cat") || "";
 
+  // sort is included in the queryKey so React Query automatically refetches
+  // when it changes — no useEffect needed.
   const { isLoading, error, data, refetch } = useQuery({
-    queryKey: ['gigs', sort],
+    queryKey: ['gigs', sort, search],
     queryFn: () =>
       newRequest.get(
         `/gigs/?${search ? search.slice(1) + '&' : ''}min=${minRef.current?.value || ''}&max=${maxRef.current?.value || ''}&sort=${sort}`
       ).then((res) => res.data?.results ?? res.data),
   });
-
-  useEffect(() => { refetch(); }, [sort]);
 
   const pageTitle = category
     ? `${category} Experts for Hire — Topmark`
@@ -36,7 +36,11 @@ const Gigs = () => {
 
   return (
     <div className="gigs">
-      
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+      </Helmet>
+
       <div className="container">
         <span className="breadcrumbs">TOPMARK &gt; BROWSE GIGS</span>
         <h1>Find an Expert</h1>

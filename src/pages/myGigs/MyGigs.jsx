@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./myGigs.scss";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function StatCard({ label, value, sub, accent }) {
   return (
@@ -33,7 +33,14 @@ function MyGigs() {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [confirmId, setConfirmId] = useState(null); // id of gig pending delete confirm
+  const [confirmId, setConfirmId] = useState(null);
+
+  // ── Role guard — only experts can access this page ──────────────────────
+  useEffect(() => {
+    if (!currentUser || currentUser.user_type !== 'expert') {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["myGigs"],
@@ -44,6 +51,9 @@ function MyGigs() {
   const mutation = useMutation({
     mutationFn: (id) => newRequest.delete(`/gigs/${id}/manage/`),
     onSuccess: () => {
+      // Clear the Add gig draft so stale data (old description, images) doesn't
+      // reappear the next time the expert opens the Create Gig form.
+      localStorage.removeItem(`add_gig_draft_${currentUser?.id}`);
       queryClient.invalidateQueries(["myGigs"]);
       setConfirmId(null);
     },
@@ -91,10 +101,10 @@ function MyGigs() {
               </button>
               <button
                 className="mg-btn mg-btn--danger"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
                 onClick={() => mutation.mutate(confirmId)}
               >
-                {mutation.isLoading ? 'Deleting…' : 'Yes, delete'}
+                {mutation.isPending ? 'Deleting…' : 'Yes, delete'}
               </button>
             </div>
           </div>
@@ -111,16 +121,14 @@ function MyGigs() {
               Welcome back, <strong>{currentUser?.username}</strong>
             </p>
           </div>
-          {currentUser?.user_type === 'expert' && (
-            <div className="mg-header__actions">
-              <Link to="/profile">
-                <button className="mg-btn mg-btn--ghost">Edit Profile</button>
-              </Link>
-              <Link to="/add">
-                <button className="mg-btn mg-btn--primary">+ New Gig</button>
-              </Link>
-            </div>
-          )}
+          <div className="mg-header__actions">
+            <Link to="/profile">
+              <button className="mg-btn mg-btn--ghost">Edit Profile</button>
+            </Link>
+            <Link to="/add">
+              <button className="mg-btn mg-btn--primary">+ New Gig</button>
+            </Link>
+          </div>
         </div>
 
         {/* ── Stats row ── */}

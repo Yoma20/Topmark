@@ -85,7 +85,7 @@ const Navbar = () => {
                 {/* LOGO — class structure unchanged */}
                 <div className="logo">
                     <Link to="/" className="logo-link">
-                        <img src="/images/logos.webp" alt="TopMark" width={32} height={38} />
+                        <img src="/images/logow.webp" alt="TopMark" width={32} height={38} />
                         <span className="text-2xl">TopMark</span>
                     </Link>
                 </div>

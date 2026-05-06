@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -48,10 +48,15 @@ const Gig = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: ['gig', id],
     queryFn: () => newRequest.get(`/gigs/${id}/`).then((res) => res.data),
-    onSuccess: (data) => {
-      if (data.packages?.length) setSelectedPackage(data.packages[0]);
-    }
   });
+
+  // Auto-select the first package once data loads.
+  // useEffect replaces the deprecated onSuccess callback (removed in React Query v5).
+  useEffect(() => {
+    if (data?.packages?.length) {
+      setSelectedPackage(data.packages[0]);
+    }
+  }, [data]);
 
   const sliderSettings = {
     dots: true, infinite: true, slidesToShow: 1, slidesToScroll: 1,
