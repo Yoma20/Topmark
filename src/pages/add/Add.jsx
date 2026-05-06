@@ -81,7 +81,7 @@ const Add = () => {
   // Fetch categories from backend
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => newRequest.get("/gigs/categories/").then(r => r.data),
+    queryFn: () => newRequest.get("/gigs/categories/").then(r => r.data.results ?? r.data),
   });
 
   const handleChange = (e) => {
@@ -192,7 +192,7 @@ const Add = () => {
             <label>Category</label>
             <select name="category" onChange={handleChange} value={state.category}>
               <option value="">Select a category</option>
-              {categoriesData?.map(cat => (
+              {(Array.isArray(categoriesData) ? categoriesData : []).map(cat => (
                 <optgroup key={cat.id} label={cat.name}>
                   {cat.subcategories?.length > 0
                     ? cat.subcategories.map(sub => (
