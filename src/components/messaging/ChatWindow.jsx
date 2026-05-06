@@ -1,83 +1,96 @@
-// src/components/messaging/ChatWindow.jsx
 import { useEffect, useRef, useState, useCallback } from "react";
-import { getMessages, sendMessage } from "../../api/messaging";
-import { formatTime } from "./utils";
+import newRequest from "../../../utils/newRequest";
+import OfferCard from "../offerCard/OfferCard";
+import SendOfferModal from "../offerCard/SendOfferModal";
 
-const POLL_INTERVAL = 4000; // ms — poll for new messages every 4 seconds
-
-export default function ChatWindow({ conversation, currentUserId, onMessageSent }) {
+/**
+ * ChatWindow
+ *
+ * Props:
+ *   conversation     – full conversation object from API (or null)
+ *   currentUserId    – logged-in user id
+ *   currentUserType  – "expert" | "student"
+ *   onMessageSent    – parent callback to refetch conversations list
+ */
+const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSent }) => {
   const [messages, setMessages] = useState([]);
-  const [draft, setDraft] = useState("");
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-  const [loadingMsgs, setLoadingMsgs] = useState(true);
+  const [sendError, setSendError] = useState("");
+  const [showOfferModal, setShowOfferModal] = useState(false);
+
   const bottomRef = useRef(null);
-  const intervalRef = useRef(null);
-  const inputRef = useRef(null);
+  const textareaRef = useRef(null);
 
-  const fetchMessages = useCallback(async (silent = false) => {
+  const isExpert = currentUserType === "expert";
+
+  // ── Fetch messages ─────────────────────────────────────────────────────────
+  const fetchMessages = useCallback(async () => {
     if (!conversation) return;
-    if (!silent) setLoadingMsgs(true);
+    setLoadingMsgs(true);
     try {
-      const data = await getMessages(conversation.id);
-      setMessages(data);
-    } catch {
-      // Silently fail on background polls
+      const res = await newRequest.get(
+        `/messaging/conversations/${conversation.id}/messages/`
+      );
+      setMessages(res.data);
+    } catch (err) {
+      console.error("Failed to load messages", err);
     } finally {
-      if (!silent) setLoadingMsgs(false);
+      setLoadingMsgs(false);
     }
-  }, [conversation]);
+  }, [conversation?.id]); // eslint-disable-line
 
-  // Initial load + start polling
+  useEffect(() => {
+    setMessages([]);
+    if (conversation) fetchMessages();
+  }, [conversation?.id]); // eslint-disable-line
+
+  // Poll for new messages every 4 seconds while this conversation is open
   useEffect(() => {
     if (!conversation) return;
-    setMessages([]);
-    setDraft("");
-    setError("");
-    fetchMessages(false);
-    inputRef.current?.focus();
+    const interval = setInterval(fetchMessages, 4000);
+    return () => clearInterval(interval);
+  }, [fetchMessages]);
 
-    intervalRef.current = setInterval(() => fetchMessages(true), POLL_INTERVAL);
-    return () => clearInterval(intervalRef.current);
-  }, [conversation, fetchMessages]);
-
-  // Auto-scroll to bottom on new messages
+  // Scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // ── Send plain text message ────────────────────────────────────────────────
   const handleSend = async () => {
-    const text = draft.trim();
-    if (!text || sending) return;
-    setError("");
-    setSending(true);
+    const content = text.trim();
+    if (!content || sending) return;
 
-    // Optimistic UI — add message locally before server confirms
-    const optimistic = {
+    // Optimistic update
+    const optimisticMsg = {
       id: `opt-${Date.now()}`,
-      content: text,
       sender: { id: currentUserId },
-      created_at: new Date().toISOString(),
+      content,
+      message_type: "text",
       is_read: false,
-      optimistic: true,
+      created_at: new Date().toISOString(),
+      _optimistic: true,
     };
-    setMessages((prev) => [...prev, optimistic]);
-    setDraft("");
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setText("");
+    setSending(true);
+    setSendError("");
 
     try {
-      const confirmed = await sendMessage(conversation.id, text);
-      // Replace optimistic msg with confirmed one
+      const res = await newRequest.post(
+        `/messaging/conversations/${conversation.id}/send/`,
+        { content }
+      );
+      // Replace optimistic with real
       setMessages((prev) =>
-        prev.map((m) => (m.id === optimistic.id ? confirmed : m))
+        prev.map((m) => (m.id === optimisticMsg.id ? res.data : m))
       );
       onMessageSent?.();
-    } catch (err) {
-      // Roll back optimistic message and show error
-      setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
-      setError(
-        err.response?.data?.detail || "Failed to send. Please try again."
-      );
-      setDraft(text); // restore draft
+    } catch {
+      setSendError("Failed to send. Click to retry.");
+      setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));
     } finally {
       setSending(false);
     }
@@ -90,98 +103,172 @@ export default function ChatWindow({ conversation, currentUserId, onMessageSent 
     }
   };
 
-  const other = conversation?.other_participant;
+  // Auto-grow textarea
+  const handleTextChange = (e) => {
+    setText(e.target.value);
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 120) + "px";
+    }
+  };
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   if (!conversation) {
     return (
-      <div className="chat-empty">
-        <div className="chat-empty-icon">💬</div>
-        <p>Select a conversation to start chatting</p>
+      <div className="chat-window">
+        <div className="chat-empty">
+          <span className="chat-empty-icon">💬</span>
+          <p>Select a conversation to start chatting</p>
+        </div>
       </div>
     );
   }
+
+  const otherParticipant = conversation.other_participant;
+  const gigTitle = conversation.gig_title;
+
+  // Gig packages: passed through conversation if present
+  const gigPackages = conversation.gig_packages || [];
 
   return (
     <div className="chat-window">
       {/* Header */}
       <div className="chat-header">
         <div className="chat-header-avatar">
-          {other.username.charAt(0).toUpperCase()}
+          {otherParticipant?.username?.charAt(0).toUpperCase()}
         </div>
         <div>
-          <div className="chat-header-name">{other.username}</div>
-          <div className="chat-header-role">{other.user_type}</div>
+          <div className="chat-header-name">{otherParticipant?.username}</div>
+          <div className="chat-header-role">
+            {otherParticipant?.user_type}
+            {gigTitle && <> · {gigTitle}</>}
+          </div>
         </div>
+
+        {/* Expert-only: Send Offer button in header */}
+        {isExpert && (
+          <button
+            className="chat-offer-btn"
+            onClick={() => setShowOfferModal(true)}
+            title="Send a custom offer"
+          >
+            📋 Send Offer
+          </button>
+        )}
       </div>
 
       {/* Messages */}
       <div className="chat-messages">
-        {loadingMsgs ? (
-          <div className="chat-loading">Loading messages…</div>
-        ) : messages.length === 0 ? (
-          <div className="chat-no-messages">
-            Say hello to {other.username}! 👋
-          </div>
-        ) : (
-          messages.map((msg) => {
-            const isMine = msg.sender?.id === currentUserId || msg.sender === currentUserId;
+        {loadingMsgs && messages.length === 0 && (
+          <p className="chat-loading">Loading messages…</p>
+        )}
+        {!loadingMsgs && messages.length === 0 && (
+          <p className="chat-no-messages">No messages yet. Say hello!</p>
+        )}
+
+        {messages.map((msg) => {
+          const isMine = msg.sender?.id === currentUserId;
+
+          // Offer-type messages render as OfferCard
+          if (msg.message_type === "offer" && msg.offer) {
             return (
               <div
                 key={msg.id}
-                className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${
-                  msg.optimistic ? "msg--optimistic" : ""
-                }`}
+                className={`msg ${isMine ? "msg--mine" : "msg--theirs"}`}
               >
-                <div className="msg-bubble">{msg.content}</div>
-                <div className="msg-meta">
-                  {formatTime(msg.created_at)}
-                  {isMine && (
-                    <span className="msg-read-indicator">
-                      {msg.is_read ? " ✓✓" : " ✓"}
-                    </span>
-                  )}
-                </div>
+                <OfferCard
+                  offer={msg.offer}
+                  currentUserId={currentUserId}
+                  onResponded={() => {
+                    fetchMessages();
+                    onMessageSent?.();
+                  }}
+                />
+                <span className="msg-meta">
+                  {new Date(msg.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </div>
             );
-          })
-        )}
+          }
+
+          // Plain text message
+          return (
+            <div
+              key={msg.id}
+              className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${
+                msg._optimistic ? "msg--optimistic" : ""
+              }`}
+            >
+              <div className="msg-bubble">{msg.content}</div>
+              <span className="msg-meta">
+                {new Date(msg.created_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                {isMine && msg.is_read && (
+                  <span className="msg-read-indicator"> ✓✓</span>
+                )}
+              </span>
+            </div>
+          );
+        })}
         <div ref={bottomRef} />
       </div>
 
       {/* Error banner */}
-      {error && (
-        <div className="chat-error" role="alert">
-          ⚠️ {error}
-          <button onClick={() => setError("")}>✕</button>
+      {sendError && (
+        <div className="chat-error">
+          <span>{sendError}</span>
+          <button onClick={() => setSendError("")}>✕</button>
         </div>
       )}
 
-      {/* Input */}
+      {/* Char count */}
+      {text.length > 4500 && (
+        <div className="chat-char-count">{text.length} / 5000</div>
+      )}
+
+      {/* Input row */}
       <div className="chat-input-row">
         <textarea
-          ref={inputRef}
+          ref={textareaRef}
           className="chat-input"
-          placeholder={`Message ${other.username}…`}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          value={text}
+          onChange={handleTextChange}
           onKeyDown={handleKeyDown}
-          maxLength={5000}
+          placeholder="Type a message…"
           rows={1}
           disabled={sending}
-          aria-label="Type a message"
+          maxLength={5000}
         />
         <button
           className={`chat-send-btn ${sending ? "chat-send-btn--sending" : ""}`}
           onClick={handleSend}
-          disabled={!draft.trim() || sending}
+          disabled={!text.trim() || sending}
           aria-label="Send message"
         >
-          {sending ? "…" : "➤"}
+          ➤
         </button>
       </div>
-      <div className="chat-char-count">
-        {draft.length > 0 && `${draft.length}/5000`}
-      </div>
+
+      {/* Send Offer Modal */}
+      {showOfferModal && (
+        <SendOfferModal
+          convId={conversation.id}
+          gigPackages={gigPackages}
+          onClose={() => setShowOfferModal(false)}
+          onSent={() => {
+            fetchMessages();
+            onMessageSent?.();
+          }}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default ChatWindow;

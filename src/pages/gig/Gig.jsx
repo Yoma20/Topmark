@@ -4,7 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
 const StarRating = ({ rating }) => {
@@ -43,15 +43,17 @@ const PackageCard = ({ pkg, selected, onSelect }) => (
 
 const Gig = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [messaging, setMessaging] = useState(false);
+
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['gig', id],
     queryFn: () => newRequest.get(`/gigs/${id}/`).then((res) => res.data),
   });
 
-  // Auto-select the first package once data loads.
-  // useEffect replaces the deprecated onSuccess callback (removed in React Query v5).
   useEffect(() => {
     if (data?.packages?.length) {
       setSelectedPackage(data.packages[0]);
@@ -60,6 +62,29 @@ const Gig = () => {
 
   const sliderSettings = {
     dots: true, infinite: true, slidesToShow: 1, slidesToScroll: 1,
+  };
+
+  const handleMessageSeller = async () => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    setMessaging(true);
+    try {
+      // Start (or retrieve) the conversation with this expert, passing gig context
+      const res = await newRequest.post("/messaging/conversations/start/", {
+        recipient_id: data.expert_id,
+        gig_id: parseInt(id),
+        initial_message: selectedPackage
+          ? `Hi! I'm interested in your "${selectedPackage.name}" package ($${selectedPackage.price}) for "${data.title}". Can we discuss?`
+          : `Hi! I'm interested in your gig "${data.title}". Can we discuss?`,
+      });
+      navigate(`/messages/${res.data.id}`);
+    } catch (err) {
+      console.error("Failed to start conversation", err);
+      setMessaging(false);
+    }
   };
 
   if (isLoading) return <div className="loader"></div>;
@@ -82,10 +107,7 @@ const Gig = () => {
     "@type": "Service",
     "name": data.title,
     "description": data.description,
-    "provider": {
-      "@type": "Person",
-      "name": data.expert_username
-    },
+    "provider": { "@type": "Person", "name": data.expert_username },
     "offers": lowestPrice ? {
       "@type": "Offer",
       "priceCurrency": "USD",
@@ -98,6 +120,9 @@ const Gig = () => {
       "bestRating": "5"
     } : undefined
   };
+
+  // Is the current user the owner of this gig? If so, hide the contact panel.
+  const isOwner = currentUser && currentUser.id === data.expert_id;
 
   return (
     <div className="gig">
@@ -156,9 +181,11 @@ const Gig = () => {
           </div>
         </div>
 
-        <div className="right">
-          {selectedPackage && (
+        {/* Right sticky panel */}
+        {!isOwner && selectedPackage && (
+          <div className="right">
             <div className="price-box">
+              {/* Package tabs */}
               <div className="tier-tabs">
                 {data.packages?.map((pkg) => (
                   <button
@@ -170,9 +197,11 @@ const Gig = () => {
                   </button>
                 ))}
               </div>
+
               <h3>{selectedPackage.name}</h3>
-              <h2>${selectedPackage.price}</h2>
+              <h2>From ${selectedPackage.price}</h2>
               <p>{selectedPackage.description}</p>
+
               <div className="details">
                 <div className="item">
                   <img src="/images/clock.png" alt="delivery time" />
@@ -183,6 +212,7 @@ const Gig = () => {
                   <span>{selectedPackage.revision_number} revisions</span>
                 </div>
               </div>
+
               <ul className="features">
                 {selectedPackage.features.map((f, i) => (
                   <li key={i}>
@@ -190,12 +220,22 @@ const Gig = () => {
                   </li>
                 ))}
               </ul>
-              <Link to={`/pay/${id}?package=${selectedPackage.id}`}>
-                <button className="continue-btn">Continue</button>
-              </Link>
+
+              {/* ── NEW: Message Seller CTA ── */}
+              <button
+                className="continue-btn"
+                onClick={handleMessageSeller}
+                disabled={messaging}
+              >
+                {messaging ? "Opening chat…" : "Message Seller"}
+              </button>
+
+              <p className="price-box__hint">
+                Discuss your requirements, negotiate, and pay only after agreeing.
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useContext } from "react";
+import { useParams } from "react-router-dom";
 import AuthContext from "../AuthContext";
 import { getConversations, getUnreadCount } from "../api/messaging";
 import ConversationList from "../components/messaging/ConversationList";
@@ -7,6 +8,8 @@ import "./MessagingPage.scss";
 
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
+  // Optional: pre-select a conversation from URL  e.g. /messages/42
+  const { convId } = useParams();
 
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
@@ -18,6 +21,7 @@ export default function MessagingPage() {
     try {
       const data = await getConversations();
       setConversations(data);
+      // Keep activeConv in sync with fresh data
       if (activeConv) {
         const updated = data.find((c) => c.id === activeConv.id);
         if (updated) setActiveConv(updated);
@@ -48,6 +52,17 @@ export default function MessagingPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, [currentUser]); // eslint-disable-line
+
+  // Auto-select conversation from URL param
+  useEffect(() => {
+    if (convId && conversations.length > 0 && !activeConv) {
+      const match = conversations.find((c) => String(c.id) === String(convId));
+      if (match) {
+        setActiveConv(match);
+        setMobileView("chat");
+      }
+    }
+  }, [convId, conversations]); // eslint-disable-line
 
   const handleSelectConversation = (conv) => {
     setActiveConv(conv);
@@ -100,6 +115,7 @@ export default function MessagingPage() {
           <ChatWindow
             conversation={activeConv}
             currentUserId={currentUser.id}
+            currentUserType={currentUser.user_type}   // "expert" | "student"
             onMessageSent={handleMessageSent}
           />
         </main>

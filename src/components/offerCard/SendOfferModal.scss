@@ -1,0 +1,148 @@
+$green: #1a9e60;
+$green-dark: #158a52;
+$border: #e4e4e4;
+$text: #1f1f1f;
+$muted: #7a7a7a;
+$red: #e53e3e;
+$radius: 12px;
+
+.offer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.offer-modal {
+  background: #fff;
+  border-radius: $radius;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid $border;
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text;
+      margin: 0;
+    }
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: $muted;
+    line-height: 1;
+    padding: 4px;
+
+    &:hover { color: $text; }
+  }
+
+  &__prefill {
+    padding: 14px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 0.78rem;
+      color: $muted;
+      font-weight: 500;
+    }
+
+    select {
+      border: 1.5px solid $border;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      outline: none;
+      cursor: pointer;
+      background: #fff;
+
+      &:focus { border-color: $green; }
+    }
+  }
+
+  &__form {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+
+    label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: $text;
+    }
+
+    input,
+    textarea {
+      border: 1.5px solid $border;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+
+      &:focus { border-color: $green; }
+      &::placeholder { color: #bbb; }
+    }
+  }
+
+  &__row {
+    display: flex;
+    gap: 10px;
+
+    .offer-modal__field { flex: 1; }
+  }
+
+  &__error {
+    font-size: 0.82rem;
+    color: $red;
+    margin: 0;
+    background: #fff5f5;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #fed7d7;
+  }
+
+  &__submit {
+    background: $green;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+
+    &:hover:not(:disabled) { background: $green-dark; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+}

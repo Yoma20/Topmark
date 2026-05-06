@@ -320,6 +320,25 @@ $sidebar-width: 320px;
   }
 }
 
+.chat-offer-btn {
+  margin-left: auto;
+  padding: 7px 14px;
+  border: 1.5px solid #1dbf73;
+  border-radius: 6px;
+  background: transparent;
+  color: #1dbf73;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+ 
+  &:hover {
+    background: #1dbf73;
+    color: #fff;
+  }
+}
+
 .chat-messages {
   flex: 1;
   overflow-y: auto;
