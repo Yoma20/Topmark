@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import newRequest from "../../utils/newRequest";
 import "./register.scss";
+import { useAuth } from "../../AuthContext";
 
 // ─── OTP Verification Screen ─────────────────────────────────────────────────
 function VerifyEmail({ userId, email, onVerified }) {
@@ -58,6 +59,7 @@ function VerifyEmail({ userId, email, onVerified }) {
       document.getElementById("otp-0")?.focus();
     } catch { /* silently fail */ }
   };
+  const { login } = useAuth();
 
   return (
     <div className="auth-page">
@@ -119,25 +121,10 @@ export default function Register() {
   const [cfToken, setCfToken] = useState(null);
 
   // ── FIX: saveAndRedirect dispatches storage event for same-tab reactivity ──
-  const handleVerified = useCallback((data) => {
-    const userData = {
-      id: data.user_id ?? data.id,
-      username: data.username,
-      email: data.email,
-      token: data.token,
-      isSeller: data.isSeller ?? false,
-    };
-    localStorage.setItem("currentUser", JSON.stringify(userData));
-
-    // Notify components listening to storage (Navbar, context, etc.)
-    window.dispatchEvent(new StorageEvent("storage", {
-      key: "currentUser",
-      newValue: JSON.stringify(userData),
-    }));
-
-    setTimeout(() => navigate("/"), 50);
-  }, [navigate]);
-
+  const handleVerified = useCallback(async (data) => {
+    await login(data);
+    navigate("/");
+  }, [login, navigate]);
   // ── Cloudflare Turnstile setup ─────────────────────────────────────────────
   useEffect(() => {
     if (!document.getElementById("cf-turnstile-script")) {

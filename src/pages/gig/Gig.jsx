@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import "./Gig.scss"; // ← THIS was missing — why styles weren't rendering
 
 const StarRating = ({ rating }) => {
   const value = parseFloat(rating);
@@ -42,7 +43,8 @@ const PackageCard = ({ pkg, selected, onSelect }) => (
 );
 
 const Gig = () => {
-  const { id } = useParams();
+  // slug is used instead of numeric id — e.g. /gig/essay-writing-expert-howard
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [messaging, setMessaging] = useState(false);
@@ -50,8 +52,9 @@ const Gig = () => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['gig', id],
-    queryFn: () => newRequest.get(`/gigs/${id}/`).then((res) => res.data),
+    queryKey: ['gig', slug],
+    // Backend now looks up by slug field instead of pk
+    queryFn: () => newRequest.get(`/gigs/${slug}/`).then((res) => res.data),
   });
 
   useEffect(() => {
@@ -69,13 +72,11 @@ const Gig = () => {
       navigate("/login");
       return;
     }
-
     setMessaging(true);
     try {
-      // Start (or retrieve) the conversation with this expert, passing gig context
       const res = await newRequest.post("/messaging/conversations/start/", {
         recipient_id: data.expert_id,
-        gig_id: parseInt(id),
+        gig_id: data.id, // use the actual pk for relations, slug is just for the URL
         initial_message: selectedPackage
           ? `Hi! I'm interested in your "${selectedPackage.name}" package ($${selectedPackage.price}) for "${data.title}". Can we discuss?`
           : `Hi! I'm interested in your gig "${data.title}". Can we discuss?`,
@@ -121,7 +122,6 @@ const Gig = () => {
     } : undefined
   };
 
-  // Is the current user the owner of this gig? If so, hide the contact panel.
   const isOwner = currentUser && currentUser.id === data.expert_id;
 
   return (
@@ -181,11 +181,9 @@ const Gig = () => {
           </div>
         </div>
 
-        {/* Right sticky panel */}
         {!isOwner && selectedPackage && (
           <div className="right">
             <div className="price-box">
-              {/* Package tabs */}
               <div className="tier-tabs">
                 {data.packages?.map((pkg) => (
                   <button
@@ -221,7 +219,6 @@ const Gig = () => {
                 ))}
               </ul>
 
-              {/* ── NEW: Message Seller CTA ── */}
               <button
                 className="continue-btn"
                 onClick={handleMessageSeller}

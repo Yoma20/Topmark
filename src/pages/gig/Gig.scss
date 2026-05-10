@@ -5,12 +5,8 @@
     margin: 0;
     line-height: 1.4;
   }
-   
-
-
-
-
-.gig {
+  
+  .gig {
     display: flex;
     justify-content: center;
   
@@ -26,7 +22,6 @@
         flex-direction: column;
         gap: 20px;
   
-        // Fixed typo: was .bradcrumbs
         .breadcrumbs {
           font-weight: 300;
           font-size: 13px;
@@ -62,7 +57,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background-color: #1a9e60 ;
+            background-color: #1a9e60;
             color: white;
             display: flex;
             align-items: center;
@@ -103,7 +98,6 @@
           }
         }
   
-        // Package cards grid
         .packages {
           display: flex;
           gap: 16px;
@@ -122,12 +116,12 @@
             gap: 8px;
   
             &:hover {
-              border-color: #1a9e60 ;
+              border-color: #1a9e60;
               box-shadow: 0 2px 10px rgba(29, 191, 115, 0.15);
             }
   
             &--active {
-              border-color: #1a9e60 ;
+              border-color: #1a9e60;
               box-shadow: 0 2px 12px rgba(29, 191, 115, 0.2);
               background-color: #f6fdf9;
             }
@@ -146,7 +140,7 @@
               font-size: 0.7rem;
               font-weight: 700;
               letter-spacing: 1px;
-              color: #1a9e60 ;
+              color: #1a9e60;
               text-transform: uppercase;
             }
   
@@ -185,7 +179,6 @@
           }
         }
   
-        // About the Expert section
         .seller {
           display: flex;
           margin-top: 30px;
@@ -197,7 +190,7 @@
             width: 64px;
             height: 64px;
             border-radius: 50%;
-            background-color: #1a9e60 ;
+            background-color: #1a9e60;
             color: white;
             display: flex;
             align-items: center;
@@ -228,10 +221,7 @@
               gap: 5px;
               align-items: center;
   
-              img {
-                width: 14px;
-                height: 14px;
-              }
+              img { width: 14px; height: 14px; }
   
               span {
                 font-size: 14px;
@@ -241,9 +231,9 @@
             }
           }
         }
-      }
+      } // end .left
   
-      // Right sticky panel
+      // ── Right sticky panel ──────────────────────────────────────────────────
       .right {
         flex: 1;
         position: sticky;
@@ -258,7 +248,6 @@
           flex-direction: column;
           gap: 14px;
   
-          // Package tier tabs
           .tier-tabs {
             display: flex;
             border-bottom: 2px solid #eee;
@@ -277,8 +266,8 @@
               margin-bottom: -2px;
   
               &.active {
-                color: #1a9e60 ;
-                border-bottom: 3px solid #1a9e60 ;
+                color: #1a9e60;
+                border-bottom: 3px solid #1a9e60;
               }
   
               &.premium.active {
@@ -363,33 +352,32 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.2s, opacity 0.2s;
-           
+  
             &:hover:not(:disabled) {
               background-color: #158a52;
             }
-           
+  
             &:disabled {
               opacity: 0.6;
               cursor: not-allowed;
             }
           }
-          }
-        }
-      }
-    }
+        } // end .price-box
+      } // end .right
+    } // end .container
   
     .loader {
       margin: 80px auto;
       border: 8px solid #eee;
       border-radius: 50%;
-      border-top: 8px solid #1a9e60 ;
+      border-top: 8px solid #1a9e60;
       width: 45px;
       height: 45px;
       animation: spinner 1s linear infinite;
     }
   
     @keyframes spinner {
-      0% { transform: rotate(0deg); }
+      0%   { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-  
+  } // end .gig

@@ -161,7 +161,7 @@ function MyGigs() {
                 </thead>
                 <tbody>
                   {data.map((gig, i) => (
-                    <tr key={gig.id} style={{ animationDelay: `${i * 0.05}s` }}>
+                    <tr key={gig.slug} style={{ animationDelay: `${i * 0.05}s` }}>
                       <td>
                         <img
                           className="mg-cover"
@@ -170,7 +170,7 @@ function MyGigs() {
                         />
                       </td>
                       <td>
-                        <Link to={`/gig/${gig.id}`} className="mg-title-link">
+                        <Link to={`/gig/${gig.slug}`} className="mg-title-link">
                           {gig.title}
                         </Link>
                         {gig.category_name && (
@@ -186,16 +186,16 @@ function MyGigs() {
                       </td>
                       <td>
                         <div className="mg-actions">
-                          <Link to={`/gig/${gig.id}`}>
+                          <Link to={`/gig/${gig.slug}`}>
                             <button className="mg-icon-btn" title="View gig">👁</button>
                           </Link>
-                          <Link to={`/edit-gig/${gig.id}`}>
+                          <Link to={`/edit-gig/${gig.slug}`}>
                             <button className="mg-icon-btn" title="Edit gig">✏️</button>
                           </Link>
                           <button
                             className="mg-icon-btn mg-icon-btn--danger"
                             title="Delete gig"
-                            onClick={() => setConfirmId(gig.id)}
+                            onClick={() => setConfirmId(gig.slug)}
                           >
                             🗑
                           </button>
