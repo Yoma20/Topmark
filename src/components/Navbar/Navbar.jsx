@@ -10,6 +10,7 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const { pathname } = useLocation();
     const dropdownRef  = useRef(null);
+    const { user: currentUser } = useContext(AuthContext);
 
     const isActive  = () => window.scrollY > 0  ? setactive(true)  : setactive(false);
     const isActive1 = () => window.scrollY > 10 ? setactive1(true) : setactive1(false);
@@ -170,7 +171,12 @@ const Navbar = () => {
                                     )}
 
                                     <Link to='/settings'  onClick={() => setopen(false)}>Account Settings</Link>
-                                    <Link to='/profile'   onClick={() => setopen(false)}>My Profile</Link>
+                                    <Link
+                                    to={currentUser?.user_type === 'student' ? '/sprofile' : '/profile'}
+                                    onClick={() => setopen(false)}
+                                    >
+                                    My Profile
+                                    </Link>
 
                                     <div className="options-divider" />
 

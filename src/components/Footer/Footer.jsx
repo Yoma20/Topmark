@@ -14,9 +14,17 @@ const Footer = () => {
 
           {/* Brand */}
           <div className="site-footer__col site-footer__col--brand">
-            <span className="site-footer__logo">TopMark</span>
+          
+            <span className="site-footer__logo font-bold tracking-widest text-white uppercase italic">
+              TOP <span style={{
+                color: '#1a9e60 ', 
+                WebkitTextStroke: '1px #1a9e60 ',
+                textShadow: '2px 2px 0px #000, -1px -1px 0px #000',
+                letterSpacing: '0.1em'
+              }}>MARK</span>
+            </span>
             <p className="site-footer__tagline">
-              Empowering academic excellence through expert help and innovative learning tools.
+              Empowering Academics.
             </p>
             <div className="site-footer__socials">
               <a href="https://facebook.com/topmark" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook size={18} /></a>
