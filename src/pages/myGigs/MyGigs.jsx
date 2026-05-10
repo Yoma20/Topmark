@@ -59,7 +59,6 @@ function MiniBarChart({ data }) {
 function EmptyState() {
   return (
     <div className="mg-empty">
-      <div className="mg-empty__icon">📭</div>
       <h2>No gigs yet</h2>
       <p>Create your first gig and start receiving orders from students.</p>
       <Link to="/add">
@@ -117,24 +116,24 @@ function GigRow({ gig, index, onDelete, onTogglePause }) {
       <td>
         <div className="mg-actions">
           <Link to={`/gig/${gig.slug}`}>
-            <button className="mg-icon-btn" title="View gig">👁</button>
+            <button className="mg-icon-btn" title="View gig"></button>
           </Link>
           <Link to={`/edit-gig/${gig.slug}`}>
-            <button className="mg-icon-btn" title="Edit gig">✏️</button>
+            <button className="mg-icon-btn" title="Edit gig"></button>
           </Link>
           <button
             className="mg-icon-btn mg-icon-btn--pause"
             title={gig.is_active !== false ? "Pause gig" : "Resume gig"}
             onClick={() => onTogglePause(gig)}
           >
-            {gig.is_active !== false ? "⏸" : "▶️"}
+            {gig.is_active !== false ? "" : ""}
           </button>
           <button
             className="mg-icon-btn mg-icon-btn--danger"
             title="Delete gig"
             onClick={() => onDelete(gig.slug)}
           >
-            🗑
+            
           </button>
         </div>
       </td>
@@ -147,7 +146,7 @@ function ConfirmModal({ gigSlug, onConfirm, onCancel, isPending }) {
   return (
     <div className="mg-modal-backdrop" onClick={onCancel}>
       <div className="mg-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="mg-modal__icon">🗑️</div>
+        <div className="mg-modal__icon"></div>
         <h3>Delete this gig?</h3>
         <p>
           This action cannot be undone. Any active orders on this gig may be
@@ -296,33 +295,20 @@ function MyGigs() {
 
       {/* ── Sidebar ── */}
       <aside className="mg-sidebar">
-        {/* Brand */}
-        <div className="mg-sidebar__brand">
-          <span className="mg-sidebar__brand-dot" />
-          TopMark
-        </div>
+        
+        
 
-        {/* Expert identity */}
-        <div className="mg-sidebar__profile">
-          <img
-            className="mg-sidebar__avatar"
-            src={profile?.avatar_url || "/images/noavatar.jpeg"}
-            alt={currentUser?.username}
-          />
-          <div>
-            <div className="mg-sidebar__name">{currentUser?.username}</div>
-            <div className="mg-sidebar__role">Expert</div>
-          </div>
-        </div>
+        
+        
+          
+            
+            
+            
+          
+          
+        
 
-        {/* Availability */}
-        <div className="mg-sidebar__avail">
-          <AvailabilityToggle
-            available={profile?.available ?? true}
-            onChange={toggleAvailability}
-            loading={availLoading}
-          />
-        </div>
+        
 
         {/* Nav */}
         <nav className="mg-sidebar__nav">
@@ -332,10 +318,10 @@ function MyGigs() {
             active={activeNav === "gigs"}
             onClick={() => setActiveNav("gigs")}
           />
-          <NavItem icon="📦" label="Orders" active={false} to="/orders" />
-          <NavItem icon="✉️" label="Messages" active={false} to="/messages" />
-          <NavItem icon="👤" label="Profile" active={false} to="/profile" />
-          <NavItem icon="💰" label="Earnings" active={false} to="/earnings" />
+          <NavItem img src="/images/orders.svg" label="Orders" active={false} to="/orders" />
+          <NavItem img src="/images/messages.svg" label="Messages" active={false} to="/messages" />
+          <NavItem img src="/images/profile.svg" label="Profile" active={false} to="/profile" />
+          <NavItem img src="/images/earnings.svg" label="Earnings" active={false} to="/earnings" />
         </nav>
 
         {/* Quick link */}
@@ -372,26 +358,22 @@ function MyGigs() {
         {/* Stats */}
         <div className="mg-stats">
           <StatCard
-            icon="📋"
             label="Active Gigs"
             value={activeGigsCount}
             sub={`of ${gigs?.length ?? 0} total`}
           />
           <StatCard
-            icon="🛒"
             label="Total Sales"
             value={totalSales}
             sub="all time"
           />
           <StatCard
-            icon="💵"
             label="Est. Earnings"
             value={`$${totalEarnings.toLocaleString()}`}
             sub="based on starting price"
             accent
           />
           <StatCard
-            icon="⭐"
             label="Avg. Rating"
             value={avgRating}
             sub="across all gigs"
@@ -405,7 +387,7 @@ function MyGigs() {
           </div>
         ) : error ? (
           <div className="mg-error">
-            <span>⚠️</span>
+            
             <p>Something went wrong loading your gigs.</p>
             <button onClick={() => queryClient.invalidateQueries(["myGigs"])}>
               Retry
@@ -447,7 +429,7 @@ function MyGigs() {
                     },
                   ].map((c, i) => (
                     <div key={i} className={`mg-check ${c.done ? "mg-check--done" : ""}`}>
-                      <span>{c.done ? "✅" : "○"}</span>
+                      <span>{c.done ? "" : "○"}</span>
                       {c.label}
                     </div>
                   ))}
