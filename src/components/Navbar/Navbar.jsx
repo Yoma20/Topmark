@@ -10,7 +10,6 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const { pathname } = useLocation();
     const dropdownRef  = useRef(null);
-    const { user: currentUser } = useContext(AuthContext);
 
     const isActive  = () => window.scrollY > 0  ? setactive(true)  : setactive(false);
     const isActive1 = () => window.scrollY > 10 ? setactive1(true) : setactive1(false);
