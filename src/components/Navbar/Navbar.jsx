@@ -90,7 +90,7 @@ const Navbar = () => {
                 {/* LOGO */}
                 <div className="logo">
                     <Link to="/" className="logo-link">
-                        <img src="/images/logow.webp" alt="TopMark" width={32} height={38} />
+                        <img src="/images/logow.png" alt="TopMark" width={32} height={38} />
                         <span className="text-2xl">TopMark</span>
                     </Link>
                 </div>
@@ -149,7 +149,7 @@ const Navbar = () => {
                                         <AvatarImg size="md" />
                                         <div className="options-user-info">
                                             <span className="options-username">{currentUser.username}</span>
-                                            <span className="options-role">{roleLabel}</span>
+                                            
                                         </div>
                                     </div>
 

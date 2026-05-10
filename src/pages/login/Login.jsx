@@ -122,7 +122,7 @@ const Login = () => {
   const saveAndRedirect = useCallback((data) => {
     login(data);
     const params = new URLSearchParams(location.search);
-    const next = params.get('next') || (data.user_type === 'expert' ? '/expert-dashboard' : '/');
+    const next = params.get('next') || (data.user_type === 'expert' ? '/mygigs' : '/');
     navigate(next);
   }, [login, navigate, location.search]);
 
