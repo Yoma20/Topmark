@@ -59,7 +59,9 @@ function VerifyEmail({ userId, email, onVerified }) {
       document.getElementById("otp-0")?.focus();
     } catch { /* silently fail */ }
   };
-  const { login } = useAuth();
+
+  // VerifyEmail does NOT need login — it just calls onVerified with the data.
+  // login is called by the parent Register component in handleVerified.
 
   return (
     <div className="auth-page">
@@ -106,6 +108,9 @@ export default function Register() {
   const navigate = useNavigate();
   const turnstileRef = useRef(null);
 
+  // ── login lives here in Register, where handleVerified is defined ──────────
+  const { login } = useAuth();
+
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -120,11 +125,11 @@ export default function Register() {
   const [pendingUser, setPendingUser] = useState(null);
   const [cfToken, setCfToken] = useState(null);
 
-  // ── FIX: saveAndRedirect dispatches storage event for same-tab reactivity ──
   const handleVerified = useCallback(async (data) => {
     await login(data);
     navigate("/");
   }, [login, navigate]);
+
   // ── Cloudflare Turnstile setup ─────────────────────────────────────────────
   useEffect(() => {
     if (!document.getElementById("cf-turnstile-script")) {
@@ -140,7 +145,6 @@ export default function Register() {
       if (window.turnstile && turnstileRef.current && !turnstileRef.current.dataset.rendered) {
         turnstileRef.current.dataset.rendered = "true";
         window.turnstile.render(turnstileRef.current, {
-          // ⚠️  Replace with your Cloudflare Turnstile Site Key
           sitekey: import.meta.env.VITE_CF_TURNSTILE_SITE_KEY || "1x00000000000000000000AA",
           callback: (token) => setCfToken(token),
           "expired-callback": () => setCfToken(null),
@@ -165,7 +169,6 @@ export default function Register() {
     const initGoogle = () => {
       if (!window.google?.accounts?.id) return;
       window.google.accounts.id.initialize({
-        
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com",
         callback: (response) => {
           window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
