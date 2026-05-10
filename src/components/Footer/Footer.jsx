@@ -1,7 +1,7 @@
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, Mail, Phone, MapPin } from 'lucide-react';
-import visaLogo from '../../assets/payment/visa.svg';
-import mastercardLogo from '../../assets/payment/mastercard.svg';
-import paypalLogo from '../../assets/payment/paypal.svg';
+const visaLogo = '/images/visa.svg';
+const mastercardLogo = '/images/mastercard.svg';
+const paypalLogo = '/images/paypal.svg';
 import "./footer.scss";
 
 const Footer = () => {

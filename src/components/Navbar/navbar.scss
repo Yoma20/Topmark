@@ -276,6 +276,56 @@
 
 .become-seller { color: #1a9e60 ; font-weight: 400; }
 
+// ── ADD these rules to your existing navbar.scss ──────────────────────────────
+
+// Profile picture in navbar (circular, sized)
+.nav-avatar-img {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &--sm {
+    width: 32px;
+    height: 32px;
+  }
+
+  &--md {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+// Initials fallback — sized variants
+.avatar-initials {
+  border-radius: 50%;
+  background: #1a9e60;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &--sm {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  &--md {
+    width: 42px;
+    height: 42px;
+    font-size: 0.9rem;
+  }
+}
+
+// Role badge in dropdown header (replaces email)
+.options-role {
+  font-size: 0.75rem;
+  color: #1a9e60;
+  font-weight: 600;
+  text-transform: capitalize;
+}
 // ─── Keyframes ────────────────────────────────────────────────────────────────
 @keyframes animated_active_navbar {
     0%, 100% { background: #fff; color: black; }

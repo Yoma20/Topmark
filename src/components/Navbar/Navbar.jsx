@@ -4,14 +4,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
 
 const Navbar = () => {
-    const [active, setactive]   = useState(false);   // scroll > 0  → search bar + shadow
-    const [active1, setactive1] = useState(false);   // scroll > 10 → category bar (original logic)
+    const [active, setactive]   = useState(false);
+    const [active1, setactive1] = useState(false);
     const [open, setopen]       = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const { pathname } = useLocation();
     const dropdownRef  = useRef(null);
 
-    // ── Scroll listeners — original thresholds kept exactly ──────────────────
     const isActive  = () => window.scrollY > 0  ? setactive(true)  : setactive(false);
     const isActive1 = () => window.scrollY > 10 ? setactive1(true) : setactive1(false);
 
@@ -24,19 +23,16 @@ const Navbar = () => {
         };
     }, []);
 
-    // Close everything on route change
     useEffect(() => {
         setMenuOpen(false);
         setopen(false);
     }, [pathname]);
 
-    // Prevent body scroll while mobile menu is open
     useEffect(() => {
         document.body.style.overflow = menuOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [menuOpen]);
 
-    // Close dropdown on outside click
     useEffect(() => {
         if (!open) return;
         const handler = (e) => {
@@ -48,9 +44,7 @@ const Navbar = () => {
         return () => document.removeEventListener('mousedown', handler);
     }, [open]);
 
-    
     const { user: currentUser, logout } = useContext(AuthContext);
-
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -62,9 +56,21 @@ const Navbar = () => {
     const [input, setinput] = useState('');
     const handlesubmit = () => navigate(`/gigs?search=${input}`);
 
-    // Helpers
     const initials = (name = '') => name.slice(0, 2).toUpperCase() || 'U';
     const isExpert  = currentUser?.isSeller || currentUser?.user_type === 'expert';
+
+    // Resolve profile picture — expert avatar_url takes priority over user profile_picture
+    const avatarUrl = currentUser?.profile?.avatar_url
+        || currentUser?.profile_picture
+        || null;
+
+    // Role label shown in dropdown header — clean, no email
+    const roleLabel = isExpert ? 'Expert' : 'Student';
+
+    // Avatar element — reused in multiple places
+    const AvatarImg = ({ size = 'md' }) => avatarUrl
+        ? <img src={avatarUrl} alt={currentUser.username} className={`nav-avatar-img nav-avatar-img--${size}`} />
+        : <span className={`avatar-initials avatar-initials--${size}`}>{initials(currentUser?.username)}</span>;
 
     return (
         <div className={active || pathname !== '/' ? 'navbar active' : 'navbar'}>
@@ -77,12 +83,11 @@ const Navbar = () => {
                     className={`hamburger ${menuOpen ? 'open' : ''}`}
                     onClick={() => setMenuOpen(!menuOpen)}
                     aria-label="Toggle menu"
-                    
                 >
                     <span></span><span></span><span></span>
                 </button>
 
-                {/* LOGO — class structure unchanged */}
+                {/* LOGO */}
                 <div className="logo">
                     <Link to="/" className="logo-link">
                         <img src="/images/logow.webp" alt="TopMark" width={32} height={38} />
@@ -125,10 +130,7 @@ const Navbar = () => {
                     {/* ── LOGGED IN ── */}
                     {currentUser && (
                         <div className="user" ref={dropdownRef} onClick={() => setopen(!open)}>
-                            {currentUser.img
-                                ? <img src={currentUser.img} alt="" />
-                                : <span className="avatar-initials">{initials(currentUser.username)}</span>
-                            }
+                            <AvatarImg size="sm" />
                             <span>{currentUser.username}</span>
                             <svg
                                 className={`user-caret ${open ? 'user-caret--up' : ''}`}
@@ -142,15 +144,12 @@ const Navbar = () => {
                             {open && (
                                 <div className="options" onClick={e => e.stopPropagation()}>
 
-                                    {/* Header: avatar + name + email */}
+                                    {/* ── Header: avatar + name + role (NO email) ── */}
                                     <div className="options-header">
-                                        {currentUser.img
-                                            ? <img src={currentUser.img} alt="" className="options-avatar-img" />
-                                            : <span className="options-avatar-initials">{initials(currentUser.username)}</span>
-                                        }
+                                        <AvatarImg size="md" />
                                         <div className="options-user-info">
                                             <span className="options-username">{currentUser.username}</span>
-                                            <span className="options-email">{currentUser.email}</span>
+                                            <span className="options-role">{roleLabel}</span>
                                         </div>
                                     </div>
 
@@ -170,8 +169,8 @@ const Navbar = () => {
                                         <Link to='/becomeSeller' onClick={() => setopen(false)}>Become an Expert</Link>
                                     )}
 
-                                    <Link to='/settings' onClick={() => setopen(false)}>Account Settings</Link>
-                                    <Link to='/profile' onClick={() => setopen(false)}>My Profile</Link>
+                                    <Link to='/settings'  onClick={() => setopen(false)}>Account Settings</Link>
+                                    <Link to='/profile'   onClick={() => setopen(false)}>My Profile</Link>
 
                                     <div className="options-divider" />
 
@@ -188,10 +187,7 @@ const Navbar = () => {
                         <button className='mobile-join-btn' onClick={() => navigate('/register')}>Join</button>
                     ) : (
                         <div className="user mobile-user" onClick={() => setopen(!open)}>
-                            {currentUser.img
-                                ? <img src={currentUser.img} alt="" />
-                                : <span className="avatar-initials avatar-initials--sm">{initials(currentUser.username)}</span>
-                            }
+                            <AvatarImg size="sm" />
                             {open && (
                                 <div className="options">
                                     <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
@@ -236,15 +232,10 @@ const Navbar = () => {
                         ) : (
                             <div className="mobile-user-section">
                                 <div className="mobile-user-info">
-                                    {currentUser.img
-                                        ? <img src={currentUser.img} alt="" />
-                                        : <span className="avatar-initials">{initials(currentUser.username)}</span>
-                                    }
+                                    <AvatarImg size="md" />
                                     <div className="mobile-user-text">
                                         <span className="mobile-username">{currentUser.username}</span>
-                                        <span className="mobile-user-type">
-                                            {currentUser.user_type || (isExpert ? 'Expert' : 'Student')}
-                                        </span>
+                                        <span className="mobile-user-type">{roleLabel}</span>
                                     </div>
                                 </div>
                                 <Link className="mobile-nav-link" to='/orders'   onClick={() => setMenuOpen(false)}>My Orders</Link>
@@ -273,10 +264,7 @@ const Navbar = () => {
                 </>
             )}
 
-            {/* ── CATEGORY BAR — original scroll-gate restored ────────────────
-                Shows when: scrolled past 10px  OR  not on the homepage.
-                Hidden on the homepage until the user scrolls (original behaviour).
-            ── */}
+            {/* ── CATEGORY BAR ── */}
             {(active1 || pathname !== '/') && (
                 <>
                     <hr className="nav-hr" />
