@@ -36,7 +36,7 @@
 .mg-sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
-  background: var(--sidebar-bg);
+  background: #f0fdf4;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -45,6 +45,13 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  .mg-sidebar:hover{
+    background-color: #f2f3f5;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  transition: all ease 0.3s;
+  }
 
   &__brand {
     display: flex;
@@ -342,7 +349,7 @@
     color: var(--ink);
     letter-spacing: -0.03em;
     line-height: 1;
-    font-family: 'Space Mono', monospace;
+    font-family: ui-sans-serif;
   }
 
   &__label {

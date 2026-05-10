@@ -312,12 +312,7 @@ function MyGigs() {
 
         {/* Nav */}
         <nav className="mg-sidebar__nav">
-          <NavItem
-            icon="📊"
-            label="Dashboard"
-            active={activeNav === "gigs"}
-            onClick={() => setActiveNav("gigs")}
-          />
+          
           <NavItem img src="/images/orders.svg" label="Orders" active={false} to="/orders" />
           <NavItem img src="/images/messages.svg" label="Messages" active={false} to="/messages" />
           <NavItem img src="/images/profile.svg" label="Profile" active={false} to="/profile" />
