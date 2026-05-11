@@ -379,7 +379,7 @@ const Add = () => {
           <button className="btn-publish" onClick={handleSubmit} disabled={mutation.isLoading}>
             {mutation.isLoading ? "Publishing…" : "Publish Gig"}
           </button>
-          {mutation.isError && <p className="error-msg">Something went wrong. Please try again.</p>}
+          {mutation.isError && <p className="error-msg">{mutation.error?.response?.data?.detail || mutation.error?.response?.data?.non_field_errors?.[0] || "Something went wrong. Please try again."}</p>}
         </div>
       );
 

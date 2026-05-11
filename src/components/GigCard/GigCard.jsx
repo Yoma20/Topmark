@@ -7,7 +7,7 @@ const GigCard = ({ item }) => {
   const hasRating = rating > 0;
 
   return (
-    <Link to={`/gig/${item.id}`} className="link">
+    <Link to={`/gig/${item.slug}`} className="link">
       <div className="gigCard">
         <img
           src={item.cover_image || '/images/noavatar.jpeg'}
