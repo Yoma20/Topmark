@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../AuthContext";
-import { startConversation } from "../api/messaging"; // adjust import path as needed
+import { startConversation } from "../../api/messaging"; // adjust import path as needed
 import "./ContactDrawer.scss";
 
 const MAX_CHARS = 500;
