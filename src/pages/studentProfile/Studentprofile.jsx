@@ -9,6 +9,7 @@ import "./studentProfile.scss";
 // ─── Sidebar nav ──────────────────────────────────────────────────────────────
 const NAV = [
   { key: "overview",  label: "Overview"         },
+  { key: "messages",  label: "Messages",          to: "/messages"   },
   { key: "orders",    label: "My Orders"         },
   { key: "settings",  label: "Account Settings"  },
   { key: "password",  label: "Change Password"   },
@@ -133,6 +134,22 @@ function Overview({ me, orders }) {
   );
 }
 
+{NAV.map(({ key, label, to }) =>
+    to ? (
+      <Link to={to} key={key} style={{ textDecoration: "none" }}>
+        <button className="sp-nav-btn">{label}</button>
+      </Link>
+    ) : (
+      <button
+        key={key}
+        className={`sp-nav-btn ${activeNav === key ? "sp-nav-btn--active" : ""}`}
+        onClick={() => setActiveNav(key)}
+      >
+        {activeNav === key && <span className="sp-nav-btn__bar" />}
+        {label}
+      </button>
+    )
+  )}
 // ─── Orders panel ─────────────────────────────────────────────────────────────
 function Orders({ orders, isLoading }) {
   const [filter, setFilter] = useState("all");

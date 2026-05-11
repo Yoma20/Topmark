@@ -15,14 +15,23 @@ const Footer = () => {
           {/* Brand */}
           <div className="site-footer__col site-footer__col--brand">
           
-            <span className="site-footer__logo font-bold tracking-widest text-white uppercase italic">
-              TOP <span style={{
-                color: '#1a9e60 ', 
-                WebkitTextStroke: '1px #1a9e60 ',
-                textShadow: '2px 2px 0px #000, -1px -1px 0px #000',
-                letterSpacing: '0.1em'
-              }}>MARK</span>
-            </span>
+          <span className="site-footer__logo font-black italic uppercase tracking-tighter" style={{
+              fontSize: '2.5rem',
+              display: 'inline-flex',
+              gap: '4px',
+              // The "Inline" magic: A striped gradient background clipped to the text
+              background: 'linear-gradient(to bottom, currentColor 20%, transparent 25%, transparent 45%, currentColor 50%, transparent 55%, transparent 75%, currentColor 80%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              WebkitTextStroke: '0.5px rgba(255,255,255,0.1)' // Softens the edges
+          }}>
+            <span style={{ color: '#FFFFFF' }}>TOP</span>
+            <span style={{ 
+              color: '#22c55e',
+              // Adds that slight 3D "pop" from your logo renders
+              filter: 'drop-shadow(2px 2px 0px #000)' 
+            }}>MARK</span>
+          </span>
             <p className="site-footer__tagline">
               Empowering Academics.
             </p>
