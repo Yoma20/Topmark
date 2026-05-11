@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../AuthContext";
-import { startConversation } from "../../api/messaging"; // adjust import path as needed
+import newRequest from "../../utils/newRequest";
 import "./ContactDrawer.scss";
 
 const MAX_CHARS = 500;
@@ -89,7 +89,11 @@ export default function ContactDrawer({
     setSending(true);
     setError(null);
     try {
-      await startConversation(expertId, trimmed, gigId);
+    await newRequest.post("/messaging/conversations/start/", {
+        recipient_id: expertId,
+        initial_message: trimmed,
+         gig_id: gigId,
+     });
       onClose();
       navigate("/messages"); // stay off the gig URL, no conversation ID leaked
     } catch (err) {
