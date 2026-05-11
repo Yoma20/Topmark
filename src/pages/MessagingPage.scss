@@ -34,7 +34,7 @@ $sidebar-width: 280px;
   &__header {
     padding: 16px 24px;
     background: $dark-bg;
-    border-bottom: 2px solid darken($dark-bg, 6%);
+    border-bottom: 2px solid #6fa35d;
     flex-shrink: 0;
   }
 
@@ -115,7 +115,7 @@ $sidebar-width: 280px;
     font-family: 'Lato', Arial, sans-serif;
     outline: none;
 
-    &::placeholder { color: lighten($gray, 10%); }
+    &::placeholder { color: #b3b6be; }
   }
 }
 
@@ -311,7 +311,7 @@ $sidebar-width: 280px;
   display: none;
   font-family: 'Lato', Arial, sans-serif;
 
-  &:hover { color: darken($blue, 10%); }
+  &:hover { color: #7aaed8; }
 }
 
 /* ─── Chat window ─────────────────────────────────────────── */
@@ -487,13 +487,13 @@ $sidebar-width: 280px;
 
 .msg-meta {
   font-size: 0.68rem;
-  color: lighten($gray, 8%);
+  color: #b3b6be;
   margin-top: -4px;
   padding: 0 4px 8px;
 }
 
 .msg-read-indicator {
-  color: darken($green, 8%);
+  color: #6fa35d;
   font-weight: 700;
 }
 
@@ -568,7 +568,7 @@ $sidebar-width: 280px;
   justify-content: center;
   letter-spacing: 0.03em;
 
-  &:hover:not(:disabled) { color: darken($blue, 10%); }
+  &:hover:not(:disabled) { color: #7aaed8; }
   &:disabled { color: $gray; cursor: not-allowed; }
   &--sending { opacity: 0.6; }
 }
@@ -599,7 +599,7 @@ $sidebar-width: 280px;
 /* ─── Gig tag on conversation item ───────────────────────── */
 .conv-gig-tag {
   font-size: 0.7rem;
-  color: lighten($gray, 10%);
+  color: #b3b6be;
   margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
@@ -683,7 +683,7 @@ $sidebar-width: 280px;
     &--accept {
       background: $green;
       color: #fff;
-      &:hover:not(:disabled) { background: darken($green, 8%); }
+      &:hover:not(:disabled) { background: #6fa35d; }
     }
 
     &--decline {
@@ -819,7 +819,7 @@ $sidebar-width: 280px;
     &--send {
       background: $green;
       color: #fff;
-      &:hover:not(:disabled) { background: darken($green, 8%); }
+      &:hover:not(:disabled) { background: #6fa35d; }
       &:disabled { opacity: 0.5; cursor: not-allowed; }
     }
   }
