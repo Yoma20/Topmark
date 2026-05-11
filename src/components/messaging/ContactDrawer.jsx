@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../AuthContext";
+import AuthContext from "../../AuthContext";
 import { startConversation } from "../api/messaging"; // adjust import path as needed
 import "./ContactDrawer.scss";
 
