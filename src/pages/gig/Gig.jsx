@@ -75,7 +75,7 @@ const Gig = () => {
     setMessaging(true);
     try {
       const res = await newRequest.post("/messaging/conversations/start/", {
-        recipient_id: data.expert_id,
+        recipient_id: data.expert_user_id,
         gig_id: data.id,
         initial_message: selectedPackage
           ? `Hi! I'm interested in your "${selectedPackage.name}" package ($${selectedPackage.price}) for "${data.title}". Can we discuss?`
@@ -96,7 +96,7 @@ const Gig = () => {
     : "Expert Service — Topmark";
   const pageDescription = data.description?.slice(0, 155) ?? `Hire ${data.expert_username} on Topmark.`;
   const lowestPrice = data.packages?.length ? Math.min(...data.packages.map(p => p.price)) : null;
-  const isOwner = currentUser && currentUser.id === data.expert_id;
+  const isOwner = currentUser && currentUser.id === data.expert_user_id;
 
   const schemaMarkup = {
     "@context": "https://schema.org",
