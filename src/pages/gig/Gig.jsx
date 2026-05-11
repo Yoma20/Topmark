@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import ContactDrawer from "../../components/messaging/ContactDrawer";
 import "./Gig.scss";
 
 /* ─── Star Rating ──────────────────────────────────────────── */
@@ -56,7 +57,7 @@ const Gig = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [messaging, setMessaging] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [whatsIncludedOpen, setWhatsIncludedOpen] = useState(false);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -69,24 +70,6 @@ const Gig = () => {
   useEffect(() => {
     if (data?.packages?.length) setSelectedPackage(data.packages[0]);
   }, [data]);
-
-  const handleMessageSeller = async () => {
-    if (!currentUser) { navigate("/login"); return; }
-    setMessaging(true);
-    try {
-      const res = await newRequest.post("/messaging/conversations/start/", {
-        recipient_id: data.expert_user_id,
-        gig_id: data.id,
-        initial_message: selectedPackage
-          ? `Hi! I'm interested in your "${selectedPackage.name}" package ($${selectedPackage.price}) for "${data.title}". Can we discuss?`
-          : `Hi! I'm interested in your gig "${data.title}". Can we discuss?`,
-      });
-      navigate(`/messages/${res.data.id}`);
-    } catch (err) {
-      console.error("Failed to start conversation", err);
-      setMessaging(false);
-    }
-  };
 
   if (isLoading) return <div className="gig-loader"><div className="spinner" /></div>;
   if (error) return <div className="gig-error">Something went wrong loading this gig.</div>;
@@ -106,6 +89,11 @@ const Gig = () => {
     provider: { "@type": "Person", name: data.expert_username },
     ...(lowestPrice && { offers: { "@type": "Offer", priceCurrency: "USD", price: lowestPrice, availability: "https://schema.org/InStock" } }),
     ...(data.expert_rating && { aggregateRating: { "@type": "AggregateRating", ratingValue: data.expert_rating, bestRating: "5" } }),
+  };
+
+  const handleContactClick = () => {
+    if (!currentUser) { navigate("/login"); return; }
+    setDrawerOpen(true);
   };
 
   return (
@@ -195,10 +183,9 @@ const Gig = () => {
               {!isOwner && (
                 <button
                   className="btn-contact-expert"
-                  onClick={handleMessageSeller}
-                  disabled={messaging}
+                  onClick={handleContactClick}
                 >
-                  {messaging ? "Opening chat…" : "Contact Me"}
+                  Contact Me
                 </button>
               )}
             </div>
@@ -276,10 +263,9 @@ const Gig = () => {
 
                 <button
                   className="btn-contact"
-                  onClick={handleMessageSeller}
-                  disabled={messaging}
+                  onClick={handleContactClick}
                 >
-                  {messaging ? "Opening chat…" : "Contact me ▾"}
+                  Contact me ▾
                 </button>
 
                 <p className="price-box__hint">
@@ -290,6 +276,18 @@ const Gig = () => {
           </div>
         )}
       </div>
+
+      {/* Contact drawer — fixed overlay, URL stays on gig page */}
+      {!isOwner && (
+        <ContactDrawer
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          expertUsername={data.expert_username}
+          expertId={data.expert_user_id}
+          gigId={data.id}
+          gigTitle={data.title}
+        />
+      )}
     </div>
   );
 };
