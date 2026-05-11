@@ -192,6 +192,15 @@ const Gig = () => {
                 <StarRating rating={data.expert_rating} reviewCount={data.review_count} />
                 {data.expert_bio && <p className="expert-bio">{data.expert_bio}</p>}
               </div>
+              {!isOwner && (
+                <button
+                  className="btn-contact-expert"
+                  onClick={handleMessageSeller}
+                  disabled={messaging}
+                >
+                  {messaging ? "Opening chat…" : "Contact Me"}
+                </button>
+              )}
             </div>
           </section>
 
