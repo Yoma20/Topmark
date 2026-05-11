@@ -4,7 +4,6 @@ import { getMessages } from "../../api/messaging";
 import OfferCard from "../offerCard/OfferCard";
 import SendOfferModal from "../offerCard/SendOfferModal";
 
-
 const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSent }) => {
   const [messages, setMessages] = useState([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
@@ -16,45 +15,83 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
 
+  // Track the conversation id the interval was set up for
+  const convIdRef = useRef(null);
+  // Stable ref to fetchMessages so the interval never needs rebuilding
+  const fetchMessagesRef = useRef(null);
+  // Track message count so we only scroll when a genuinely new message arrives
+  const prevMsgCountRef = useRef(0);
+
   const isExpert = currentUserType === "expert";
 
-  // ── Fetch messages ─────────────────────────────────────────────────────────
-  const fetchMessages = useCallback(async () => {
-    if (!conversation) return;
-    setLoadingMsgs(true);
+  // ── Fetch messages ──────────────────────────────────────────────────────────
+  const fetchMessages = useCallback(async (convId) => {
+    if (!convId) return;
     try {
-      const msgs = await getMessages(conversation.id);
-      setMessages(msgs);
+      const msgs = await getMessages(convId);
+      // Only call setMessages if the content actually changed — compare by
+      // last message id and count to avoid triggering a re-render on every poll.
+      setMessages((prev) => {
+        const sameCount = prev.length === msgs.length;
+        const sameLastId =
+          prev.length > 0 &&
+          msgs.length > 0 &&
+          prev[prev.length - 1].id === msgs[msgs.length - 1].id;
+        return sameCount && sameLastId ? prev : msgs;
+      });
     } catch (err) {
       console.error("Failed to load messages", err);
     } finally {
       setLoadingMsgs(false);
     }
-  }, [conversation?.id]); // eslint-disable-line
+  }, []); // empty deps — never recreated
 
+  // Keep ref in sync
+  useEffect(() => { fetchMessagesRef.current = fetchMessages; }, [fetchMessages]);
+
+  // ── Reset + initial load when conversation changes ──────────────────────────
   useEffect(() => {
+    if (!conversation) {
+      setMessages([]);
+      prevMsgCountRef.current = 0;
+      return;
+    }
+
+    // Only re-initialise when the actual conversation id changes
+    if (convIdRef.current === conversation.id) return;
+    convIdRef.current = conversation.id;
+
     setMessages([]);
-    if (conversation) fetchMessages();
+    prevMsgCountRef.current = 0;
+    setLoadingMsgs(true);
+    fetchMessagesRef.current?.(conversation.id);
   }, [conversation?.id]); // eslint-disable-line
 
-  // Poll for new messages every 4 seconds while this conversation is open
+  // ── Stable polling interval — keyed to conversation id ─────────────────────
   useEffect(() => {
-    if (!conversation) return;
-    const interval = setInterval(fetchMessages, 4000);
+    if (!conversation?.id) return;
+    const id = conversation.id;
+    const interval = setInterval(() => {
+      fetchMessagesRef.current?.(id);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [fetchMessages]);
+  }, [conversation?.id]); // only restarts when switching conversations
 
-  // Scroll to bottom on new messages
+  // ── Scroll to bottom ONLY when message count increases ─────────────────────
+  // Previously this ran on every setMessages call, including polls that return
+  // the same data — which is what caused the page to "pull up" constantly.
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > prevMsgCountRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevMsgCountRef.current = messages.length;
   }, [messages]);
 
-  // ── Send plain text message ────────────────────────────────────────────────
+  // ── Send plain text message ─────────────────────────────────────────────────
   const handleSend = async () => {
     const content = text.trim();
     if (!content || sending) return;
 
-    // Optimistic update
     const optimisticMsg = {
       id: `opt-${Date.now()}`,
       sender: { id: currentUserId },
@@ -74,7 +111,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
         `/messaging/conversations/${conversation.id}/send/`,
         { content }
       );
-      // Replace optimistic with real
       setMessages((prev) =>
         prev.map((m) => (m.id === optimisticMsg.id ? res.data : m))
       );
@@ -94,7 +130,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     }
   };
 
-  // Auto-grow textarea
   const handleTextChange = (e) => {
     setText(e.target.value);
     const el = textareaRef.current;
@@ -104,7 +139,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     }
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ──────────────────────────────────────────────────────────────────
   if (!conversation) {
     return (
       <div className="chat-window">
@@ -118,8 +153,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
 
   const otherParticipant = conversation.other_participant;
   const gigTitle = conversation.gig_title;
-
-  // Gig packages: passed through conversation if present
   const gigPackages = conversation.gig_packages || [];
 
   return (
@@ -137,7 +170,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
           </div>
         </div>
 
-        {/* Expert-only: Send Offer button in header */}
         {isExpert && (
           <button
             className="chat-offer-btn"
@@ -161,7 +193,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
         {messages.map((msg) => {
           const isMine = msg.sender?.id === currentUserId;
 
-          // Offer-type messages render as OfferCard
           if (msg.message_type === "offer" && msg.offer) {
             return (
               <div
@@ -172,7 +203,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
                   offer={msg.offer}
                   currentUserId={currentUserId}
                   onResponded={() => {
-                    fetchMessages();
+                    fetchMessagesRef.current?.(conversation.id);
                     onMessageSent?.();
                   }}
                 />
@@ -186,7 +217,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
             );
           }
 
-          // Plain text message
           return (
             <div
               key={msg.id}
@@ -253,7 +283,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
           gigPackages={gigPackages}
           onClose={() => setShowOfferModal(false)}
           onSent={() => {
-            fetchMessages();
+            fetchMessagesRef.current?.(conversation.id);
             onMessageSent?.();
           }}
         />
