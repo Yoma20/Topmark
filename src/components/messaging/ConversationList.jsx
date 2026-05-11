@@ -29,7 +29,7 @@ export default function ConversationList({
       <div className="conv-list conv-list--empty">
         <span>💬</span>
         <p>No conversations yet.</p>
-        <small>Start one by messaging an expert or student.</small>
+        <small>Start one by messaging an expert.</small>
       </div>
     );
   }
@@ -43,6 +43,11 @@ export default function ConversationList({
         const isActive = conv.id === activeId;
         const isMine = last?.sender_id === currentUserId;
 
+        // Simple heuristic: if last message was within 10 min, show online
+        const isOnline = last
+          ? Date.now() - new Date(last.created_at).getTime() < 10 * 60 * 1000
+          : false;
+
         return (
           <li
             key={conv.id}
@@ -54,9 +59,17 @@ export default function ConversationList({
             tabIndex={0}
             onKeyDown={(e) => e.key === "Enter" && onSelect(conv)}
           >
-            <div className="conv-avatar">
-              {other.username.charAt(0).toUpperCase()}
+            <div className="conv-avatar-wrap">
+              <div className="conv-avatar">
+                {other.username.charAt(0).toUpperCase()}
+              </div>
+              <span
+                className={`conv-status-dot ${
+                  isOnline ? "conv-status-dot--online" : "conv-status-dot--offline"
+                }`}
+              />
             </div>
+
             <div className="conv-info">
               <div className="conv-header">
                 <span className="conv-name">{other.username}</span>
@@ -76,6 +89,9 @@ export default function ConversationList({
                   <span className="conv-badge">{unread > 99 ? "99+" : unread}</span>
                 )}
               </div>
+              {conv.gig_title && (
+                <div className="conv-gig-tag">📎 {conv.gig_title}</div>
+              )}
             </div>
           </li>
         );
