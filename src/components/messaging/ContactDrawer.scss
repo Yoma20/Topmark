@@ -183,9 +183,9 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 .cd-chip {
   padding: 6px 13px;
   border-radius: 999px;
-  border: 1.5px solid darken($blue, 5%);
-  background: rgba($blue, 0.08);
-  color: darken($blue, 22%);
+  border: 1.5px solid #7aaed8;
+  background: rgba(#7aaed8, 0.08);
+  color: darken(#7aaed8, 22%);
   font-size: 0.78rem;
   font-family: 'Lato', Arial, sans-serif;
   font-weight: 700;
@@ -233,7 +233,7 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   transition: border-color 0.2s, box-shadow 0.2s;
   min-height: 130px;
 
-  &::placeholder { color: lighten($gray, 12%); }
+  &::placeholder { color: #b3b6be; }
 
   &:focus {
     border-color: $blue;
@@ -242,8 +242,8 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   &--overlimit {
-    border-color: $orange;
-    box-shadow: 0 0 0 3px rgba($orange, 0.15);
+    border-color: #d97a56;
+    box-shadow: 0 0 0 3px rgba(#d97a56, 0.15);
   }
 
   &:disabled {
@@ -258,9 +258,9 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   text-align: right;
   transition: color 0.2s;
 
-  &--warn { color: darken($orange, 5%); }
+  &--warn { color: #d97a56; }
   &--over {
-    color: $orange;
+    color: #d97a56;
     font-weight: 700;
   }
 }
@@ -338,7 +338,7 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     color: #fff;
     min-width: 150px;
 
-    &:hover:not(:disabled) { background: darken($green, 8%); }
+    &:hover:not(:disabled) { background: #7aaed8; }
 
     &:disabled {
       opacity: 0.45;
