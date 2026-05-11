@@ -8,7 +8,6 @@ import "./MessagingPage.scss";
 
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
-  // Optional: pre-select a conversation from URL  e.g. /messages/42
   const { convId } = useParams();
 
   const [conversations, setConversations] = useState([]);
@@ -16,18 +15,28 @@ export default function MessagingPage() {
   const [loadingConvs, setLoadingConvs] = useState(true);
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [mobileView, setMobileView] = useState("list");
+  const [convError, setConvError] = useState(null); // ← new: surface errors in UI
 
   const fetchConversations = useCallback(async () => {
     try {
       const data = await getConversations();
-      setConversations(data);
-      // Keep activeConv in sync with fresh data
+
+      // Defensive: DRF pagination returns { count, results } — handle both
+      const list = Array.isArray(data) ? data : (data?.results ?? []);
+
+      console.log("[MessagingPage] conversations fetched:", list);
+      setConversations(list);
+      setConvError(null);
+
       if (activeConv) {
-        const updated = data.find((c) => c.id === activeConv.id);
+        const updated = list.find((c) => c.id === activeConv.id);
         if (updated) setActiveConv(updated);
       }
     } catch (err) {
-      console.error("Failed to load conversations", err);
+      console.error("[MessagingPage] Failed to load conversations:", err);
+      console.error("  status:", err?.response?.status);
+      console.error("  data:", err?.response?.data);
+      setConvError(err?.response?.data?.detail || err.message || "Failed to load conversations");
     } finally {
       setLoadingConvs(false);
     }
@@ -96,7 +105,28 @@ export default function MessagingPage() {
       </div>
 
       <div className="msg-page__body">
-        <aside className={`msg-sidebar ${mobileView === "chat" ? "msg-sidebar--hidden-mobile" : ""}`}>
+        <aside
+          className={`msg-sidebar ${
+            mobileView === "chat" ? "msg-sidebar--hidden-mobile" : ""
+          }`}
+        >
+          {/* Show error inline in the sidebar so it's visible without DevTools */}
+          {convError && (
+            <div
+              style={{
+                padding: "16px",
+                color: "#E38968",
+                fontSize: "0.82rem",
+                background: "rgba(227,137,104,0.1)",
+                borderRadius: "6px",
+                margin: "12px",
+              }}
+            >
+              <strong>Could not load conversations:</strong>
+              <br />
+              {convError}
+            </div>
+          )}
           <ConversationList
             conversations={conversations}
             activeId={activeConv?.id}
@@ -106,7 +136,11 @@ export default function MessagingPage() {
           />
         </aside>
 
-        <main className={`msg-main ${mobileView === "list" ? "msg-main--hidden-mobile" : ""}`}>
+        <main
+          className={`msg-main ${
+            mobileView === "list" ? "msg-main--hidden-mobile" : ""
+          }`}
+        >
           {mobileView === "chat" && (
             <button className="msg-back-btn" onClick={handleBackToList}>
               ← Back
@@ -115,7 +149,7 @@ export default function MessagingPage() {
           <ChatWindow
             conversation={activeConv}
             currentUserId={currentUser.id}
-            currentUserType={currentUser.user_type}   // "expert" | "student"
+            currentUserType={currentUser.user_type}
             onMessageSent={handleMessageSent}
           />
         </main>

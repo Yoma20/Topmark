@@ -2,7 +2,9 @@ import newRequest from "../utils/newRequest";
 
 export async function getConversations() {
   const { data } = await newRequest.get("/messaging/conversations/");
-  return data;
+  // Handle Django REST Framework pagination ({ count, results: [...] })
+  // as well as plain array responses
+  return Array.isArray(data) ? data : (data.results ?? []);
 }
 
 export async function getUnreadCount() {
