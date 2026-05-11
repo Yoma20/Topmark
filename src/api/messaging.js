@@ -2,8 +2,13 @@ import newRequest from "../utils/newRequest";
 
 export async function getConversations() {
   const { data } = await newRequest.get("/messaging/conversations/");
-  // Handle Django REST Framework pagination ({ count, results: [...] })
-  // as well as plain array responses
+  // DRF pagination returns { count, next, previous, results: [...] }
+  return Array.isArray(data) ? data : (data.results ?? []);
+}
+
+export async function getMessages(convId) {
+  const { data } = await newRequest.get(`/messaging/conversations/${convId}/messages/`);
+  // DRF pagination returns { count, next, previous, results: [...] }
   return Array.isArray(data) ? data : (data.results ?? []);
 }
 

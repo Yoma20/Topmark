@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import newRequest from "../../utils/newRequest";
+import { getMessages } from "../../api/messaging";
 import OfferCard from "../offerCard/OfferCard";
 import SendOfferModal from "../offerCard/SendOfferModal";
 
@@ -22,10 +23,8 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     if (!conversation) return;
     setLoadingMsgs(true);
     try {
-      const res = await newRequest.get(
-        `/messaging/conversations/${conversation.id}/messages/`
-      );
-      setMessages(res.data);
+      const msgs = await getMessages(conversation.id);
+      setMessages(msgs);
     } catch (err) {
       console.error("Failed to load messages", err);
     } finally {
