@@ -1,82 +1,82 @@
-import { useState, useEffect } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import "./Gig.scss"; // ← THIS was missing — why styles weren't rendering
+import "./Gig.scss";
 
-const StarRating = ({ rating }) => {
+/* ─── Star Rating ──────────────────────────────────────────── */
+const StarRating = ({ rating, reviewCount }) => {
   const value = parseFloat(rating);
-  if (!value) return <span style={{ color: '#aaa', fontSize: '0.85rem' }}>New</span>;
+  if (!value) return <span className="rating-new">New</span>;
+  const full = Math.round(value);
   return (
     <div className="stars">
-      {Array(Math.round(value)).fill().map((_, i) => (
-        <img src="/images/star.png" alt="star" key={i} style={{ width: 18 }} />
+      {Array(5).fill(null).map((_, i) => (
+        <svg key={i} className={`star-icon ${i < full ? "filled" : "empty"}`} viewBox="0 0 24 24" width="16" height="16">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
       ))}
-      <span style={{ color: '#f5a623', fontWeight: 600 }}>{value.toFixed(1)}</span>
+      <span className="rating-value">{value.toFixed(1)}</span>
+      {reviewCount != null && <span className="rating-count">({reviewCount})</span>}
     </div>
   );
 };
 
-const PackageCard = ({ pkg, selected, onSelect }) => (
-  <div
-    className={`package-card ${selected ? 'package-card--active' : ''} ${pkg.tier === 'premium' ? 'package-card--premium' : ''}`}
-    onClick={() => onSelect(pkg)}
-  >
-    <div className="package-tier">{pkg.tier.toUpperCase()}</div>
-    <div className="package-name">{pkg.name}</div>
-    <div className="package-price">${pkg.price}</div>
-    <div className="package-meta">
-      <span>⏱ {pkg.delivery_days} days</span>
-      <span>🔄 {pkg.revision_number} revisions</span>
+/* ─── Image Gallery (Fiverr-style with thumbnails) ─────────── */
+const ImageGallery = ({ images, title }) => {
+  const [active, setActive] = useState(0);
+  if (!images?.length) return null;
+  return (
+    <div className="gallery">
+      <div className="gallery__main">
+        <img src={images[active]} alt={`${title} — sample ${active + 1}`} />
+        {images.length > 1 && (
+          <>
+            <button className="gallery__arrow gallery__arrow--prev" onClick={() => setActive(i => (i - 1 + images.length) % images.length)}>‹</button>
+            <button className="gallery__arrow gallery__arrow--next" onClick={() => setActive(i => (i + 1) % images.length)}>›</button>
+          </>
+        )}
+      </div>
+      {images.length > 1 && (
+        <div className="gallery__thumbs">
+          {images.map((img, i) => (
+            <button key={i} className={`gallery__thumb ${i === active ? "active" : ""}`} onClick={() => setActive(i)}>
+              <img src={img} alt={`thumb ${i + 1}`} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
-    <ul className="package-features">
-      {pkg.features.map((f, i) => (
-        <li key={i}>✓ {f}</li>
-      ))}
-    </ul>
-    <p style={{ fontSize: '0.85rem', color: '#555', marginTop: 8 }}>{pkg.description}</p>
-  </div>
-);
+  );
+};
 
+/* ─── Gig Page ─────────────────────────────────────────────── */
 const Gig = () => {
-  // slug is used instead of numeric id — e.g. /gig/essay-writing-expert-howard
   const { slug } = useParams();
   const navigate = useNavigate();
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [messaging, setMessaging] = useState(false);
+  const [whatsIncludedOpen, setWhatsIncludedOpen] = useState(false);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['gig', slug],
-    // Backend now looks up by slug field instead of pk
+    queryKey: ["gig", slug],
     queryFn: () => newRequest.get(`/gigs/${slug}/`).then((res) => res.data),
   });
 
   useEffect(() => {
-    if (data?.packages?.length) {
-      setSelectedPackage(data.packages[0]);
-    }
+    if (data?.packages?.length) setSelectedPackage(data.packages[0]);
   }, [data]);
 
-  const sliderSettings = {
-    dots: true, infinite: true, slidesToShow: 1, slidesToScroll: 1,
-  };
-
   const handleMessageSeller = async () => {
-    if (!currentUser) {
-      navigate("/login");
-      return;
-    }
+    if (!currentUser) { navigate("/login"); return; }
     setMessaging(true);
     try {
       const res = await newRequest.post("/messaging/conversations/start/", {
         recipient_id: data.expert_id,
-        gig_id: data.id, // use the actual pk for relations, slug is just for the URL
+        gig_id: data.id,
         initial_message: selectedPackage
           ? `Hi! I'm interested in your "${selectedPackage.name}" package ($${selectedPackage.price}) for "${data.title}". Can we discuss?`
           : `Hi! I'm interested in your gig "${data.title}". Can we discuss?`,
@@ -88,148 +88,195 @@ const Gig = () => {
     }
   };
 
-  if (isLoading) return <div className="loader"></div>;
-  if (error) return <h4 style={{ color: 'red', textAlign: 'center' }}>Something went wrong</h4>;
+  if (isLoading) return <div className="gig-loader"><div className="spinner" /></div>;
+  if (error) return <div className="gig-error">Something went wrong loading this gig.</div>;
 
   const pageTitle = data.title
     ? `${data.title} by ${data.expert_username} — Topmark`
     : "Expert Service — Topmark";
-
-  const pageDescription = data.description
-    ? data.description.slice(0, 155)
-    : `Hire ${data.expert_username} on Topmark for expert academic help.`;
-
-  const lowestPrice = data.packages?.length
-    ? Math.min(...data.packages.map(p => p.price))
-    : null;
+  const pageDescription = data.description?.slice(0, 155) ?? `Hire ${data.expert_username} on Topmark.`;
+  const lowestPrice = data.packages?.length ? Math.min(...data.packages.map(p => p.price)) : null;
+  const isOwner = currentUser && currentUser.id === data.expert_id;
 
   const schemaMarkup = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": data.title,
-    "description": data.description,
-    "provider": { "@type": "Person", "name": data.expert_username },
-    "offers": lowestPrice ? {
-      "@type": "Offer",
-      "priceCurrency": "USD",
-      "price": lowestPrice,
-      "availability": "https://schema.org/InStock"
-    } : undefined,
-    "aggregateRating": data.expert_rating ? {
-      "@type": "AggregateRating",
-      "ratingValue": data.expert_rating,
-      "bestRating": "5"
-    } : undefined
+    name: data.title,
+    description: data.description,
+    provider: { "@type": "Person", name: data.expert_username },
+    ...(lowestPrice && { offers: { "@type": "Offer", priceCurrency: "USD", price: lowestPrice, availability: "https://schema.org/InStock" } }),
+    ...(data.expert_rating && { aggregateRating: { "@type": "AggregateRating", ratingValue: data.expert_rating, bestRating: "5" } }),
   };
 
-  const isOwner = currentUser && currentUser.id === data.expert_id;
-
   return (
-    <div className="gig">
+    <div className="gig-page">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <script type="application/ld+json">
-          {JSON.stringify(schemaMarkup)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(schemaMarkup)}</script>
       </Helmet>
 
-      <div className="container">
-        <div className="left">
-          <span className="breadcrumbs">TOPMARK &gt; {data.category_name || 'GIGS'}</span>
-          <h1>{data.title}</h1>
-          <div className="user">
-            <div className="avatar">{data.expert_username?.charAt(0).toUpperCase()}</div>
-            <span>{data.expert_username}</span>
-            <StarRating rating={data.expert_rating} />
+      <div className="gig-layout">
+        {/* ── LEFT ── */}
+        <div className="gig-left">
+
+          {/* Breadcrumb */}
+          <nav className="breadcrumb">
+            <span>Topmark</span>
+            <span className="sep">›</span>
+            <span>{data.category_name || "Gigs"}</span>
+          </nav>
+
+          {/* Title */}
+          <h1 className="gig-title">{data.title}</h1>
+
+          {/* Seller row */}
+          <div className="seller-row">
+            <div className="avatar sm">{data.expert_username?.charAt(0).toUpperCase()}</div>
+            <span className="seller-name">{data.expert_username}</span>
+            {data.expert_badge && <span className="badge">{data.expert_badge}</span>}
+            <StarRating rating={data.expert_rating} reviewCount={data.review_count} />
+            {data.orders_in_queue != null && (
+              <span className="queue-count">{data.orders_in_queue} orders in queue</span>
+            )}
           </div>
 
-          {data.images?.length > 0 && (
-            <Slider {...sliderSettings} className="slider">
-              {data.images.map((img, i) => (
-                <div key={i}>
-                  <img src={img} alt={`${data.title} — sample work ${i + 1}`} />
-                </div>
-              ))}
-            </Slider>
-          )}
+          {/* Image gallery */}
+          <ImageGallery images={data.images} title={data.title} />
 
-          <h2>About This Gig</h2>
-          <p>{data.description}</p>
+          {/* About */}
+          <section className="gig-section">
+            <h2>About This Gig</h2>
+            <p>{data.description}</p>
+          </section>
 
-          <h2>Packages</h2>
-          <div className="packages">
-            {data.packages?.map((pkg) => (
-              <PackageCard
-                key={pkg.id}
-                pkg={pkg}
-                selected={selectedPackage?.id === pkg.id}
-                onSelect={setSelectedPackage}
-              />
-            ))}
-          </div>
-
-          <h2>About the Expert</h2>
-          <div className="seller">
-            <div className="avatar large">{data.expert_username?.charAt(0).toUpperCase()}</div>
-            <div className="info">
-              <span className="name">{data.expert_username}</span>
-              <StarRating rating={data.expert_rating} />
-            </div>
-          </div>
-        </div>
-
-        {!isOwner && selectedPackage && (
-          <div className="right">
-            <div className="price-box">
-              <div className="tier-tabs">
-                {data.packages?.map((pkg) => (
-                  <button
+          {/* Packages — left-side cards (mobile / secondary view) */}
+          {data.packages?.length > 0 && (
+            <section className="gig-section">
+              <h2>Packages</h2>
+              <div className="pkg-cards">
+                {data.packages.map((pkg) => (
+                  <div
                     key={pkg.id}
-                    className={`tier-tab ${selectedPackage.id === pkg.id ? 'active' : ''} ${pkg.tier === 'premium' ? 'premium' : ''}`}
+                    className={`pkg-card ${selectedPackage?.id === pkg.id ? "active" : ""} tier-${pkg.tier}`}
                     onClick={() => setSelectedPackage(pkg)}
                   >
-                    {pkg.tier.charAt(0).toUpperCase() + pkg.tier.slice(1)}
-                  </button>
+                    <div className="pkg-tier">{pkg.tier.toUpperCase()}</div>
+                    <div className="pkg-name">{pkg.name}</div>
+                    <div className="pkg-price">${pkg.price}</div>
+                    <div className="pkg-meta">
+                      <span>⏱ {pkg.delivery_days}d delivery</span>
+                      <span>🔄 {pkg.revision_number} revisions</span>
+                    </div>
+                    <ul className="pkg-features">
+                      {pkg.features.map((f, i) => (
+                        <li key={i}><svg viewBox="0 0 24 24" width="13" height="13"><path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>{f}</li>
+                      ))}
+                    </ul>
+                    {pkg.description && <p className="pkg-desc">{pkg.description}</p>}
+                  </div>
                 ))}
               </div>
+            </section>
+          )}
 
-              <h3>{selectedPackage.name}</h3>
-              <h2>From ${selectedPackage.price}</h2>
-              <p>{selectedPackage.description}</p>
-
-              <div className="details">
-                <div className="item">
-                  <img src="/images/clock.png" alt="delivery time" />
-                  <span>{selectedPackage.delivery_days} days delivery</span>
-                </div>
-                <div className="item">
-                  <img src="/images/recycle.png" alt="revisions" />
-                  <span>{selectedPackage.revision_number} revisions</span>
-                </div>
+          {/* About the Expert */}
+          <section className="gig-section">
+            <h2>About the Expert</h2>
+            <div className="expert-card">
+              <div className="avatar lg">{data.expert_username?.charAt(0).toUpperCase()}</div>
+              <div className="expert-info">
+                <span className="expert-name">{data.expert_username}</span>
+                <StarRating rating={data.expert_rating} reviewCount={data.review_count} />
+                {data.expert_bio && <p className="expert-bio">{data.expert_bio}</p>}
               </div>
+            </div>
+          </section>
 
-              <ul className="features">
-                {selectedPackage.features.map((f, i) => (
-                  <li key={i}>
-                    <img src="/images/greencheck.png" alt="included" />{f}
-                  </li>
-                ))}
-              </ul>
+        </div>
 
-              <button
-                className="continue-btn"
-                onClick={handleMessageSeller}
-                disabled={messaging}
-              >
-                {messaging ? "Opening chat…" : "Message Seller"}
-              </button>
+        {/* ── RIGHT (sticky price box) ── */}
+        {!isOwner && selectedPackage && (
+          <div className="gig-right">
+            <div className="price-box">
 
-              <p className="price-box__hint">
-                Discuss your requirements, negotiate, and pay only after agreeing.
-              </p>
+              {/* Tier tabs */}
+              {data.packages?.length > 1 && (
+                <div className="tier-tabs">
+                  {data.packages.map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      className={`tier-tab ${selectedPackage.id === pkg.id ? "active" : ""} tier-${pkg.tier}`}
+                      onClick={() => setSelectedPackage(pkg)}
+                    >
+                      {pkg.tier.charAt(0).toUpperCase() + pkg.tier.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Package details */}
+              <div className="price-box__body">
+                <div className="price-box__name-price">
+                  <span className="price-box__pkg-name">{selectedPackage.name}</span>
+                  <span className="price-box__price">${selectedPackage.price}</span>
+                </div>
+                <p className="price-box__desc">{selectedPackage.description}</p>
+
+                <div className="price-box__meta">
+                  <div className="meta-item">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    <span>{selectedPackage.delivery_days}-day delivery</span>
+                  </div>
+                  <div className="meta-item">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+                    <span>{selectedPackage.revision_number} revisions</span>
+                  </div>
+                </div>
+
+                {/* What's included accordion */}
+                {selectedPackage.features?.length > 0 && (
+                  <div className="whats-included">
+                    <button className="wi-toggle" onClick={() => setWhatsIncludedOpen(o => !o)}>
+                      What's Included
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: whatsIncludedOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }}>
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </button>
+                    {whatsIncludedOpen && (
+                      <ul className="wi-list">
+                        {selectedPackage.features.map((f, i) => (
+                          <li key={i}>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#1a9e60" strokeWidth="2.5"><path d="M20 6L9 17l-5-5" strokeLinecap="round"/></svg>
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  className="btn-continue"
+                  onClick={() => navigate(`/checkout?gig=${data.id}&package=${selectedPackage.id}`)}
+                >
+                  Continue <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round"/></svg>
+                </button>
+
+                <button
+                  className="btn-contact"
+                  onClick={handleMessageSeller}
+                  disabled={messaging}
+                >
+                  {messaging ? "Opening chat…" : "Contact me ▾"}
+                </button>
+
+                <p className="price-box__hint">
+                  Discuss requirements, negotiate, and pay only after agreeing.
+                </p>
+              </div>
             </div>
           </div>
         )}
