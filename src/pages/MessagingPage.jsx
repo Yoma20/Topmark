@@ -8,7 +8,6 @@ import "./MessagingPage.scss";
 
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
-  console.log("MP render, user id:", currentUser?.id, "ts:", Date.now());
   const { convId } = useParams();
 
   const [conversations, setConversations] = useState([]);
