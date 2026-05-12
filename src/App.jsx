@@ -29,16 +29,14 @@ const queryClient = new QueryClient();
 
 function Layout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className='app'>
-        <Navbar />
-        <Suspense fallback={<div className="page-loading">Loading…</div>}>
-          <Outlet />
-        </Suspense>
-        <hr />
-        <Footer />
-      </div>
-    </QueryClientProvider>
+    <div className='app'>
+      <Navbar />
+      <Suspense fallback={<div className="page-loading">Loading…</div>}>
+        <Outlet />
+      </Suspense>
+      <hr />
+      <Footer />
+    </div>
   );
 }
 
@@ -76,7 +74,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <HelmetProvider>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </HelmetProvider>
   );
 }
