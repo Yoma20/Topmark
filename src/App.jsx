@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useContext } from 'react';
+import React, { lazy, Suspense, useContext, useEffect } from 'react';
 import './App.scss';
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import AuthContext from './AuthContext.jsx';
 import { MessagingProvider } from './MessagingContext.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
+import newRequest from './utils/newRequest.js';
 
 const Add            = lazy(() => import('./pages/add/Add.jsx'));
 const MessagingPage  = lazy(() => import('./pages/MessagingPage.jsx'));
@@ -30,8 +31,11 @@ const queryClient = new QueryClient();
 
 function Layout() {
   useEffect(() => {
-    newRequest.get('/users/csrf/');
+    newRequest.get('/users/csrf/').catch(() => {
+      console.warn('Could not fetch CSRF cookie — login may fail.');
+    });
   }, []);
+
   return (
     <div className='app'>
       <Navbar />
