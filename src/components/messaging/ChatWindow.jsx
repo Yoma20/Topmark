@@ -23,7 +23,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
   const prevMsgCountRef = useRef(0);
 
   const isExpert = currentUserType === "expert";
-  console.log("ChatWindow render, conv id:", conversation?.id);
 
   // ── Fetch messages ──────────────────────────────────────────────────────────
   const fetchMessages = useCallback(async (convId) => {

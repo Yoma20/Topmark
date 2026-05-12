@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useContext } from "react";
+import { createContext, useState, useCallback, useContext, useRef, useEffect } from "react";
 import newRequest from "./utils/newRequest";
 
 const AuthContext = createContext(null);
@@ -74,13 +74,19 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   }, []);
 
+  // ── userRef — always points to latest user without being a dep ───────────
+  const userRef = useRef(user);
+  useEffect(() => { userRef.current = user; }, [user]);
+
   // ── refreshProfile — call this after saving profile edits ─────────────────
   // e.g. after PATCH /expert-profiles/me/ or POST /expert-profiles/me/avatar/
+  // Uses userRef so this callback is never recreated after login, preventing
+  // consumers from re-rendering just because user state updated.
   const refreshProfile = useCallback(async () => {
-    if (!user) return;
-    const enriched = await fetchAndMergeProfile(user);
+    if (!userRef.current) return;
+    const enriched = await fetchAndMergeProfile(userRef.current);
     persist(enriched);
-  }, [user, fetchAndMergeProfile]);
+  }, [fetchAndMergeProfile]); // ← no longer depends on `user`
 
   // ── updateUser — lightweight patch for non-profile fields ─────────────────
   // e.g. after PATCH /users/me/ to change username

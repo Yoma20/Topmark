@@ -69,7 +69,7 @@ export default function MessagingPage() {
   // recreate the interval when the functions update (they don't here, but
   // this pattern is future-proof).
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser?.id) return;
 
     // Immediate first fetch
     fetchConversationsRef.current?.();
@@ -81,7 +81,7 @@ export default function MessagingPage() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [currentUser]); // ← only restart when the logged-in user changes
+  }, [currentUser?.id]); // ← depend on the id scalar, not the object reference
 
   // ── Auto-select conversation from URL param ───────────────────────────────
   // Guard with a ref so we only do this once per convId, not on every poll.
