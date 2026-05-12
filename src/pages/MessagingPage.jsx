@@ -8,7 +8,22 @@ import "./MessagingPage.scss";
 
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
-  console.log("MP render, user id:", currentUser?.id, "ts:", Date.now());
+
+  // ── TEMP DIAGNOSTIC — DELETE AFTER FIXING ──
+  const renderCount = useRef(0);
+  const prevUser = useRef(currentUser);
+  renderCount.current += 1;
+  if (prevUser.current !== currentUser) {
+    console.warn("MP re-render #" + renderCount.current + " — currentUser CHANGED",
+      "\n  prev id:", prevUser.current?.id,
+      "\n  next id:", currentUser?.id,
+      "\n  same object?", prevUser.current === currentUser
+    );
+    prevUser.current = currentUser;
+  } else {
+    console.log("MP re-render #" + renderCount.current + " — currentUser SAME object");
+  }
+  // ── END DIAGNOSTIC ──
   const { convId } = useParams();
 
   const [conversations, setConversations] = useState([]);
