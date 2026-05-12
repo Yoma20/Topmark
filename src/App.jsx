@@ -28,14 +28,12 @@ const ProfileEdit   = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
 const queryClient = new QueryClient();
 
 function Layout() {
-  const { user } = useContext(AuthContext);
-
   return (
     <QueryClientProvider client={queryClient}>
       <div className='app'>
         <Navbar />
         <Suspense fallback={<div className="page-loading">Loading…</div>}>
-          <Outlet context={{ user }} />
+          <Outlet />
         </Suspense>
         <hr />
         <Footer />
