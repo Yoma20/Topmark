@@ -1,26 +1,26 @@
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
 import { useParams } from "react-router-dom";
 import AuthContext from "../AuthContext";
-import { getConversations, getUnreadCount } from "../api/messaging";
+import { getConversations } from "../api/messaging";
+import { useMessaging } from "../MessagingContext";
 import ConversationList from "../components/messaging/ConversationList";
 import ChatWindow from "../components/messaging/ChatWindow";
 import "./MessagingPage.scss";
 
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
+  const { unreadCount: unreadTotal, refreshUnread } = useMessaging();
   const { convId } = useParams();
 
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
   const [loadingConvs, setLoadingConvs] = useState(true);
-  const [unreadTotal, setUnreadTotal] = useState(0);
   const [mobileView, setMobileView] = useState("list");
   const [convError, setConvError] = useState(null);
 
   // ── Keep stable refs to the fetch functions so the polling interval
   //    never needs to be rebuilt when React re-renders the component. ──────────
   const fetchConversationsRef = useRef(null);
-  const fetchUnreadRef = useRef(null);
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -54,18 +54,8 @@ export default function MessagingPage() {
     }
   }, []); // ← empty: this function never needs to be recreated
 
-  const fetchUnread = useCallback(async () => {
-    try {
-      const count = await getUnreadCount();
-      setUnreadTotal((prev) => prev === count ? prev : count);
-    } catch {
-      // non-critical — ignore silently
-    }
-  }, []); // ← empty: same reasoning
-
-  // Keep refs in sync with the latest callback versions
+  // Keep ref in sync with the latest callback version
   useEffect(() => { fetchConversationsRef.current = fetchConversations; }, [fetchConversations]);
-  useEffect(() => { fetchUnreadRef.current = fetchUnread; }, [fetchUnread]);
 
   // ── Single polling effect — depends only on currentUser ───────────────────
   // Using refs inside the interval means we never need to tear down and
@@ -76,11 +66,9 @@ export default function MessagingPage() {
 
     // Immediate first fetch
     fetchConversationsRef.current?.();
-    fetchUnreadRef.current?.();
 
     const interval = setInterval(() => {
       fetchConversationsRef.current?.();
-      fetchUnreadRef.current?.();
     }, 5000);
 
     return () => clearInterval(interval);
@@ -106,7 +94,8 @@ export default function MessagingPage() {
 
   const handleMessageSent = useCallback(() => {
     fetchConversationsRef.current?.();
-  }, []);
+    refreshUnread();
+  }, [refreshUnread]);
 
   const handleBackToList = () => {
     setMobileView("list");

@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import AuthContext from './AuthContext.jsx';
+import { MessagingProvider } from './MessagingContext.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 
@@ -75,7 +76,9 @@ function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <MessagingProvider>
+          <RouterProvider router={router} />
+        </MessagingProvider>
       </QueryClientProvider>
     </HelmetProvider>
   );

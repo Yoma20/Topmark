@@ -2,6 +2,7 @@ import './navbar.scss'
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
+import { useMessaging } from '../../MessagingContext';
 
 const Navbar = () => {
     const [active, setactive]   = useState(false);
@@ -45,6 +46,7 @@ const Navbar = () => {
     }, [open]);
 
     const { user: currentUser, logout } = useContext(AuthContext);
+    const { unreadCount } = useMessaging();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -156,7 +158,12 @@ const Navbar = () => {
                                     <div className="options-divider" />
 
                                     <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
-                                    <Link to='/messages' onClick={() => setopen(false)}>Messages</Link>
+                                    <Link to='/messages' onClick={() => setopen(false)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Messages
+                        {unreadCount > 0 && (
+                            <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                        )}
+                    </Link>
 
                                     <div className="options-divider" />
 
@@ -196,7 +203,12 @@ const Navbar = () => {
                             {open && (
                                 <div className="options">
                                     <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
-                                    <Link to='/messages' onClick={() => setopen(false)}>Messages</Link>
+                                    <Link to='/messages' onClick={() => setopen(false)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Messages
+                        {unreadCount > 0 && (
+                            <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                        )}
+                    </Link>
                                     {isExpert ? (
                                         <>
                                             <Link to='/mygigs' onClick={() => setopen(false)}>My Gigs</Link>
@@ -244,7 +256,12 @@ const Navbar = () => {
                                     </div>
                                 </div>
                                 <Link className="mobile-nav-link" to='/orders'   onClick={() => setMenuOpen(false)}>My Orders</Link>
-                                <Link className="mobile-nav-link" to='/messages' onClick={() => setMenuOpen(false)}>Messages</Link>
+                                <Link className="mobile-nav-link" to='/messages' onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    Messages
+                    {unreadCount > 0 && (
+                        <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                    )}
+                </Link>
                                 {isExpert ? (
                                     <>
                                         <Link className="mobile-nav-link" to='/mygigs' onClick={() => setMenuOpen(false)}>My Gigs</Link>

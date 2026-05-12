@@ -319,6 +319,20 @@
   }
 }
 
+.nav-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
 // Role badge in dropdown header (replaces email)
 .options-role {
   font-size: 0.75rem;
