@@ -8,22 +8,7 @@ import "./MessagingPage.scss";
 
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
-
-  // ── TEMP DIAGNOSTIC — DELETE AFTER FIXING ──
-  const renderCount = useRef(0);
-  const prevUser = useRef(currentUser);
-  renderCount.current += 1;
-  if (prevUser.current !== currentUser) {
-    console.warn("MP re-render #" + renderCount.current + " — currentUser CHANGED",
-      "\n  prev id:", prevUser.current?.id,
-      "\n  next id:", currentUser?.id,
-      "\n  same object?", prevUser.current === currentUser
-    );
-    prevUser.current = currentUser;
-  } else {
-    console.log("MP re-render #" + renderCount.current + " — currentUser SAME object");
-  }
-  // ── END DIAGNOSTIC ──
+  console.log("MP render, user id:", currentUser?.id, "ts:", Date.now());
   const { convId } = useParams();
 
   const [conversations, setConversations] = useState([]);
@@ -43,8 +28,12 @@ export default function MessagingPage() {
       const data = await getConversations();
       const list = Array.isArray(data) ? data : (data?.results ?? []);
 
-      setConversations(list);
-      setConvError(null);
+      setConversations((prev) => {
+        if (prev.length === list.length &&
+            JSON.stringify(prev) === JSON.stringify(list)) return prev;
+        return list;
+      });
+      setConvError((prev) => prev === null ? prev : null);
 
       // Refresh the active conversation object from the new list so its
       // data stays current, but only swap the reference when the identity
@@ -62,15 +51,14 @@ export default function MessagingPage() {
         err?.response?.data?.detail || err.message || "Failed to load conversations"
       );
     } finally {
-      // Only flip loadingConvs off once — after the first successful fetch.
-      setLoadingConvs(false);
+      setLoadingConvs((prev) => prev ? false : prev);
     }
   }, []); // ← empty: this function never needs to be recreated
 
   const fetchUnread = useCallback(async () => {
     try {
       const count = await getUnreadCount();
-      setUnreadTotal(count);
+      setUnreadTotal((prev) => prev === count ? prev : count);
     } catch {
       // non-critical — ignore silently
     }
