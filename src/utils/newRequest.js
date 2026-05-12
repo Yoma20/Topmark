@@ -11,17 +11,21 @@ function getCookie(name) {
 
 const newRequest = axios.create({
   baseURL: import.meta.env.VITE_API_URL + "/api",
-  withCredentials: true,   // sends the session cookie on every request
+  withCredentials: true, // sends the session cookie on every request
 });
 
-/**
- * Attach the Django CSRF token to all state-mutating requests.
- * Django's CsrfViewMiddleware checks for X-CSRFToken on POST/PUT/PATCH/DELETE.
- * The csrftoken cookie is set by Django on the first GET request.
- */
-newRequest.interceptors.request.use((config) => {
+
+const csrfReady = getCookie("csrftoken")
+  ? Promise.resolve()
+  : newRequest
+      .get("/users/csrf/")
+      .catch(() => console.warn("CSRF prefetch failed — login may not work."));
+
+
+newRequest.interceptors.request.use(async (config) => {
   const method = config.method?.toLowerCase();
   if (["post", "put", "patch", "delete"].includes(method)) {
+    await csrfReady;
     const csrfToken = getCookie("csrftoken");
     if (csrfToken) {
       config.headers["X-CSRFToken"] = csrfToken;
