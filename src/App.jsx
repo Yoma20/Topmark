@@ -29,6 +29,9 @@ const ProfileEdit    = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
 const queryClient = new QueryClient();
 
 function Layout() {
+  useEffect(() => {
+    newRequest.get('/users/csrf/');
+  }, []);
   return (
     <div className='app'>
       <Navbar />
