@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
-import { useParams } from "react-router-dom";
 import AuthContext from "../AuthContext";
 import { getConversations } from "../api/messaging";
 import { useMessaging } from "../MessagingContext";
@@ -10,16 +9,15 @@ import "./MessagingPage.scss";
 export default function MessagingPage() {
   const { user: currentUser } = useContext(AuthContext);
   const { unreadCount: unreadTotal, refreshUnread } = useMessaging();
-  const { convId } = useParams();
 
-  const [conversations, setConversations] = useState([]);
-  const [activeConv, setActiveConv] = useState(null);
-  const [loadingConvs, setLoadingConvs] = useState(true);
+  const [conversations, setConversations]   = useState([]);
+  const [activeConv, setActiveConv]         = useState(null);
+  const [loadingConvs, setLoadingConvs]     = useState(true);
+  const [convError, setConvError]           = useState(null);
+
+  // Mobile only — "list" or "chat"
   const [mobileView, setMobileView] = useState("list");
-  const [convError, setConvError] = useState(null);
 
-  // ── Keep stable refs to the fetch functions so the polling interval
-  //    never needs to be rebuilt when React re-renders the component. ──────────
   const fetchConversationsRef = useRef(null);
 
   const fetchConversations = useCallback(async () => {
@@ -28,21 +26,19 @@ export default function MessagingPage() {
       const list = Array.isArray(data) ? data : (data?.results ?? []);
 
       setConversations((prev) => {
-        if (prev.length === list.length &&
-            JSON.stringify(prev) === JSON.stringify(list)) return prev;
+        if (
+          prev.length === list.length &&
+          JSON.stringify(prev) === JSON.stringify(list)
+        ) return prev;
         return list;
       });
-      setConvError((prev) => prev === null ? prev : null);
 
-      // Refresh the active conversation object from the new list so its
-      // data stays current, but only swap the reference when the identity
-      // actually changes — this prevents a cascade re-render.
+      setConvError((prev) => (prev === null ? prev : null));
+
       setActiveConv((prev) => {
         if (!prev) return prev;
         const fresh = list.find((c) => c.id === prev.id);
-        // If nothing found, keep the stale object (don't null it out)
         if (!fresh) return prev;
-        // Cheap referential-equality guard: same JSON → same object
         return JSON.stringify(fresh) === JSON.stringify(prev) ? prev : fresh;
       });
     } catch (err) {
@@ -50,57 +46,41 @@ export default function MessagingPage() {
         err?.response?.data?.detail || err.message || "Failed to load conversations"
       );
     } finally {
-      setLoadingConvs((prev) => prev ? false : prev);
+      setLoadingConvs((prev) => (prev ? false : prev));
     }
-  }, []); // ← empty: this function never needs to be recreated
+  }, []);
 
-  // Keep ref in sync with the latest callback version
-  useEffect(() => { fetchConversationsRef.current = fetchConversations; }, [fetchConversations]);
+  useEffect(() => {
+    fetchConversationsRef.current = fetchConversations;
+  }, [fetchConversations]);
 
-  // ── Single polling effect — depends only on currentUser ───────────────────
-  // Using refs inside the interval means we never need to tear down and
-  // recreate the interval when the functions update (they don't here, but
-  // this pattern is future-proof).
+  // ── Polling — never navigates, stays on page ──────────────────────────────
   useEffect(() => {
     if (!currentUser?.id) return;
-
-    // Immediate first fetch
     fetchConversationsRef.current?.();
-
     const interval = setInterval(() => {
       fetchConversationsRef.current?.();
     }, 5000);
-
     return () => clearInterval(interval);
-  }, [currentUser?.id]); // ← depend on the id scalar, not the object reference
+  }, [currentUser?.id]);
 
-  // ── Auto-select conversation from URL param ───────────────────────────────
-  // Guard with a ref so we only do this once per convId, not on every poll.
-  const didAutoSelectRef = useRef(false);
-  useEffect(() => {
-    if (!convId || didAutoSelectRef.current) return;
-    const match = conversations.find((c) => String(c.id) === String(convId));
-    if (match) {
-      didAutoSelectRef.current = true;
-      setActiveConv(match);
-      setMobileView("chat");
-    }
-  }, [convId, conversations]);
-
+  // ── Select a conversation — NO navigation, just state update ─────────────
   const handleSelectConversation = (conv) => {
     setActiveConv(conv);
-    setMobileView("chat");
+    setMobileView("chat"); // only matters on mobile
+  };
+
+  // ── Back button — just resets state, does NOT navigate/go back ───────────
+  const handleBackToList = () => {
+    setMobileView("list");
+    setActiveConv(null);
+    // ❌ DO NOT call navigate(-1) or navigate('/') — that's what was breaking it
   };
 
   const handleMessageSent = useCallback(() => {
     fetchConversationsRef.current?.();
     refreshUnread();
   }, [refreshUnread]);
-
-  const handleBackToList = () => {
-    setMobileView("list");
-    setActiveConv(null);
-  };
 
   if (!currentUser) {
     return (
@@ -113,6 +93,8 @@ export default function MessagingPage() {
   return (
     <div className="msg-page">
       <div className="msg-page__body">
+
+        {/* ── Sidebar (conversation list) ── */}
         <aside
           className={`msg-sidebar ${
             mobileView === "chat" ? "msg-sidebar--hidden-mobile" : ""
@@ -141,22 +123,25 @@ export default function MessagingPage() {
           <ConversationList
             conversations={conversations}
             activeId={activeConv?.id}
-            onSelect={handleSelectConversation}
+            onSelect={handleSelectConversation}   // ← sets state, no navigation
             loading={loadingConvs}
             currentUserId={currentUser.id}
           />
         </aside>
 
+        {/* ── Main chat panel ── */}
         <main
           className={`msg-main ${
             mobileView === "list" ? "msg-main--hidden-mobile" : ""
           }`}
         >
+          {/* Back button — mobile only, resets to list view without navigating */}
           {mobileView === "chat" && (
             <button className="msg-back-btn" onClick={handleBackToList}>
-              ← Back
+              ← Back to messages
             </button>
           )}
+
           <ChatWindow
             conversation={activeConv}
             currentUserId={currentUser.id}
@@ -164,6 +149,7 @@ export default function MessagingPage() {
             onMessageSent={handleMessageSent}
           />
         </main>
+
       </div>
     </div>
   );
