@@ -14,6 +14,12 @@ const GigCard = ({ item }) => {
           alt={item.title}
           loading="lazy"
         />
+        <img
+          className="cover-img"
+          src={item.cover_image || '/images/noavatar.jpeg'}
+          alt={item.title}
+          loading="lazy"
+        />
         <div className="info">
           <div className="user">
             <div className="avatar-initial">

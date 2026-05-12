@@ -8,23 +8,23 @@ import { MessagingProvider } from './MessagingContext.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 
-const Add           = lazy(() => import('./pages/add/Add.jsx'));
-const MessagingPage = lazy(() => import('./pages/MessagingPage.jsx'));
-const Orders        = lazy(() => import('./pages/orders/Orders.jsx'));
-const Dashboard     = lazy(() => import('./pages/home/Dashboard.jsx'));
-const MyGigs        = lazy(() => import('./pages/myGigs/MyGigs.jsx'));
-const Gig           = lazy(() => import('./pages/gig/Gig.jsx'));
-const Gigs          = lazy(() => import('./pages/gigs/Gigs.jsx'));
+const Add            = lazy(() => import('./pages/add/Add.jsx'));
+const MessagingPage  = lazy(() => import('./pages/MessagingPage.jsx'));
+const Orders         = lazy(() => import('./pages/orders/Orders.jsx'));
+const Dashboard      = lazy(() => import('./pages/home/Dashboard.jsx'));
+const MyGigs         = lazy(() => import('./pages/myGigs/MyGigs.jsx'));
+const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
+const Gigs           = lazy(() => import('./pages/gigs/Gigs.jsx'));
 const StudentProfile = lazy(() => import('./pages/studentProfile/Studentprofile.jsx'));
-const Home          = lazy(() => import('./pages/home/Home.jsx'));
-const Pay           = lazy(() => import('./pages/pay/Pay.jsx'));
-const Success       = lazy(() => import('./pages/success/Success.jsx'));
-const Login         = lazy(() => import('./pages/login/Login.jsx'));
-const Settings      = lazy(() => import('./pages/settings/Settings.jsx'));
-const Register      = lazy(() => import('./pages/register/Register.jsx'));
-const BecomeSeller  = lazy(() => import('./components/becomeSeller/BecomeSeller.jsx'));
-const BecomeSeller2 = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
-const ProfileEdit   = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
+const Home           = lazy(() => import('./pages/home/Home.jsx'));
+const Pay            = lazy(() => import('./pages/pay/Pay.jsx'));
+const Success        = lazy(() => import('./pages/success/Success.jsx'));
+const Login          = lazy(() => import('./pages/login/Login.jsx'));
+const Settings       = lazy(() => import('./pages/settings/Settings.jsx'));
+const Register       = lazy(() => import('./pages/register/Register.jsx'));
+const BecomeSeller   = lazy(() => import('./components/becomeSeller/BecomeSeller.jsx'));
+const BecomeSeller2  = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
+const ProfileEdit    = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
 
 const queryClient = new QueryClient();
 
@@ -35,7 +35,6 @@ function Layout() {
       <Suspense fallback={<div className="page-loading">Loading…</div>}>
         <Outlet />
       </Suspense>
-      <hr />
       <Footer />
     </div>
   );
@@ -64,6 +63,7 @@ const router = createBrowserRouter([
       { path: "/register",          element: <Register /> },
       { path: "/sprofile",          element: <StudentProfile /> },
       { path: "/pay/:id",           element: <Pay /> },
+      { path: "/pay/offer/:id",     element: <Pay /> },
       { path: "/success",           element: <Success /> },
       { path: "/becomeSeller",      element: <BecomeSeller /> },
       { path: "/becomeSeller2",     element: <BecomeSeller2 /> },

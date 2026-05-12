@@ -134,22 +134,6 @@ function Overview({ me, orders }) {
   );
 }
 
-{NAV.map(({ key, label, to }) =>
-    to ? (
-      <Link to={to} key={key} style={{ textDecoration: "none" }}>
-        <button className="sp-nav-btn">{label}</button>
-      </Link>
-    ) : (
-      <button
-        key={key}
-        className={`sp-nav-btn ${activeNav === key ? "sp-nav-btn--active" : ""}`}
-        onClick={() => setActiveNav(key)}
-      >
-        {activeNav === key && <span className="sp-nav-btn__bar" />}
-        {label}
-      </button>
-    )
-  )}
 // ─── Orders panel ─────────────────────────────────────────────────────────────
 function Orders({ orders, isLoading }) {
   const [filter, setFilter] = useState("all");
@@ -368,7 +352,6 @@ export default function StudentProfile() {
     setSaving(true);
     try {
       const res = await newRequest.patch("/users/me/", form);
-      // Update AuthContext so navbar reflects new username
       login({ ...currentUser, ...res.data });
       queryClient.invalidateQueries(["me"]);
       showToast("Profile updated.");
@@ -409,7 +392,6 @@ export default function StudentProfile() {
     setPwSaving(true);
     try {
       const res = await newRequest.post("/users/change-password/", data);
-      // Backend rotates the token — update AuthContext
       login({ ...currentUser, token: res.data.token });
       showToast("Password changed successfully.");
     } catch (err) {
@@ -460,16 +442,22 @@ export default function StudentProfile() {
         </div>
 
         <nav className="sp-sidebar__nav">
-          {NAV.map(({ key, label }) => (
-            <button
-              key={key}
-              className={`sp-nav-btn ${activeNav === key ? "sp-nav-btn--active" : ""}`}
-              onClick={() => setActiveNav(key)}
-            >
-              {activeNav === key && <span className="sp-nav-btn__bar" />}
-              {label}
-            </button>
-          ))}
+          {NAV.map(({ key, label, to }) =>
+            to ? (
+              <Link to={to} key={key} style={{ textDecoration: "none" }}>
+                <button className="sp-nav-btn">{label}</button>
+              </Link>
+            ) : (
+              <button
+                key={key}
+                className={`sp-nav-btn ${activeNav === key ? "sp-nav-btn--active" : ""}`}
+                onClick={() => setActiveNav(key)}
+              >
+                {activeNav === key && <span className="sp-nav-btn__bar" />}
+                {label}
+              </button>
+            )
+          )}
         </nav>
 
         <div className="sp-sidebar__bottom">

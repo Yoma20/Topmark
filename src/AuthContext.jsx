@@ -3,18 +3,20 @@ import newRequest from "./utils/newRequest";
 
 const AuthContext = createContext(null);
 
-// ─── Shape reference ───────────────────────────────────────────────────────────
-// user: {
-//   id, username, email, token, user_type, isSeller,
-//   profile_picture,          ← from /api/users/me/
-//   profile: {                ← only for experts, from /api/expert-profiles/me/
-//     id, title, bio, avatar_url, country, languages, skills,
-//     rating, total_reviews, recommendation_rate,
-//     avg_rubric_adherence, avg_timeliness, avg_communication,
-//     stripe_account_verified, available,
-//     work_experience, education, certifications,
-//   }
-// }
+/**
+ * User shape stored in state (and localStorage for page-refresh hydration):
+ * {
+ *   id, username, email, user_type, isSeller,
+ *   profile_picture,          ← from /api/users/me/
+ *   profile: { ... }          ← only for experts, from /api/expert-profiles/me/
+ * }
+ *
+ * NOTE: No token field. Authentication is now handled entirely by the
+ * HttpOnly session cookie that Django sets on login. localStorage is only
+ * used so the UI can immediately show the user's name/avatar on page load
+ * without waiting for a /me/ round-trip. The session cookie is the real
+ * source of truth for whether the user is authenticated on the server.
+ */
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -36,7 +38,6 @@ export const AuthProvider = ({ children }) => {
   const fetchAndMergeProfile = useCallback(async (baseUser) => {
     if (baseUser.user_type !== "expert") return baseUser;
     try {
-      // Ensure profile row exists (idempotent)
       await newRequest.post("/expert-profiles/ensure/");
       const res = await newRequest.get("/expert-profiles/me/");
       return { ...baseUser, profile: res.data };
@@ -45,51 +46,53 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // ── login — called after successful auth (login / OTP verify / Google) ─────
+  /**
+   * login — called after a successful auth response from the server.
+   * The server has already set the session cookie; we just store the
+   * user metadata in localStorage for fast hydration on next load.
+   */
   const login = useCallback(async (data) => {
     const baseUser = {
       id:              data.user_id ?? data.id,
       username:        data.username,
       email:           data.email,
-      token:           data.token,
       user_type:       data.user_type,
       isSeller:        data.user_type === "expert",
       profile_picture: data.profile_picture ?? null,
-      profile:         data.profile ?? null,   // carry over if already merged
+      profile:         data.profile ?? null,
     };
 
-    // Immediately set base user so the app can render
     persist(baseUser);
-
-    // Then fetch extra profile data in the background
     const enriched = await fetchAndMergeProfile(baseUser);
     persist(enriched);
-
     return enriched;
   }, [fetchAndMergeProfile]);
 
-  // ── logout ─────────────────────────────────────────────────────────────────
-  const logout = useCallback(() => {
+  /**
+   * logout — clears local state and tells the server to destroy the session.
+   */
+  const logout = useCallback(async () => {
+    try {
+      await newRequest.post("/users/logout/");
+    } catch {
+      // Ignore errors — clear local state regardless
+    }
     localStorage.removeItem("currentUser");
     setUser(null);
   }, []);
 
-  // ── userRef — always points to latest user without being a dep ───────────
+  // ── userRef — always points to latest user without being a dep ─────────────
   const userRef = useRef(user);
   useEffect(() => { userRef.current = user; }, [user]);
 
-  // ── refreshProfile — call this after saving profile edits ─────────────────
-  // e.g. after PATCH /expert-profiles/me/ or POST /expert-profiles/me/avatar/
-  // Uses userRef so this callback is never recreated after login, preventing
-  // consumers from re-rendering just because user state updated.
+  // ── refreshProfile — re-fetch expert profile after edits ───────────────────
   const refreshProfile = useCallback(async () => {
     if (!userRef.current) return;
     const enriched = await fetchAndMergeProfile(userRef.current);
     persist(enriched);
-  }, [fetchAndMergeProfile]); // ← no longer depends on `user`
+  }, [fetchAndMergeProfile]);
 
   // ── updateUser — lightweight patch for non-profile fields ─────────────────
-  // e.g. after PATCH /users/me/ to change username
   const updateUser = useCallback((patch) => {
     setUser(prev => {
       const next = { ...prev, ...patch };
@@ -105,7 +108,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
 export const useAuth = () => useContext(AuthContext);
-
 export default AuthContext;
