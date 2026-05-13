@@ -148,3 +148,21 @@ $border: #e4e5e7;
     }
   }
 }
+
+.site-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+  text-decoration: none;
+
+  &--top {
+    color: #ffffff;
+  }
+
+  &--mark {
+    color: #1a9e60;
+  }
+}

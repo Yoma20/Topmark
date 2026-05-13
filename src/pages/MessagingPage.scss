@@ -1,102 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-// ── Shared accent colours (same in both modes) ────────────────────────────────
-$green:  #86BB71;
+$green:  #1a9e60;
 $blue:   #94C2ED;
 $orange: #E38968;
 
-// ── Light mode tokens ─────────────────────────────────────────────────────────
 .msg-page--light {
-  --msg-page-bg:        #C5DDEB;
-  --msg-body-bg:        #ffffff;
-  --msg-sidebar-bg:     #f0f2f5;
-  --msg-sidebar-border: rgba(0,0,0,0.08);
-  --msg-header-bg:      #e8edf2;
-  --msg-header-border:  rgba(0,0,0,0.08);
-  --msg-title-color:    #2d3142;
-  --msg-search-bg:      #dde2e8;
-  --msg-search-color:   #2d3142;
-  --msg-search-placeholder: #8a8f9a;
-  --msg-main-bg:        #f7f9fb;
-  --msg-panel-bg:       #ffffff;
-  --msg-text-primary:   #2d3142;
-  --msg-text-secondary: #6b7080;
-  --msg-input-bg:       #f0f2f5;
-  --msg-input-border:   #d0d5de;
-  --msg-input-focus:    #{$blue};
-  --msg-send-bg:        #{$blue};
-  --msg-bubble-mine:    #{$blue};
-  --msg-bubble-theirs:  #{$green};
-  --msg-conv-hover:     rgba(0,0,0,0.04);
-  --msg-conv-active:    rgba(148,194,237,0.15);
-  --msg-conv-active-bar:#{$blue};
-  --msg-conv-name:      #2d3142;
-  --msg-conv-preview:   #6b7080;
-  --msg-avatar-bg:      #94C2ED;
-  --msg-skeleton-bg:    rgba(0,0,0,0.07);
-  --msg-error-bg:       rgba(227,137,104,0.10);
-  --msg-error-color:    #{$orange};
-  --msg-toggle-color:   #2d3142;
-  --msg-back-btn-bg:    #ffffff;
-  --msg-back-btn-border:#e0e2e8;
-  --msg-chat-header-bg: #ffffff;
-  --msg-chat-header-border: #edf0f4;
+  --msg-page-bg:            #ffffff;
+  --msg-body-bg:            #ffffff;
+  --msg-sidebar-bg:         #ffffff;
+  --msg-sidebar-border:     #e4e5e7;
+  --msg-header-bg:          #ffffff;
+  --msg-header-border:      #e4e5e7;
+  --msg-title-color:        #111b21;
+  --msg-search-bg:          #f0f2f5;
+  --msg-search-color:       #111b21;
+  --msg-search-placeholder: #8696a0;
+  --msg-main-bg:            #efeae2;   // WhatsApp-style warm chat background
+  --msg-panel-bg:           #ffffff;
+  --msg-text-primary:       #111b21;
+  --msg-text-secondary:     #667781;
+  --msg-input-bg:           #ffffff;
+  --msg-input-border:       #e4e5e7;
+  --msg-input-focus:        #{$green};
+  --msg-send-bg:            #{$green};
+  --msg-bubble-mine:        #dcf8c6;   // WhatsApp sender — soft green
+  --msg-bubble-mine-text:   #111b21;   // dark text on light green
+  --msg-bubble-theirs:      #ffffff;   // receiver — pure white bubble
+  --msg-bubble-theirs-text: #111b21;   // dark text
+  --msg-conv-hover:         #f5f6f6;
+  --msg-conv-active:        #e9f5ef;
+  --msg-conv-active-bar:    #{$green};
+  --msg-conv-unread-bg:     #ffffff;
+  --msg-conv-read-bg:       #ffffff;
+  --msg-conv-unread-name:   #111b21;
+  --msg-conv-read-name:     #667781;
+  --msg-conv-preview:       #667781;
+  --msg-avatar-bg:          #{$green};
+  --msg-skeleton-bg:        rgba(0,0,0,0.06);
+  --msg-error-bg:           rgba(227,137,104,0.10);
+  --msg-error-color:        #{$orange};
+  --msg-toggle-color:       #54656f;
+  --msg-back-btn-bg:        #ffffff;
+  --msg-back-btn-border:    #e4e5e7;
+  --msg-chat-header-bg:     #ffffff;
+  --msg-chat-header-border: #e4e5e7;
+  --msg-font:               'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
-// ── Dark mode tokens ──────────────────────────────────────────────────────────
 .msg-page--dark {
-  --msg-page-bg:        #1a1d24;
-  --msg-body-bg:        #23262f;
-  --msg-sidebar-bg:     #1e2029;
-  --msg-sidebar-border: rgba(255,255,255,0.06);
-  --msg-header-bg:      #1a1d24;
-  --msg-header-border:  rgba(255,255,255,0.06);
-  --msg-title-color:    #e0e2e8;
-  --msg-search-bg:      #2e3140;
-  --msg-search-color:   #e0e2e8;
-  --msg-search-placeholder: #6a6e7a;
-  --msg-main-bg:        #23262f;
-  --msg-panel-bg:       #2a2d38;
-  --msg-text-primary:   #e0e2e8;
-  --msg-text-secondary: #92959e;
-  --msg-input-bg:       #1e2029;
-  --msg-input-border:   #3a3d4a;
-  --msg-input-focus:    #{$blue};
-  --msg-send-bg:        #{$blue};
-  --msg-bubble-mine:    #{$blue};
-  --msg-bubble-theirs:  #5a9e4a;
-  --msg-conv-hover:     rgba(255,255,255,0.04);
-  --msg-conv-active:    rgba(148,194,237,0.10);
-  --msg-conv-active-bar:#{$blue};
-  --msg-conv-name:      #e0e2e8;
-  --msg-conv-preview:   #92959e;
-  --msg-avatar-bg:      #3a4a5a;
-  --msg-skeleton-bg:    rgba(255,255,255,0.06);
-  --msg-error-bg:       rgba(227,137,104,0.12);
-  --msg-error-color:    #{$orange};
-  --msg-toggle-color:   #e0e2e8;
-  --msg-back-btn-bg:    #2a2d38;
-  --msg-back-btn-border:#3a3d4a;
-  --msg-chat-header-bg: #2a2d38;
-  --msg-chat-header-border: #323544;
+  --msg-page-bg:            #111b21;
+  --msg-body-bg:            #111b21;
+  --msg-sidebar-bg:         #111b21;
+  --msg-sidebar-border:     #2a3942;
+  --msg-header-bg:          #202c33;
+  --msg-header-border:      #2a3942;
+  --msg-title-color:        #e9edef;
+  --msg-search-bg:          #2a3942;
+  --msg-search-color:       #e9edef;
+  --msg-search-placeholder: #8696a0;
+  --msg-main-bg:            #0b141a;   // WhatsApp dark chat bg
+  --msg-panel-bg:           #202c33;
+  --msg-text-primary:       #e9edef;
+  --msg-text-secondary:     #8696a0;
+  --msg-input-bg:           #2a3942;
+  --msg-input-border:       #2a3942;
+  --msg-input-focus:        #{$green};
+  --msg-send-bg:            #{$green};
+  --msg-bubble-mine:        #005c4b;   // WhatsApp dark sender — deep teal green
+  --msg-bubble-mine-text:   #e9edef;
+  --msg-bubble-theirs:      #202c33;   // receiver — dark panel
+  --msg-bubble-theirs-text: #e9edef;
+  --msg-conv-hover:         #2a3942;
+  --msg-conv-active:        #2a3942;
+  --msg-conv-active-bar:    #{$green};
+  --msg-conv-unread-bg:     #111b21;
+  --msg-conv-read-bg:       #111b21;
+  --msg-conv-unread-name:   #e9edef;
+  --msg-conv-read-name:     #8696a0;
+  --msg-conv-preview:       #8696a0;
+  --msg-avatar-bg:          #2a3942;
+  --msg-skeleton-bg:        rgba(255,255,255,0.06);
+  --msg-error-bg:           rgba(227,137,104,0.12);
+  --msg-error-color:        #{$orange};
+  --msg-toggle-color:       #8696a0;
+  --msg-back-btn-bg:        #202c33;
+  --msg-back-btn-border:    #2a3942;
+  --msg-chat-header-bg:     #202c33;
+  --msg-chat-header-border: #2a3942;
+  --msg-font:               'Inter', 'Segoe UI', Arial, sans-serif;
 }
-
 // ── Reset ─────────────────────────────────────────────────────────────────────
 *, *:before, *:after { box-sizing: border-box; }
 
-// ── Page shell ────────────────────────────────────────────────────────────────
 .msg-page {
-  font: 14px/20px 'Lato', Arial, sans-serif;
-  background: var(--msg-page-bg);
-  min-height: 100vh;
-  padding: 0;
-  display: flex;
-  transition: background 0.25s;
+  font: 14px/20px var(--msg-font);
+  // ... rest unchanged
+}
 
-  &--auth-required {
-    align-items: center;
-    justify-content: center;
-    color: var(--msg-text-primary);
+.msg-bubble {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 21px;
+  max-width: 78%;
+  word-break: break-word;
+
+  .msg--mine   & {
+    background: var(--msg-bubble-mine);
+    color: var(--msg-bubble-mine-text);
+    border-bottom-right-radius: 2px;
+  }
+  .msg--theirs & {
+    background: var(--msg-bubble-theirs);
+    color: var(--msg-bubble-theirs-text);
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
   }
 }
 
@@ -230,26 +248,27 @@ $orange: #E38968;
 }
 
 .conv-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: background 0.15s;
-  border-left: 3px solid transparent;
+  background: var(--msg-conv-read-bg);
 
-  &:hover { background: var(--msg-conv-hover); }
+  &--unread {
+    background: var(--msg-conv-unread-bg);
 
-  &--active {
-    background: var(--msg-conv-active);
-    border-left-color: var(--msg-conv-active-bar);
+    .conv-name {
+      color: var(--msg-conv-unread-name);
+      font-weight: 700;
+    }
+
+    .conv-preview-text {
+      color: var(--msg-text-primary);
+      font-weight: 500;
+    }
   }
 
-  &--unread .conv-name { color: var(--msg-conv-name); font-weight: 700; }
-
-  &--skeleton { pointer-events: none; gap: 12px; }
+  .conv-name {
+    color: var(--msg-conv-read-name);
+    font-weight: 400;
+  }
 }
-
 .conv-avatar-wrap {
   position: relative;
   flex-shrink: 0;

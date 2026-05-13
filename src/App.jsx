@@ -42,9 +42,11 @@ function Layout() {
   return (
     <div className={`app ${isMessaging ? "app--fullscreen" : ""}`}>
       <Navbar />
-      <Suspense fallback={<div className="page-loading">Loading…</div>}>
-        <Outlet />
-      </Suspense>
+      <div style={{ flex: 1 }}>
+        <Suspense fallback={<div className="page-loading">Loading…</div>}>
+          <Outlet />
+        </Suspense>
+      </div>
       {!isMessaging && <Footer />}
     </div>
   );
