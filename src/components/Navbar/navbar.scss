@@ -284,24 +284,24 @@
     .menu {
         width: 100%;
         max-width: 1400px;
-        padding: 10px 24px;
+        padding: 4px 24px;        // was 10px — now just 4px top/bottom
         display: flex;
         justify-content: space-between;
         font-weight: 400;
         color: #666;
         font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
-
+        font-size: 13px;           // was 14px — slightly tighter
+    
         .menulink {
             white-space: nowrap;
             text-decoration: none;
             color: #555;
-            padding-bottom: 4px;
+            padding-bottom: 2px;   // was 4px
             transition: color 0.15s, border-bottom 0.15s;
-
+    
             &:hover {
-                color: #1a9e60 ;
-                border-bottom: 2px solid #1a9e60 ;
+                color: #1a9e60;
+                border-bottom: 2px solid #1a9e60;
             }
         }
     }

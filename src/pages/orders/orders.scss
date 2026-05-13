@@ -1,53 +1,180 @@
-.orders{
-    display: flex;
-    justify-content: center;
-    font-family:Arial, Helvetica, sans-serif;
-    .container {
-        width: 1400px;
-        padding: 50px 0px;
+// ── Orders page ────────────────────────────────────────────────────────────────
+$green:       #1dbf73;
+$green-light: rgba(#1dbf73, 0.08);
+$red:         #e74c3c;
+$amber:       #f39c12;
+$blue:        #3498db;
+$grey:        #6b7280;
+$border:      #e5e7eb;
+$bg:          #f3f4f6;
+$white:       #ffffff;
+$text:        #111827;
 
-        .title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+.orders {
+  min-height: 100vh;
+  background: $bg;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 40px 24px;
 
-            button {
-                background: #1dbf73;
-                color: white;
-                padding: 10px;
-                border: none;
-                font-weight: 500;
-                cursor: pointer;
-            }
-        }
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
-        table {
-            width: 100%;
+  // ── Header ──────────────────────────────────────────────────────────────────
+  &__header {
+    margin-bottom: 24px;
 
-            tr {
-                th {
-                    text-align: left;
-                }
-
-                height: 50px;
-
-                td {
-                    img {
-                        width: 50px;
-                        height: 25px;
-                        object-fit: cover;
-
-                    }
-
-                    .message {
-                        width: 25px;
-                        cursor: pointer;
-                    }
-                }
-                &:nth-child(even){
-                    background-color: #1dbf730f;
-                }
-            }
-        }
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: $text;
+      margin: 0;
     }
+  }
+
+  // ── Filter tabs ─────────────────────────────────────────────────────────────
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  &__filter-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px solid $border;
+    background: $white;
+    color: $grey;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $green;
+      color: $green;
+    }
+
+    &--active {
+      background: $green;
+      border-color: $green;
+      color: $white;
+
+      &:hover {
+        background: darken($green, 6%);
+        color: $white;
+      }
+    }
+  }
+
+  // ── Card wrapper ─────────────────────────────────────────────────────────────
+  &__card {
+    background: $white;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  // ── Empty / loading / error state ───────────────────────────────────────────
+  &__feedback {
+    text-align: center;
+    color: $grey;
+    font-size: 0.95rem;
+    padding: 48px 24px;
+
+    &--error {
+      color: $red;
+    }
+  }
+
+  // ── Table ────────────────────────────────────────────────────────────────────
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead tr {
+      background: #f9fafb;
+      border-bottom: 1.5px solid $border;
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: $grey;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid $border;
+      transition: background 0.12s;
+
+      &:last-child { border-bottom: none; }
+      &:hover      { background: $green-light; }
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      color: $text;
+      vertical-align: middle;
+    }
+  }
+
+  // ── Cover image ──────────────────────────────────────────────────────────────
+  &__cover {
+    width: 52px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+  }
+
+  // ── Price ────────────────────────────────────────────────────────────────────
+  &__price {
+    font-weight: 600;
+  }
+
+  // ── Status / payment badges ───────────────────────────────────────────────────
+  &__badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: capitalize;
+
+    // order statuses
+    &--pending     { background: rgba($amber, 0.12); color: darken($amber, 12%); }
+    &--in_progress { background: rgba($blue,  0.12); color: darken($blue,  10%); }
+    &--submitted   { background: rgba($blue,  0.12); color: darken($blue,  10%); }
+    &--completed   { background: rgba($green, 0.12); color: darken($green, 10%); }
+    &--archived    { background: rgba($grey,  0.12); color: $grey; }
+
+    // payment statuses
+    &--paid        { background: rgba($green, 0.12); color: darken($green, 10%); }
+    &--unpaid      { background: rgba($red,   0.12); color: darken($red,   8%); }
+    &--refunded    { background: rgba($grey,  0.12); color: $grey; }
+  }
+
+  // ── Message icon ─────────────────────────────────────────────────────────────
+  &__msg-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+
+    &:hover { opacity: 1; }
+  }
 }
