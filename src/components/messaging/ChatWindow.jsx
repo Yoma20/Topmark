@@ -3,7 +3,62 @@ import newRequest from "../../utils/newRequest";
 import { getMessages } from "../../api/messaging";
 import OfferCard from "../offerCard/OfferCard";
 import SendOfferModal from "../offerCard/SendOfferModal";
+import { Avatar } from "./ConversationList";
 
+// ── Simple emoji picker ───────────────────────────────────────────────────────
+const EMOJI_LIST = [
+  "😊","😂","❤️","👍","🙏","😭","😍","🔥","✅","💯",
+  "🎉","😅","🤔","👀","💪","✨","😢","🥹","😎","🤝",
+  "👋","🙌","💬","📎","📝","⭐","🚀","💡","✔️","❓",
+];
+
+function EmojiPicker({ onSelect, onClose }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) onClose();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
+
+  return (
+    <div className="emoji-picker" ref={ref} role="dialog" aria-label="Emoji picker">
+      {EMOJI_LIST.map((emoji) => (
+        <button
+          key={emoji}
+          className="emoji-picker__btn"
+          onClick={() => onSelect(emoji)}
+          aria-label={emoji}
+        >
+          {emoji}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Attachment pill shown in the input area before sending ────────────────────
+function AttachmentPreview({ file, onRemove }) {
+  const isImage = file.type.startsWith("image/");
+  const isVideo = file.type.startsWith("video/");
+
+  const icon = isImage ? "🖼️" : isVideo ? "🎬" : "📄";
+  const name = file.name.length > 22 ? file.name.slice(0, 20) + "…" : file.name;
+
+  return (
+    <div className="attach-preview">
+      <span className="attach-preview__icon">{icon}</span>
+      <span className="attach-preview__name">{name}</span>
+      <button className="attach-preview__remove" onClick={onRemove} aria-label="Remove attachment">
+        ✕
+      </button>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
 const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSent }) => {
   const [messages, setMessages] = useState([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
@@ -11,15 +66,17 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
   const [showOfferModal, setShowOfferModal] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [attachments, setAttachments] = useState([]); // File[]
 
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const imageInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
-  // Track the conversation id the interval was set up for
   const convIdRef = useRef(null);
-  // Stable ref to fetchMessages so the interval never needs rebuilding
   const fetchMessagesRef = useRef(null);
-  // Track message count so we only scroll when a genuinely new message arrives
   const prevMsgCountRef = useRef(0);
 
   const isExpert = currentUserType === "expert";
@@ -29,8 +86,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     if (!convId) return;
     try {
       const msgs = await getMessages(convId);
-      // Only call setMessages if the content actually changed — compare by
-      // last message id and count to avoid triggering a re-render on every poll.
       setMessages((prev) => {
         const sameCount = prev.length === msgs.length;
         const sameLastId =
@@ -44,42 +99,31 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     } finally {
       setLoadingMsgs(false);
     }
-  }, []); // empty deps — never recreated
+  }, []);
 
-  // Keep ref in sync
   useEffect(() => { fetchMessagesRef.current = fetchMessages; }, [fetchMessages]);
 
-  // ── Reset + initial load when conversation changes ──────────────────────────
   useEffect(() => {
     if (!conversation) {
       setMessages([]);
       prevMsgCountRef.current = 0;
       return;
     }
-
-    // Only re-initialise when the actual conversation id changes
     if (convIdRef.current === conversation.id) return;
     convIdRef.current = conversation.id;
-
     setMessages([]);
     prevMsgCountRef.current = 0;
     setLoadingMsgs(true);
     fetchMessagesRef.current?.(conversation.id);
-  }, [conversation?.id]); // eslint-disable-line
+  }, [conversation?.id]);
 
-  // ── Stable polling interval — keyed to conversation id ─────────────────────
   useEffect(() => {
     if (!conversation?.id) return;
     const id = conversation.id;
-    const interval = setInterval(() => {
-      fetchMessagesRef.current?.(id);
-    }, 4000);
+    const interval = setInterval(() => { fetchMessagesRef.current?.(id); }, 4000);
     return () => clearInterval(interval);
-  }, [conversation?.id]); // only restarts when switching conversations
+  }, [conversation?.id]);
 
-  // ── Scroll to bottom ONLY when message count increases ─────────────────────
-  // Previously this ran on every setMessages call, including polls that return
-  // the same data — which is what caused the page to "pull up" constantly.
   useEffect(() => {
     if (messages.length > prevMsgCountRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -87,15 +131,15 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     prevMsgCountRef.current = messages.length;
   }, [messages]);
 
-  // ── Send plain text message ─────────────────────────────────────────────────
+  // ── Send ────────────────────────────────────────────────────────────────────
   const handleSend = async () => {
     const content = text.trim();
-    if (!content || sending) return;
+    if ((!content && attachments.length === 0) || sending) return;
 
     const optimisticMsg = {
       id: `opt-${Date.now()}`,
       sender: { id: currentUserId },
-      content,
+      content: content || (attachments.length > 0 ? `📎 ${attachments[0].name}` : ""),
       message_type: "text",
       is_read: false,
       created_at: new Date().toISOString(),
@@ -103,17 +147,28 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     };
     setMessages((prev) => [...prev, optimisticMsg]);
     setText("");
+    setAttachments([]);
     setSending(true);
     setSendError("");
 
     try {
-      const res = await newRequest.post(
-        `/messaging/conversations/${conversation.id}/send/`,
-        { content }
-      );
-      setMessages((prev) =>
-        prev.map((m) => (m.id === optimisticMsg.id ? res.data : m))
-      );
+      let res;
+      if (attachments.length > 0) {
+        const formData = new FormData();
+        if (content) formData.append("content", content);
+        attachments.forEach((f) => formData.append("files", f));
+        res = await newRequest.post(
+          `/messaging/conversations/${conversation.id}/send/`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+      } else {
+        res = await newRequest.post(
+          `/messaging/conversations/${conversation.id}/send/`,
+          { content }
+        );
+      }
+      setMessages((prev) => prev.map((m) => (m.id === optimisticMsg.id ? res.data : m)));
       onMessageSent?.();
     } catch {
       setSendError("Failed to send. Click to retry.");
@@ -139,7 +194,23 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     }
   };
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  const handleEmojiSelect = (emoji) => {
+    setText((prev) => prev + emoji);
+    setShowEmoji(false);
+    textareaRef.current?.focus();
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    setAttachments((prev) => [...prev, ...files].slice(0, 5)); // max 5 attachments
+    e.target.value = "";
+  };
+
+  const removeAttachment = (index) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ── No conversation selected ────────────────────────────────────────────────
   if (!conversation) {
     return (
       <div className="chat-window">
@@ -159,9 +230,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     <div className="chat-window">
       {/* Header */}
       <div className="chat-header">
-        <div className="chat-header-avatar">
-          {otherParticipant?.username?.charAt(0).toUpperCase()}
-        </div>
+        <Avatar user={otherParticipant} size={42} className="chat-header-avatar" />
         <div>
           <div className="chat-header-name">{otherParticipant?.username}</div>
           <div className="chat-header-role">
@@ -195,10 +264,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
 
           if (msg.message_type === "offer" && msg.offer) {
             return (
-              <div
-                key={msg.id}
-                className={`msg ${isMine ? "msg--mine" : "msg--theirs"}`}
-              >
+              <div key={msg.id} className={`msg ${isMine ? "msg--mine" : "msg--theirs"}`}>
                 <OfferCard
                   offer={msg.offer}
                   currentUserId={currentUserId}
@@ -208,10 +274,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
                   }}
                 />
                 <span className="msg-meta">
-                  {new Date(msg.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
             );
@@ -220,19 +283,12 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
           return (
             <div
               key={msg.id}
-              className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${
-                msg._optimistic ? "msg--optimistic" : ""
-              }`}
+              className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${msg._optimistic ? "msg--optimistic" : ""}`}
             >
               <div className="msg-bubble">{msg.content}</div>
               <span className="msg-meta">
-                {new Date(msg.created_at).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                {isMine && msg.is_read && (
-                  <span className="msg-read-indicator"> ✓✓</span>
-                )}
+                {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                {isMine && msg.is_read && <span className="msg-read-indicator"> ✓✓</span>}
               </span>
             </div>
           );
@@ -253,8 +309,80 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
         <div className="chat-char-count">{text.length} / 5000</div>
       )}
 
+      {/* Attachment previews */}
+      {attachments.length > 0 && (
+        <div className="attach-preview-row">
+          {attachments.map((file, i) => (
+            <AttachmentPreview key={i} file={file} onRemove={() => removeAttachment(i)} />
+          ))}
+        </div>
+      )}
+
       {/* Input row */}
       <div className="chat-input-row">
+        {/* Hidden file inputs */}
+        <input ref={fileInputRef}  type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={handleFileChange} />
+        <input ref={imageInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={handleFileChange} />
+        <input ref={videoInputRef} type="file" accept="video/*" multiple style={{ display: "none" }} onChange={handleFileChange} />
+
+        {/* Attach buttons */}
+        <div className="chat-attach-group">
+          <button
+            className="chat-attach-btn"
+            onClick={() => imageInputRef.current?.click()}
+            title="Attach photo"
+            aria-label="Attach photo"
+            disabled={sending}
+          >
+            {/* Photo icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </button>
+          <button
+            className="chat-attach-btn"
+            onClick={() => videoInputRef.current?.click()}
+            title="Attach video"
+            aria-label="Attach video"
+            disabled={sending}
+          >
+            {/* Video icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+            </svg>
+          </button>
+          <button
+            className="chat-attach-btn"
+            onClick={() => fileInputRef.current?.click()}
+            title="Attach document"
+            aria-label="Attach document"
+            disabled={sending}
+          >
+            {/* Paperclip icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Emoji toggle */}
+        <div className="chat-emoji-wrap">
+          <button
+            className={`chat-attach-btn ${showEmoji ? "chat-attach-btn--active" : ""}`}
+            onClick={() => setShowEmoji((v) => !v)}
+            title="Emoji"
+            aria-label="Emoji"
+            disabled={sending}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+            </svg>
+          </button>
+          {showEmoji && (
+            <EmojiPicker onSelect={handleEmojiSelect} onClose={() => setShowEmoji(false)} />
+          )}
+        </div>
+
         <textarea
           ref={textareaRef}
           className="chat-input"
@@ -266,10 +394,11 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
           disabled={sending}
           maxLength={5000}
         />
+
         <button
           className={`chat-send-btn ${sending ? "chat-send-btn--sending" : ""}`}
           onClick={handleSend}
-          disabled={!text.trim() || sending}
+          disabled={(!text.trim() && attachments.length === 0) || sending}
           aria-label="Send message"
         >
           ➤

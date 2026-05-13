@@ -1,6 +1,37 @@
 // src/components/messaging/ConversationList.jsx
 import { formatDistanceToNow } from "./utils";
 
+/** Renders a real profile picture if available, otherwise falls back to the
+ *  coloured initial avatar that was there before. */
+function Avatar({ user, size = 40, className = "conv-avatar" }) {
+  if (user?.profile_picture) {
+    return (
+      <img
+        src={user.profile_picture}
+        alt={user.username}
+        className={`${className} ${className}--img`}
+        style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover" }}
+        onError={(e) => {
+          // If the image fails to load, swap it out for the initial fallback
+          e.currentTarget.style.display = "none";
+          e.currentTarget.nextSibling?.style.removeProperty("display");
+        }}
+      />
+    );
+  }
+  return (
+    <div
+      className={className}
+      style={{ width: size, height: size }}
+      aria-label={user?.username}
+    >
+      {user?.username?.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+export { Avatar };
+
 export default function ConversationList({
   conversations,
   activeId,
@@ -43,7 +74,6 @@ export default function ConversationList({
         const isActive = conv.id === activeId;
         const isMine = last?.sender_id === currentUserId;
 
-        // Simple heuristic: if last message was within 10 min, show online
         const isOnline = last
           ? Date.now() - new Date(last.created_at).getTime() < 10 * 60 * 1000
           : false;
@@ -60,9 +90,7 @@ export default function ConversationList({
             onKeyDown={(e) => e.key === "Enter" && onSelect(conv)}
           >
             <div className="conv-avatar-wrap">
-              <div className="conv-avatar">
-                {other.username.charAt(0).toUpperCase()}
-              </div>
+              <Avatar user={other} size={40} className="conv-avatar" />
               <span
                 className={`conv-status-dot ${
                   isOnline ? "conv-status-dot--online" : "conv-status-dot--offline"

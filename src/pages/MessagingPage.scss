@@ -620,6 +620,132 @@ $orange: #E38968;
   &--sending { opacity: 0.6; }
 }
 
+// ── Avatar image variant ──────────────────────────────────────────────────────
+.conv-avatar--img,
+.chat-header-avatar--img {
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+// ── Input toolbar: attach + emoji buttons ─────────────────────────────────────
+.chat-attach-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.chat-emoji-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chat-attach-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--msg-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--msg-conv-hover);
+    color: var(--msg-text-primary);
+  }
+
+  &--active {
+    background: var(--msg-conv-active);
+    color: $blue;
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+// ── Emoji picker popup ────────────────────────────────────────────────────────
+.emoji-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: var(--msg-panel-bg);
+  border: 1px solid var(--msg-input-border);
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  width: 280px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+  z-index: 200;
+
+  &__btn {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: none;
+    font-size: 17px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+    padding: 0;
+
+    &:hover { background: var(--msg-conv-hover); }
+  }
+}
+
+// ── Attachment previews above the input ───────────────────────────────────────
+.attach-preview-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 20px 0;
+  background: var(--msg-panel-bg);
+}
+
+.attach-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--msg-input-bg);
+  border: 1px solid var(--msg-input-border);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--msg-text-primary);
+  max-width: 200px;
+
+  &__icon { font-size: 14px; flex-shrink: 0; }
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--msg-text-secondary);
+    font-size: 11px;
+    padding: 0;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-left: 2px;
+
+    &:hover { color: $orange; }
+  }
+}
+
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 600px) {
   .msg-page { padding: 0; }
