@@ -93,7 +93,10 @@ const Navbar = () => {
                 <div className="logo">
                     <Link to="/" className="logo-link">
                         <img src="/images/logow.png" alt="TopMark" width={32} height={38} />
-                        <span className="text-2xl">TopMark</span>
+                        <span className="site-footer__logo">
+                            <span className="site-footer__logo--top">Top</span>
+                            <span className="site-footer__logo--mark">Mark</span>
+                        </span>
                     </Link>
                 </div>
 

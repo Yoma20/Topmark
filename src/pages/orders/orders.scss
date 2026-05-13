@@ -1,6 +1,6 @@
 // ── Orders page ────────────────────────────────────────────────────────────────
-$green:       #1dbf73;
-$green-light: rgba(#1dbf73, 0.08);
+$green:       #1a9e60 ;
+$green-light: rgba(#1a9e60, 0.08);
 $red:         #e74c3c;
 $amber:       #f39c12;
 $blue:        #3498db;
@@ -24,6 +24,7 @@ $text:        #111827;
   // ── Header ──────────────────────────────────────────────────────────────────
   &__header {
     margin-bottom: 24px;
+    font-family: ui-sans-serif;
 
     h1 {
       font-size: 1.6rem;
@@ -43,7 +44,7 @@ $text:        #111827;
 
   &__filter-btn {
     padding: 6px 16px;
-    border-radius: 20px;
+    border-radius: 10px;
     border: 1.5px solid $border;
     background: $white;
     color: $grey;
