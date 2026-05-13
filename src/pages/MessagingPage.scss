@@ -89,10 +89,8 @@ $orange: #E38968;
   font: 14px/20px 'Lato', Arial, sans-serif;
   background: var(--msg-page-bg);
   min-height: 100vh;
-  padding: 40px 20px;
+  padding: 0;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
   transition: background 0.25s;
 
   &--auth-required {
@@ -104,14 +102,12 @@ $orange: #E38968;
 
 .msg-page__body {
   display: flex;
-  width: 860px;       // wider to show both panels comfortably
-  max-width: 100%;
-  height: 820px;
+  width: 100%;
+  height: 100vh;
   background: var(--msg-body-bg);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
-  transition: background 0.25s, box-shadow 0.25s;
+  transition: background 0.25s;
 }
 
 .msg-page__badge {
@@ -748,12 +744,8 @@ $orange: #E38968;
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 600px) {
-  .msg-page { padding: 0; }
-
   .msg-page__body {
-    width: 100%;
-    height: 100vh;
-    border-radius: 0;
+    height: 100dvh; // use dynamic viewport on mobile
   }
 
   // On mobile, sidebar and main toggle each other
