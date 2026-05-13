@@ -10,11 +10,6 @@ const GigCard = ({ item }) => {
     <Link to={`/gig/${item.slug}`} className="link">
       <div className="gigCard">
         <img
-          src={item.cover_image || '/images/noavatar.jpeg'}
-          alt={item.title}
-          loading="lazy"
-        />
-        <img
           className="cover-img"
           src={item.cover_image || '/images/noavatar.jpeg'}
           alt={item.title}
