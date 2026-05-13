@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ContactDrawer from "../../components/messaging/ContactDrawer";
+import AuthContext from "../../AuthContext";
 import "./Gig.scss";
 
 /* ─── Star Rating ──────────────────────────────────────────── */
@@ -56,11 +57,10 @@ const ImageGallery = ({ images, title }) => {
 const Gig = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { user: currentUser } = useContext(AuthContext);  // ← session-based, not localStorage
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [whatsIncludedOpen, setWhatsIncludedOpen] = useState(false);
-
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["gig", slug],
@@ -74,12 +74,18 @@ const Gig = () => {
   if (isLoading) return <div className="gig-loader"><div className="spinner" /></div>;
   if (error) return <div className="gig-error">Something went wrong loading this gig.</div>;
 
+  // Merge cover_image + extra images array so gallery always has something to show
+  const allImages = [
+    ...(data.cover_image ? [data.cover_image] : []),
+    ...(data.images || []).filter(img => img !== data.cover_image),
+  ];
+
   const pageTitle = data.title
     ? `${data.title} by ${data.expert_username} — Topmark`
     : "Expert Service — Topmark";
   const pageDescription = data.description?.slice(0, 155) ?? `Hire ${data.expert_username} on Topmark.`;
   const lowestPrice = data.packages?.length ? Math.min(...data.packages.map(p => p.price)) : null;
-  const isOwner = currentUser && currentUser.id === data.expert_user_id;
+  const isOwner = currentUser && currentUser.user_id === data.expert_user_id;
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -122,7 +128,11 @@ const Gig = () => {
 
           {/* Seller row */}
           <div className="seller-row">
-            <div className="avatar sm">{data.expert_username?.charAt(0).toUpperCase()}</div>
+            {data.expert_avatar ? (
+              <img className="avatar sm" src={data.expert_avatar} alt={data.expert_username} style={{ objectFit: 'cover' }} />
+            ) : (
+              <div className="avatar sm">{data.expert_username?.charAt(0).toUpperCase()}</div>
+            )}
             <span className="seller-name">{data.expert_username}</span>
             {data.expert_badge && <span className="badge">{data.expert_badge}</span>}
             <StarRating rating={data.expert_rating} reviewCount={data.review_count} />
@@ -131,8 +141,8 @@ const Gig = () => {
             )}
           </div>
 
-          {/* Image gallery */}
-          <ImageGallery images={data.images} title={data.title} />
+          {/* Image gallery — uses cover_image + images array */}
+          <ImageGallery images={allImages} title={data.title} />
 
           {/* About */}
           <section className="gig-section">
@@ -140,7 +150,7 @@ const Gig = () => {
             <p>{data.description}</p>
           </section>
 
-          {/* Packages — left-side cards (mobile / secondary view) */}
+          {/* Packages — left-side cards */}
           {data.packages?.length > 0 && (
             <section className="gig-section">
               <h2>Packages</h2>
@@ -160,7 +170,10 @@ const Gig = () => {
                     </div>
                     <ul className="pkg-features">
                       {pkg.features.map((f, i) => (
-                        <li key={i}><svg viewBox="0 0 24 24" width="13" height="13"><path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>{f}</li>
+                        <li key={i}>
+                          <svg viewBox="0 0 24 24" width="13" height="13"><path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
+                          {f}
+                        </li>
                       ))}
                     </ul>
                     {pkg.description && <p className="pkg-desc">{pkg.description}</p>}
@@ -174,17 +187,18 @@ const Gig = () => {
           <section className="gig-section">
             <h2>About the Expert</h2>
             <div className="expert-card">
-              <div className="avatar lg">{data.expert_username?.charAt(0).toUpperCase()}</div>
+              {data.expert_avatar ? (
+                <img className="avatar lg" src={data.expert_avatar} alt={data.expert_username} style={{ objectFit: 'cover' }} />
+              ) : (
+                <div className="avatar lg">{data.expert_username?.charAt(0).toUpperCase()}</div>
+              )}
               <div className="expert-info">
                 <span className="expert-name">{data.expert_username}</span>
                 <StarRating rating={data.expert_rating} reviewCount={data.review_count} />
                 {data.expert_bio && <p className="expert-bio">{data.expert_bio}</p>}
               </div>
               {!isOwner && (
-                <button
-                  className="btn-contact-expert"
-                  onClick={handleContactClick}
-                >
+                <button className="btn-contact-expert" onClick={handleContactClick}>
                   Contact Me
                 </button>
               )}
@@ -237,7 +251,8 @@ const Gig = () => {
                   <div className="whats-included">
                     <button className="wi-toggle" onClick={() => setWhatsIncludedOpen(o => !o)}>
                       What's Included
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: whatsIncludedOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }}>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"
+                        style={{ transform: whatsIncludedOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }}>
                         <path d="M6 9l6 6 6-6"/>
                       </svg>
                     </button>
@@ -256,15 +271,12 @@ const Gig = () => {
 
                 <button
                   className="btn-continue"
-                  onClick={() => navigate(`/checkout?gig=${data.id}&package=${selectedPackage.id}`)}
+                  onClick={() => navigate(`/pay/${selectedPackage.id}`)}
                 >
                   Continue <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round"/></svg>
                 </button>
 
-                <button
-                  className="btn-contact"
-                  onClick={handleContactClick}
-                >
+                <button className="btn-contact" onClick={handleContactClick}>
                   Contact me ▾
                 </button>
 
@@ -277,7 +289,7 @@ const Gig = () => {
         )}
       </div>
 
-      {/* Contact drawer — fixed overlay, URL stays on gig page */}
+      {/* Contact drawer */}
       {!isOwner && (
         <ContactDrawer
           isOpen={drawerOpen}
