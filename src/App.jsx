@@ -42,7 +42,13 @@ function Layout() {
   return (
     <div className={`app ${isMessaging ? "app--fullscreen" : ""}`}>
       <Navbar />
-      <div style={{ flex: 1 }}>
+      <div style={{
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: isMessaging ? 'hidden' : 'auto',
+      }}>
         <Suspense fallback={<div className="page-loading">Loading…</div>}>
           <Outlet />
         </Suspense>
