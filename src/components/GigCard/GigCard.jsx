@@ -17,9 +17,16 @@ const GigCard = ({ item }) => {
         />
         <div className="info">
           <div className="user">
-            <div className="avatar-initial">
-              {item.expert_username?.charAt(0).toUpperCase() || "E"}
-            </div>
+            {item.expert_avatar ? (
+              <img
+                src={item.expert_avatar}
+                alt={item.expert_username}
+              />
+            ) : (
+              <div className="avatar-initial">
+                {item.expert_username?.charAt(0).toUpperCase() || "E"}
+              </div>
+            )}
             <span>{item.expert_username}</span>
           </div>
           <p>{item.short_description || item.description?.slice(0, 100)}</p>
