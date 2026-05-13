@@ -1,130 +1,128 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+// ── Shared accent colours ─────────────────────────────────────────────────────
 $green:  #1a9e60;
 $blue:   #94C2ED;
 $orange: #E38968;
 
+// ── Light mode tokens ─────────────────────────────────────────────────────────
 .msg-page--light {
-  --msg-page-bg:            #ffffff;
-  --msg-body-bg:            #ffffff;
-  --msg-sidebar-bg:         #ffffff;
-  --msg-sidebar-border:     #e4e5e7;
-  --msg-header-bg:          #ffffff;
-  --msg-header-border:      #e4e5e7;
-  --msg-title-color:        #111b21;
-  --msg-search-bg:          #f0f2f5;
-  --msg-search-color:       #111b21;
-  --msg-search-placeholder: #8696a0;
-  --msg-main-bg:            #efeae2;   // WhatsApp-style warm chat background
-  --msg-panel-bg:           #ffffff;
-  --msg-text-primary:       #111b21;
-  --msg-text-secondary:     #667781;
-  --msg-input-bg:           #ffffff;
-  --msg-input-border:       #e4e5e7;
-  --msg-input-focus:        #{$green};
-  --msg-send-bg:            #{$green};
-  --msg-bubble-mine:        #dcf8c6;   // WhatsApp sender — soft green
-  --msg-bubble-mine-text:   #111b21;   // dark text on light green
-  --msg-bubble-theirs:      #ffffff;   // receiver — pure white bubble
-  --msg-bubble-theirs-text: #111b21;   // dark text
-  --msg-conv-hover:         #f5f6f6;
-  --msg-conv-active:        #e9f5ef;
-  --msg-conv-active-bar:    #{$green};
-  --msg-conv-unread-bg:     #ffffff;
-  --msg-conv-read-bg:       #ffffff;
-  --msg-conv-unread-name:   #111b21;
-  --msg-conv-read-name:     #667781;
-  --msg-conv-preview:       #667781;
-  --msg-avatar-bg:          #{$green};
-  --msg-skeleton-bg:        rgba(0,0,0,0.06);
-  --msg-error-bg:           rgba(227,137,104,0.10);
-  --msg-error-color:        #{$orange};
-  --msg-toggle-color:       #54656f;
-  --msg-back-btn-bg:        #ffffff;
-  --msg-back-btn-border:    #e4e5e7;
-  --msg-chat-header-bg:     #ffffff;
-  --msg-chat-header-border: #e4e5e7;
-  --msg-font:               'Inter', 'Segoe UI', Arial, sans-serif;
+  --msg-page-bg:              #f0f2f5;
+  --msg-body-bg:              #ffffff;
+  --msg-sidebar-bg:           #ffffff;
+  --msg-sidebar-border:       #e4e5e7;
+  --msg-header-bg:            #ffffff;
+  --msg-header-border:        #e4e5e7;
+  --msg-title-color:          #111b21;
+  --msg-search-bg:            #f0f2f5;
+  --msg-search-color:         #111b21;
+  --msg-search-placeholder:   #8696a0;
+  --msg-main-bg:              #efeae2;
+  --msg-panel-bg:             #ffffff;
+  --msg-text-primary:         #111b21;
+  --msg-text-secondary:       #667781;
+  --msg-input-bg:             #ffffff;
+  --msg-input-border:         #e4e5e7;
+  --msg-input-focus:          #{$green};
+  --msg-send-bg:              #{$green};
+  --msg-bubble-mine:          #dcf8c6;
+  --msg-bubble-mine-text:     #111b21;
+  --msg-bubble-theirs:        #ffffff;
+  --msg-bubble-theirs-text:   #111b21;
+  --msg-conv-hover:           #f5f6f6;
+  --msg-conv-active:          #e9f5ef;
+  --msg-conv-active-bar:      #{$green};
+  --msg-conv-unread-bg:       #ffffff;
+  --msg-conv-read-bg:         #ffffff;
+  --msg-conv-unread-name:     #111b21;
+  --msg-conv-read-name:       #667781;
+  --msg-conv-preview:         #667781;
+  --msg-avatar-bg:            #{$green};
+  --msg-skeleton-bg:          rgba(0,0,0,0.06);
+  --msg-error-bg:             rgba(227,137,104,0.10);
+  --msg-error-color:          #{$orange};
+  --msg-toggle-color:         #54656f;
+  --msg-back-btn-bg:          #ffffff;
+  --msg-back-btn-border:      #e4e5e7;
+  --msg-chat-header-bg:       #ffffff;
+  --msg-chat-header-border:   #e4e5e7;
+  --msg-font:                 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
+// ── Dark mode tokens ──────────────────────────────────────────────────────────
 .msg-page--dark {
-  --msg-page-bg:            #111b21;
-  --msg-body-bg:            #111b21;
-  --msg-sidebar-bg:         #111b21;
-  --msg-sidebar-border:     #2a3942;
-  --msg-header-bg:          #202c33;
-  --msg-header-border:      #2a3942;
-  --msg-title-color:        #e9edef;
-  --msg-search-bg:          #2a3942;
-  --msg-search-color:       #e9edef;
-  --msg-search-placeholder: #8696a0;
-  --msg-main-bg:            #0b141a;   // WhatsApp dark chat bg
-  --msg-panel-bg:           #202c33;
-  --msg-text-primary:       #e9edef;
-  --msg-text-secondary:     #8696a0;
-  --msg-input-bg:           #2a3942;
-  --msg-input-border:       #2a3942;
-  --msg-input-focus:        #{$green};
-  --msg-send-bg:            #{$green};
-  --msg-bubble-mine:        #005c4b;   // WhatsApp dark sender — deep teal green
-  --msg-bubble-mine-text:   #e9edef;
-  --msg-bubble-theirs:      #202c33;   // receiver — dark panel
-  --msg-bubble-theirs-text: #e9edef;
-  --msg-conv-hover:         #2a3942;
-  --msg-conv-active:        #2a3942;
-  --msg-conv-active-bar:    #{$green};
-  --msg-conv-unread-bg:     #111b21;
-  --msg-conv-read-bg:       #111b21;
-  --msg-conv-unread-name:   #e9edef;
-  --msg-conv-read-name:     #8696a0;
-  --msg-conv-preview:       #8696a0;
-  --msg-avatar-bg:          #2a3942;
-  --msg-skeleton-bg:        rgba(255,255,255,0.06);
-  --msg-error-bg:           rgba(227,137,104,0.12);
-  --msg-error-color:        #{$orange};
-  --msg-toggle-color:       #8696a0;
-  --msg-back-btn-bg:        #202c33;
-  --msg-back-btn-border:    #2a3942;
-  --msg-chat-header-bg:     #202c33;
-  --msg-chat-header-border: #2a3942;
-  --msg-font:               'Inter', 'Segoe UI', Arial, sans-serif;
+  --msg-page-bg:              #0b141a;
+  --msg-body-bg:              #111b21;
+  --msg-sidebar-bg:           #111b21;
+  --msg-sidebar-border:       #2a3942;
+  --msg-header-bg:            #202c33;
+  --msg-header-border:        #2a3942;
+  --msg-title-color:          #e9edef;
+  --msg-search-bg:            #2a3942;
+  --msg-search-color:         #e9edef;
+  --msg-search-placeholder:   #8696a0;
+  --msg-main-bg:              #0b141a;
+  --msg-panel-bg:             #202c33;
+  --msg-text-primary:         #e9edef;
+  --msg-text-secondary:       #8696a0;
+  --msg-input-bg:             #2a3942;
+  --msg-input-border:         #2a3942;
+  --msg-input-focus:          #{$green};
+  --msg-send-bg:              #{$green};
+  --msg-bubble-mine:          #005c4b;
+  --msg-bubble-mine-text:     #e9edef;
+  --msg-bubble-theirs:        #202c33;
+  --msg-bubble-theirs-text:   #e9edef;
+  --msg-conv-hover:           #2a3942;
+  --msg-conv-active:          #2a3942;
+  --msg-conv-active-bar:      #{$green};
+  --msg-conv-unread-bg:       #111b21;
+  --msg-conv-read-bg:         #111b21;
+  --msg-conv-unread-name:     #e9edef;
+  --msg-conv-read-name:       #8696a0;
+  --msg-conv-preview:         #8696a0;
+  --msg-avatar-bg:            #2a3942;
+  --msg-skeleton-bg:          rgba(255,255,255,0.06);
+  --msg-error-bg:             rgba(227,137,104,0.12);
+  --msg-error-color:          #{$orange};
+  --msg-toggle-color:         #8696a0;
+  --msg-back-btn-bg:          #202c33;
+  --msg-back-btn-border:      #2a3942;
+  --msg-chat-header-bg:       #202c33;
+  --msg-chat-header-border:   #2a3942;
+  --msg-font:                 'Inter', 'Segoe UI', Arial, sans-serif;
 }
+
 // ── Reset ─────────────────────────────────────────────────────────────────────
 *, *:before, *:after { box-sizing: border-box; }
 
+// ── Page shell ────────────────────────────────────────────────────────────────
 .msg-page {
   font: 14px/20px var(--msg-font);
-  // ... rest unchanged
-}
+  background: var(--msg-page-bg);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow: hidden;
+  transition: background 0.25s;
 
-.msg-bubble {
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 21px;
-  max-width: 78%;
-  word-break: break-word;
-
-  .msg--mine   & {
-    background: var(--msg-bubble-mine);
-    color: var(--msg-bubble-mine-text);
-    border-bottom-right-radius: 2px;
-  }
-  .msg--theirs & {
-    background: var(--msg-bubble-theirs);
-    color: var(--msg-bubble-theirs-text);
-    border-bottom-left-radius: 2px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  &--auth-required {
+    align-items: center;
+    justify-content: center;
+    color: var(--msg-text-primary);
   }
 }
 
 .msg-page__body {
   display: flex;
-  width: 100%;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
   background: var(--msg-body-bg);
-  border-radius: 0;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  border: 1px solid var(--msg-sidebar-border);
   transition: background 0.25s;
 }
 
@@ -152,10 +150,10 @@ $orange: #E38968;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-radius: 12px 0 0 12px;
   transition: background 0.25s;
 
-  // Mobile only: hide when chat is open
-  &--hidden-mobile { display: flex; } // always shown on desktop
+  &--hidden-mobile { display: flex; }
 }
 
 .msg-sidebar__header {
@@ -182,7 +180,6 @@ $orange: #E38968;
   align-items: center;
 }
 
-// Dark / light toggle button
 .msg-theme-toggle {
   background: none;
   border: none;
@@ -205,11 +202,12 @@ $orange: #E38968;
   padding: 8px 14px;
   color: var(--msg-search-color);
   font-size: 13px;
+  font-family: var(--msg-font);
   outline: none;
   transition: background 0.2s, color 0.2s;
 
   &::placeholder { color: var(--msg-search-placeholder); }
-  &:focus { outline: 2px solid $blue; outline-offset: 1px; }
+  &:focus { outline: 2px solid $green; outline-offset: 1px; }
 }
 
 .msg-sidebar__error {
@@ -248,7 +246,21 @@ $orange: #E38968;
 }
 
 .conv-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
   background: var(--msg-conv-read-bg);
+
+  &:hover { background: var(--msg-conv-hover); }
+
+  &--active {
+    background: var(--msg-conv-active);
+    border-left-color: var(--msg-conv-active-bar);
+  }
 
   &--unread {
     background: var(--msg-conv-unread-bg);
@@ -268,7 +280,10 @@ $orange: #E38968;
     color: var(--msg-conv-read-name);
     font-weight: 400;
   }
+
+  &--skeleton { pointer-events: none; gap: 12px; }
 }
+
 .conv-avatar-wrap {
   position: relative;
   flex-shrink: 0;
@@ -342,7 +357,7 @@ $orange: #E38968;
 }
 
 .conv-badge {
-  background: $blue;
+  background: $green;
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -390,9 +405,10 @@ $orange: #E38968;
   flex-direction: column;
   background: var(--msg-main-bg);
   overflow: hidden;
+  min-width: 0;
+  border-radius: 0 12px 12px 0;
   transition: background 0.25s;
 
-  // Desktop: always visible — only hidden on mobile
   &--hidden-mobile { display: flex; }
 }
 
@@ -407,7 +423,7 @@ $orange: #E38968;
   cursor: pointer;
   font-weight: 700;
 
-  &:hover { color: $blue; }
+  &:hover { color: $green; }
 }
 
 // ── Chat empty state ──────────────────────────────────────────────────────────
@@ -465,7 +481,7 @@ $orange: #E38968;
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: $blue;
+  background: $green;
   color: #fff;
   display: flex;
   align-items: center;
@@ -489,13 +505,14 @@ $orange: #E38968;
 
 .chat-offer-btn {
   margin-left: auto;
-  background: $blue;
+  background: $green;
   color: #fff;
   border: none;
   border-radius: 20px;
   padding: 7px 14px;
   font-size: 13px;
   font-weight: 700;
+  font-family: var(--msg-font);
   cursor: pointer;
   transition: opacity 0.15s;
 
@@ -536,16 +553,24 @@ $orange: #E38968;
 }
 
 .msg-bubble {
-  padding: 12px 16px;
-  border-radius: 18px;
+  padding: 8px 12px;
+  border-radius: 8px;
   font-size: 14px;
-  line-height: 22px;
-  color: #fff;
+  line-height: 21px;
   max-width: 78%;
   word-break: break-word;
 
-  .msg--mine  & { background: var(--msg-bubble-mine);  border-bottom-right-radius: 4px; }
-  .msg--theirs & { background: var(--msg-bubble-theirs); border-bottom-left-radius: 4px; }
+  .msg--mine   & {
+    background: var(--msg-bubble-mine);
+    color: var(--msg-bubble-mine-text);
+    border-bottom-right-radius: 2px;
+  }
+  .msg--theirs & {
+    background: var(--msg-bubble-theirs);
+    color: var(--msg-bubble-theirs-text);
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
 }
 
 .msg-meta {
@@ -556,7 +581,7 @@ $orange: #E38968;
 }
 
 .msg-read-indicator {
-  color: $blue;
+  color: $green;
   margin-left: 4px;
 }
 
@@ -604,14 +629,14 @@ $orange: #E38968;
   border: 1.5px solid var(--msg-input-border);
   border-radius: 20px;
   padding: 10px 16px;
-  font: 14px/20px 'Lato', Arial, sans-serif;
+  font: 14px/20px var(--msg-font);
   color: var(--msg-text-primary);
   background: var(--msg-input-bg);
   outline: none;
   transition: border 0.15s, background 0.2s, color 0.2s;
   max-height: 120px;
 
-  &:focus { border-color: $blue; }
+  &:focus { border-color: $green; }
   &::placeholder { color: var(--msg-search-placeholder); }
 }
 
@@ -620,7 +645,7 @@ $orange: #E38968;
   height: 38px;
   border-radius: 50%;
   border: none;
-  background: $blue;
+  background: $green;
   color: #fff;
   font-size: 16px;
   display: flex;
@@ -677,7 +702,7 @@ $orange: #E38968;
 
   &--active {
     background: var(--msg-conv-active);
-    color: $blue;
+    color: $green;
   }
 
   &:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -763,12 +788,25 @@ $orange: #E38968;
 
 // ── Responsive ────────────────────────────────────────────────────────────────
 @media (max-width: 600px) {
-  .msg-page__body {
-    height: 100dvh; // use dynamic viewport on mobile
+  .msg-page {
+    padding: 0;
   }
 
-  // On mobile, sidebar and main toggle each other
-  .msg-sidebar { width: 100%; }
+  .msg-page__body {
+    border-radius: 0;
+    box-shadow: none;
+    height: 100dvh;
+  }
+
+  .msg-sidebar {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .msg-main {
+    border-radius: 0;
+  }
+
   .msg-sidebar--hidden-mobile { display: none !important; }
   .msg-main--hidden-mobile    { display: none !important; }
   .msg-back-btn               { display: block; }

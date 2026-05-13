@@ -18,14 +18,14 @@ function ChatEmptyState() {
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          <rect x="8" y="22" width="64" height="44" rx="6" fill="#94C2ED" opacity="0.18" />
-          <rect x="8" y="22" width="64" height="44" rx="6" stroke="#94C2ED" strokeWidth="2.5" />
-          <path d="M8 28 L40 50 L72 28" stroke="#94C2ED" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
-          <rect x="55" y="14" width="3" height="14" rx="1.5" fill="#86BB71" />
-          <rect x="55" y="10" width="10" height="7" rx="1.5" fill="#86BB71" />
-          <circle cx="20" cy="18" r="2" fill="#94C2ED" opacity="0.5" />
-          <circle cx="14" cy="30" r="1.5" fill="#94C2ED" opacity="0.35" />
-          <circle cx="66" cy="16" r="1.5" fill="#86BB71" opacity="0.5" />
+          <rect x="8" y="22" width="64" height="44" rx="6" fill="#1a9e60" opacity="0.18" />
+          <rect x="8" y="22" width="64" height="44" rx="6" stroke="#1a9e60" strokeWidth="2.5" />
+          <path d="M8 28 L40 50 L72 28" stroke="#1a9e60" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
+          <rect x="55" y="14" width="3" height="14" rx="1.5" fill="#1a9e60" />
+          <rect x="55" y="10" width="10" height="7" rx="1.5" fill="#1a9e60" />
+          <circle cx="20" cy="18" r="2" fill="#1a9e60" opacity="0.5" />
+          <circle cx="14" cy="30" r="1.5" fill="#1a9e60" opacity="0.35" />
+          <circle cx="66" cy="16" r="1.5" fill="#1a9e60" opacity="0.5" />
         </svg>
       </div>
       <h2 className="chat-empty-state__title">Select a conversation</h2>
@@ -41,12 +41,12 @@ export default function MessagingPage() {
   const { unreadCount: unreadTotal, refreshUnread } = useMessaging();
   const { convId } = useParams();
 
-  const [conversations, setConversations] = useState([]);
-  const [activeConv, setActiveConv] = useState(null);
-  const [loadingConvs, setLoadingConvs] = useState(true);
-  const [mobileView, setMobileView] = useState("list");
-  const [convError, setConvError] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [conversations, setConversations]   = useState([]);
+  const [activeConv, setActiveConv]         = useState(null);
+  const [loadingConvs, setLoadingConvs]     = useState(true);
+  const [mobileView, setMobileView]         = useState("list");
+  const [convError, setConvError]           = useState(null);
+  const [darkMode, setDarkMode]             = useState(false);
 
   const fetchConversationsRef = useRef(null);
 
