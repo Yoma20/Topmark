@@ -9,6 +9,13 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+
+    // On full-screen pages (messages) prevent the page from growing
+    // beyond the viewport — the child handles its own height.
+    &--fullscreen {
+        height: 100vh;
+        overflow: hidden;
+    }
 }
 
 .page-loading {

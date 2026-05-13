@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useContext, useEffect } from 'react';
 import './App.scss';
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import AuthContext from './AuthContext.jsx';
@@ -30,6 +30,9 @@ const ProfileEdit    = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
 const queryClient = new QueryClient();
 
 function Layout() {
+  const { pathname } = useLocation();
+  const isMessaging = pathname.startsWith("/messages");
+
   useEffect(() => {
     newRequest.get('/users/csrf/').catch(() => {
       console.warn('Could not fetch CSRF cookie — login may fail.');
@@ -37,12 +40,12 @@ function Layout() {
   }, []);
 
   return (
-    <div className='app'>
+    <div className={`app ${isMessaging ? "app--fullscreen" : ""}`}>
       <Navbar />
       <Suspense fallback={<div className="page-loading">Loading…</div>}>
         <Outlet />
       </Suspense>
-      <Footer />
+      {!isMessaging && <Footer />}
     </div>
   );
 }
