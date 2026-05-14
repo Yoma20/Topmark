@@ -8,11 +8,11 @@ import "./studentProfile.scss";
 
 // ─── Sidebar nav ──────────────────────────────────────────────────────────────
 const NAV = [
-  { key: "overview",  label: "Overview"         },
-  { key: "messages",  label: "Messages",          to: "/messages"   },
-  { key: "orders",    label: "My Orders"         },
-  { key: "settings",  label: "Account Settings"  },
-  { key: "password",  label: "Change Password"   },
+  { key: "overview",  label: "Overview"                          },
+  { key: "messages",  label: "Messages",   to: "/messages"       },
+  { key: "orders",    label: "My Orders",  to: "/orders"         },
+  { key: "settings",  label: "Account Settings", to: "/settings" },
+  { key: "password",  label: "Change Password"                   },
 ];
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
