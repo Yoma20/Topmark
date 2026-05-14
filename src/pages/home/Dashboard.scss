@@ -135,17 +135,24 @@
     }
   }
 
-  // ── Category grid ───────────────────────────────────────
+  // ── Category horizontal scroll row ──────────────────────
   &-cats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-direction: row;
     gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
 
-    @media (max-width: 768px) { grid-template-columns: repeat(3, 1fr); }
-    @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
+    // hide scrollbar but keep functionality
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
   }
 
   &-cat {
+    flex: 0 0 220px;
+    scroll-snap-align: start;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
