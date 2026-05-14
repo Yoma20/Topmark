@@ -285,6 +285,14 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
               key={msg.id}
               className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${msg._optimistic ? "msg--optimistic" : ""}`}
             >
+              {/* Avatar only on incoming messages */}
+              {!isMine && (
+                <Avatar
+                  user={otherParticipant}
+                  size={28}
+                  className="conv-avatar"
+                />
+              )}
               <div className="msg-bubble">{msg.content}</div>
               <span className="msg-meta">
                 {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
