@@ -8,12 +8,12 @@ import GigCard from "../../components/GigCard/GigCard";
 import "./Dashboard.scss";
 
 const CATEGORIES = [
-  { icon: "/images/Legal.webp",             label: "Law & Legal",     search: "Law",            placeholder: "#e8e4f0" },
-  { icon: "/images/Nursing.webp",         label: "Nursing",         search: "Nursing",         placeholder: "#e4f0ea" },
-  { icon: "/images/Cybersecurity.webp",   label: "Cybersecurity",   search: "Cybersecurity",   placeholder: "#e4eaf0" },
-  { icon: "/images/Biology.webp",         label: "Biology",         search: "Biology",          placeholder: "#e4f0e8" },
+  { icon: "/images/law.webp",             label: "Law & Legal",     search: "Law",            placeholder: "#e8e4f0" },
+  { icon: "/images/nursing.webp",         label: "Nursing",         search: "Nursing",         placeholder: "#e4f0ea" },
+  { icon: "/images/cybersecurity.webp",   label: "Cybersecurity",   search: "Cybersecurity",   placeholder: "#e4eaf0" },
+  { icon: "/images/biology.webp",         label: "Biology",         search: "Biology",          placeholder: "#e4f0e8" },
   { icon: "/images/history.webp",         label: "History",         search: "History",          placeholder: "#f0ece4" },
-  { icon: "/images/data science.webp",    label: "Data Science",    search: "Data Science",    placeholder: "#ede4f0" },
+  { icon: "/images/data-science.webp",    label: "Data Science",    search: "Data Science",    placeholder: "#ede4f0" },
   { icon: "/images/computer-science.webp",label: "Computer Science",search: "Computer Science",placeholder: "#e4edf0" },
   { icon: "/images/business.webp",        label: "Business",        search: "Business",         placeholder: "#f0e4e4" },
   { icon: "/images/psychology.webp",      label: "Psychology",      search: "Psychology",       placeholder: "#f0e8e4" },
@@ -300,43 +300,48 @@ export default function Dashboard() {
     queryFn: () => newRequest.get("/gigs/?sort=sales").then(r => r.data?.results ?? r.data),
   });
 
-  const { data: orders } = useQuery({
-    queryKey: ["dashboard-orders"],
-    queryFn: () => newRequest.get("/gigs/orders/").then(r => r.data?.results ?? r.data),
-    enabled: !!user,
-  });
-
-  const { data: unreadData } = useQuery({
-    queryKey: ["unread"],
-    queryFn: () => newRequest.get("/messaging/unread-count/").then(r => r.data),
-    enabled: !!user,
-    refetchInterval: 30000,
-  });
-
-  const activeOrders = orders?.filter(o =>
-    ["pending","in_progress","submitted"].includes(o.status)
-  ) || [];
-
   return (
     <div className="dashboard">
 
-       
-
-      
-
-      {/* ── Quick search ── */}
+      {/* ── Search ── */}
       <section className="dashboard-search">
         <SearchBar />
       </section>
 
-      {/* ── Categories ── */}
+      {/* ── Recommended Experts ── */}
+      <section className="dashboard-section">
+        <div className="dashboard-section__header">
+          <h2>Recommended Experts</h2>
+          <span onClick={() => navigate("/gigs")}>See all →</span>
+        </div>
+        {isLoading ? (
+          <div className="dashboard-loading">Loading experts…</div>
+        ) : !gigs?.length ? (
+          <div className="dashboard-empty">
+            <p>No experts yet — be the first to join!</p>
+            {user?.user_type === "expert" && (
+              <button className="btn-primary" onClick={() => navigate("/add")}>
+                Create Your First Gig
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="dashboard-gigs">
+            {gigs.slice(0, 8).map(gig => (
+              <GigCard key={gig.id} item={gig} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Browse by Subject ── */}
       <section className="dashboard-section">
         <div className="dashboard-section__header">
           <h2>Browse by Subject</h2>
           <span onClick={() => navigate("/gigs")}>See all →</span>
         </div>
         <div className="dashboard-cats">
-          {CATEGORIES.map((cat, i) => (
+          {CATEGORIES.map((cat) => (
             <div
               key={cat.label}
               className="dashboard-cat"
@@ -364,88 +369,6 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
-
-      {/* ── Active orders ── */}
-      {activeOrders.length > 0 && (
-        <section className="dashboard-section">
-          <div className="dashboard-section__header">
-            <h2>Your Active Orders</h2>
-            <span onClick={() => navigate("/orders")}>View all →</span>
-          </div>
-          <div className="dashboard-orders">
-            {activeOrders.slice(0, 3).map(order => (
-              <div key={order.id} className="dashboard-order-card">
-                <img src={order.gig_cover || "/images/noavatar.jpeg"} alt={order.gig_title} />
-                <div className="dashboard-order-card__info">
-                  <h4>{order.gig_title}</h4>
-                  <p>{order.package?.tier} package · ${order.total_price}</p>
-                  <div className={`status-pill status-pill--${order.status}`}>
-                    {order.status.replace("_", " ")}
-                  </div>
-                </div>
-                <button onClick={() => navigate("/orders")}>View</button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── Recommended gigs ── */}
-      <section className="dashboard-section">
-        <div className="dashboard-section__header">
-          <h2>Recommended Experts</h2>
-          <span onClick={() => navigate("/gigs")}>See all →</span>
-        </div>
-        {isLoading ? (
-          <div className="dashboard-loading">Loading experts…</div>
-        ) : !gigs?.length ? (
-          <div className="dashboard-empty">
-            <p>No experts yet — be the first to join!</p>
-            {user?.user_type === "expert" && (
-              <button className="btn-primary" onClick={() => navigate("/add")}>
-                Create Your First Gig
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="dashboard-gigs">
-            {gigs.slice(0, 8).map(gig => (
-              <GigCard key={gig.id} item={gig} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* ── Expert tools ── */}
-      {user?.user_type === "expert" && (
-        <section className="dashboard-section">
-          <div className="dashboard-section__header">
-            <h2>Expert Tools</h2>
-          </div>
-          <div className="dashboard-expert-tools">
-            <div className="tool-card" onClick={() => navigate("/mygigs")}>
-              <img src="/images/gigs.png" alt="manage your gigs" style={{ width: "36px", height: "36px" }} />
-              <h3>My Gigs</h3>
-              <p>Manage your service listings</p>
-            </div>
-            <div className="tool-card" onClick={() => navigate("/orders")}>
-              <img src="/images/orders.png" alt="orders" style={{ width: "36px", height: "36px" }} />
-              <h3>My Orders</h3>
-              <p>View and manage student orders</p>
-            </div>
-            <div className="tool-card" onClick={() => navigate("/messages")}>
-              <img src="/images/messages.png" alt="chat" style={{ width: "36px", height: "36px" }} />
-              <h3>Messages</h3>
-              <p>Chat with your students</p>
-            </div>
-            <div className="tool-card" onClick={() => navigate("/add")}>
-              <img src="/images/gig.png" alt="add new gig" style={{ width: "36px", height: "36px" }} />
-              <h3>Add New Gig</h3>
-              <p>Create a new service listing</p>
-            </div>
-          </div>
-        </section>
-      )}
 
     </div>
   );
