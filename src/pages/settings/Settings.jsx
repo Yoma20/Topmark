@@ -3,6 +3,8 @@ import AuthContext from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import "./settings.scss";
 
+const IMGBB_KEY = import.meta.env.VITE_IMGBB_API_KEY;
+
 const Panel = ({ id, active, children }) => (
   <div className={`settings-panel${active === id ? " active" : ""}`}>
     {children}
@@ -14,6 +16,19 @@ const SaveBtn = ({ loading }) => (
     {loading ? "Saving…" : "Save changes"}
   </button>
 );
+
+// Upload file to ImgBB and return the permanent URL
+const uploadToImgBB = async (file) => {
+  const form = new FormData();
+  form.append("image", file);
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+    method: "POST",
+    body: form,
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error("Image upload failed");
+  return data.data.url;
+};
 
 export default function Settings() {
   const { user: currentUser, login } = useContext(AuthContext);
@@ -62,6 +77,8 @@ export default function Settings() {
           bio:            data.bio            ?? "",
           field_of_study: data.field_of_study ?? "",
         });
+        // Use expert avatar_url as preview if available and no user profile_picture
+        if (data.avatar_url) setAvatarPreview(prev => prev || data.avatar_url);
       }).catch(console.error);
     }
   }, [isExpert]);
@@ -80,18 +97,39 @@ export default function Settings() {
     setProfileLoading(true);
     setProfileMsg(null);
     try {
-      const formData = new FormData();
-      Object.entries(profile).forEach(([k, v]) => formData.append(k, v));
-      if (avatarFile) formData.append("profile_picture", avatarFile);
+      let pictureUrl = null;
 
-      const { data } = await newRequest.patch("/users/me/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // If there's a new file, upload to ImgBB first
+      if (avatarFile) {
+        pictureUrl = await uploadToImgBB(avatarFile);
+        setAvatarPreview(pictureUrl);
+        setAvatarFile(null);
+      }
+
+      // Send JSON to backend — URL string, not a file
+      const payload = { ...profile };
+      if (pictureUrl) payload.profile_picture = pictureUrl;
+
+      const { data } = await newRequest.patch("/users/me/", payload);
 
       setProfileMsg({ ok: true, text: "Profile saved!" });
-      if (data.profile_picture) setAvatarPreview(data.profile_picture);
-      setAvatarFile(null);
-      login({ ...currentUser, ...data });
+
+      // Update auth context with new data
+      const updatedUser = {
+        ...currentUser,
+        ...data,
+        profile_picture: pictureUrl || data.profile_picture || currentUser?.profile_picture,
+      };
+
+      // If expert, also update profile.avatar_url in context
+      if (isExpert && pictureUrl) {
+        updatedUser.profile = {
+          ...(currentUser?.profile ?? {}),
+          avatar_url: pictureUrl,
+        };
+      }
+
+      login(updatedUser);
     } catch (err) {
       const detail = err?.response?.data;
       const text = typeof detail === "string"
