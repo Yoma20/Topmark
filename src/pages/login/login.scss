@@ -365,6 +365,24 @@ form > label {
   }
 }
 
+// ── Expert sign-in note ────────────────────────────────────────────────────────
+.auth-expert-note {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+  text-align: center;
+
+  span {
+    font-weight: 700;
+    color: #15803d;
+  }
+}
+
 // ── Footer / legal ─────────────────────────────────────────────────────────────
 .footer {
   text-align: center;
