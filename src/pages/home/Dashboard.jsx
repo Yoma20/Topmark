@@ -8,25 +8,20 @@ import GigCard from "../../components/GigCard/GigCard";
 import "./Dashboard.scss";
 
 const CATEGORIES = [
-  { icon: "/images/law.png",             label: "Law & Legal",     search: "Law" },
-  { icon: "/images/nursing.png",         label: "Nursing",         search: "Nursing" },
-  { icon: "/images/cybersecurity.png",   label: "Cybersecurity",   search: "Cybersecurity" },
-  { icon: "/images/biology.png",         label: "Biology",         search: "Biology" },
-  { icon: "/images/history.png",         label: "History",         search: "History" },
-  { icon: "/images/data-science.png",    label: "Data Science",    search: "Data Science" },
-  { icon: "/images/computer-science.png",label: "Computer Science",search: "Computer Science" },
-  { icon: "/images/business.png",        label: "Business",        search: "Business" },
-  { icon: "/images/psychology.png",      label: "Psychology",      search: "Psychology" },
-  { icon: "/images/essay.png",           label: "Essay Writing",   search: "Essay Writing" },
-  { icon: "/images/chemistry.png",       label: "Chemistry",       search: "Chemistry" },
-  { icon: "/images/mathematics.png",     label: "Mathematics",     search: "Mathematics" },
+  { icon: "/images/law.webp",             label: "Law & Legal",     search: "Law" },
+  { icon: "/images/nursing.webp",         label: "Nursing",         search: "Nursing" },
+  { icon: "/images/cybersecurity.webp",   label: "Cybersecurity",   search: "Cybersecurity" },
+  { icon: "/images/biology.webp",         label: "Biology",         search: "Biology" },
+  { icon: "/images/history.webp",         label: "History",         search: "History" },
+  { icon: "/images/data-science.webp",    label: "Data Science",    search: "Data Science" },
+  { icon: "/images/computer-science.webp",label: "Computer Science",search: "Computer Science" },
+  { icon: "/images/business.webp",        label: "Business",        search: "Business" },
+  { icon: "/images/psychology.webp",      label: "Psychology",      search: "Psychology" },
+  { icon: "/images/essay.webp",           label: "Essay Writing",   search: "Essay Writing" },
+  { icon: "/images/chemistry.webp",       label: "Chemistry",       search: "Chemistry" },
+  { icon: "/images/mathematics.webp",     label: "Mathematics",     search: "Mathematics" },
 ];
 
-const CATEGORY_COLORS = [
-  "#7c3aed","#059669","#2563eb","#16a34a",
-  "#d97706","#7c3aed","#0891b2","#dc2626",
-  "#7c3aed","#059669","#0891b2","#2563eb",
-];
 
 // ── Search bar ────────────────────────────────────────────────────────────────
 const STATIC_SUBJECTS = [
@@ -350,13 +345,12 @@ export default function Dashboard() {
               tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.search)}`)}
             >
-              <div
-                className="dashboard-cat__icon"
-                style={{ background: CATEGORY_COLORS[i] + "18", border: `1.5px solid ${CATEGORY_COLORS[i]}30` }}
-              >
-                <img src={cat.icon} alt={cat.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} />
+              <div className="dashboard-cat__img-wrap">
+                <img src={cat.icon} alt={cat.label} className="dashboard-cat__img" />
+                <div className="dashboard-cat__overlay">
+                  <span className="dashboard-cat__label">{cat.label}</span>
+                </div>
               </div>
-              <span className="dashboard-cat__label">{cat.label}</span>
             </div>
           ))}
         </div>
