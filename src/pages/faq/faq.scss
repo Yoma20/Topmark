@@ -1,65 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 .faq {
-    &__hero {
-      background: linear-gradient(135deg, #1a9e60 0%, #0d6e43 100%);
-      color: #fff;
-      text-align: center;
-      padding: 60px 20px;
-      h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; }
-      p { opacity: 0.9; font-size: 1.05rem; }
-    }
-  
-    &__container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 60px 20px;
-    }
-  
-    &__section { margin-bottom: 48px; }
-  
-    &__category {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #1a9e60;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #d4edda;
-    }
-  
-    &__item {
-      border: 1px solid #e8e8e8;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      overflow: hidden;
-      transition: border-color 0.2s;
-      &--open { border-color: #1a9e60; }
-    }
-  
-    &__question {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      text-align: left;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #222;
-      gap: 12px;
-      &:hover { background: #f8fdf9; }
-    }
-  
-    &__icon {
-      font-size: 1.25rem;
-      color: #1a9e60;
-      flex-shrink: 0;
-      font-weight: 300;
-    }
-  
-    &__answer {
-      padding: 0 20px 16px;
-      p { font-size: 0.9rem; color: #555; line-height: 1.7; margin: 0; }
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fff;
+
+  &__hero {
+    background: #fff;
+    color: #111;
+    text-align: center;
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid #e8e8e8;
+    h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; color: #111; font-family: 'Plus Jakarta Sans', sans-serif; }
+    p { color: #666; font-size: 1rem; font-family: 'Plus Jakarta Sans', sans-serif; }
+  }
+
+  &__container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+
+  &__section { margin-bottom: 48px; }
+
+  &__category {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8e8e8;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  &__item {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    &--open { border-color: #aaa; }
+  }
+
+  &__question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #222;
+    gap: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    &:hover { background: #fafafa; }
+  }
+
+  &__icon {
+    font-size: 1.25rem;
+    color: #444;
+    flex-shrink: 0;
+    font-weight: 300;
+  }
+
+  &__answer {
+    padding: 0 20px 16px;
+    p {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.7;
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
   }
+}

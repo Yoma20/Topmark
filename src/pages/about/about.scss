@@ -1,93 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 .about {
-    &__hero {
-      background: linear-gradient(135deg, #1a9e60 0%, #0d6e43 100%);
-      color: #fff;
-      text-align: center;
-      padding: 80px 20px;
-  
-      h1 {
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 16px;
-        span { color: #a8f0cc; }
-      }
-  
-      p {
-        font-size: 1.15rem;
-        opacity: 0.9;
-        max-width: 500px;
-        margin: 0 auto;
-      }
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fff;
+
+  &__hero {
+    background: #fff;
+    color: #111;
+    text-align: center;
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid #e8e8e8;
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #111;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      span { color: #1a9e60; }
     }
-  
-    &__container {
-      max-width: 900px;
+
+    p {
+      font-size: 1.1rem;
+      color: #666;
+      max-width: 500px;
       margin: 0 auto;
-      padding: 60px 20px;
-    }
-  
-    &__block {
-      margin-bottom: 48px;
-      h2 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #222;
-        margin-bottom: 14px;
-      }
-      p {
-        font-size: 1rem;
-        color: #555;
-        line-height: 1.8;
-      }
-    }
-  
-    &__values {
-      margin-bottom: 60px;
-      h2 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #222;
-        margin-bottom: 24px;
-      }
-    }
-  
-    &__values-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-    }
-  
-    &__value-card {
-      background: #f8fdf9;
-      border: 1px solid #d4edda;
-      border-radius: 12px;
-      padding: 24px 20px;
-      text-align: center;
-  
-      span { font-size: 2rem; display: block; margin-bottom: 12px; }
-      h3 { font-size: 1rem; font-weight: 600; color: #1a9e60; margin-bottom: 8px; }
-      p { font-size: 0.875rem; color: #666; line-height: 1.6; }
-    }
-  
-    &__cta {
-      text-align: center;
-      background: #f0faf5;
-      border-radius: 16px;
-      padding: 48px 32px;
-  
-      h2 { font-size: 1.8rem; font-weight: 700; color: #222; margin-bottom: 12px; }
-      p { color: #555; margin-bottom: 24px; }
-    }
-  
-    &__btn {
-      display: inline-block;
-      background: #1a9e60;
-      color: #fff;
-      padding: 12px 32px;
-      border-radius: 8px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: background 0.2s;
-      &:hover { background: #157a4a; }
     }
   }
+
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+
+  &__block {
+    margin-bottom: 48px;
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 14px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    p {
+      font-size: 0.97rem;
+      color: #555;
+      line-height: 1.8;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  }
+
+  &__values {
+    margin-bottom: 60px;
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 24px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  }
+
+  &__values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+
+  &__value-card {
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+
+    span { font-size: 2rem; display: block; margin-bottom: 12px; }
+    h3 { font-size: 1rem; font-weight: 600; color: #111; margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    p { font-size: 0.875rem; color: #666; line-height: 1.6; font-family: 'Plus Jakarta Sans', sans-serif; }
+  }
+
+  &__cta {
+    text-align: center;
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    padding: 48px 32px;
+
+    h2 { font-size: 1.8rem; font-weight: 700; color: #111; margin-bottom: 12px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    p { color: #555; margin-bottom: 24px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  }
+
+  &__btn {
+    display: inline-block;
+    background: #1a9e60;
+    color: #fff;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background 0.2s;
+    &:hover { background: #157a4a; }
+  }
+}

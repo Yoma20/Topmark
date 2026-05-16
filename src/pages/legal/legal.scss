@@ -1,12 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 // legal.scss — shared by PrivacyPolicy, TermsOfService, RefundPolicy, Disclaimer
 .legal {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #fff;
+
   &__hero {
-    background: linear-gradient(135deg, #1a9e60 0%, #0d6e43 100%);
-    color: #fff;
+    background: #fff;
+    color: #111;
     text-align: center;
-    padding: 60px 20px;
-    h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 10px; }
-    p { opacity: 0.85; font-size: 0.95rem; }
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid #e8e8e8;
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #111;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #888;
+    }
   }
 
   &__container {
@@ -21,8 +38,8 @@
     line-height: 1.8;
     margin-bottom: 40px;
     padding: 20px 24px;
-    background: #f0faf5;
-    border-left: 4px solid #1a9e60;
+    background: #f9f9f9;
+    border-left: 4px solid #222;
     border-radius: 0 8px 8px 0;
   }
 
@@ -30,19 +47,21 @@
     margin-bottom: 40px;
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #1a9e60;
+      color: #111;
       margin-bottom: 12px;
       padding-bottom: 8px;
-      border-bottom: 1px solid #d4edda;
+      border-bottom: 1px solid #e8e8e8;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     h3 {
-      font-size: 1rem;
+      font-size: 0.97rem;
       font-weight: 600;
-      color: #333;
+      color: #222;
       margin: 16px 0 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     p {
@@ -50,6 +69,7 @@
       color: #555;
       line-height: 1.8;
       margin-bottom: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     ul {
@@ -59,9 +79,10 @@
         color: #555;
         line-height: 1.8;
         margin-bottom: 4px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
       }
     }
 
-    strong { color: #333; }
+    strong { color: #222; }
   }
 }
