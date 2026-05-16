@@ -27,6 +27,15 @@ const BecomeSeller   = lazy(() => import('./components/becomeSeller/BecomeSeller
 const BecomeSeller2  = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
 const ProfileEdit    = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
 
+// New pages
+const About          = lazy(() => import('./pages/about/About.jsx'));
+const FAQ            = lazy(() => import('./pages/faq/FAQ.jsx'));
+const PrivacyPolicy  = lazy(() => import('./pages/legal/PrivacyPolicy.jsx'));
+const TermsOfService = lazy(() => import('./pages/legal/TermsOfService.jsx'));
+const RefundPolicy   = lazy(() => import('./pages/legal/RefundPolicy.jsx'));
+const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer.jsx'));
+const Support        = lazy(() => import('./pages/support/Support.jsx'));
+
 const queryClient = new QueryClient();
 
 function Layout() {
@@ -68,24 +77,33 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { path: "/",                  element: <HomeOrDashboard /> },
-      { path: "/gigs",              element: <Gigs /> },
-      { path: "gig/:slug",          element: <Gig /> },
-      { path: "/orders",            element: <Orders /> },
-      { path: "/mygigs",            element: <MyGigs /> },
-      { path: "/add",               element: <Add /> },
-      { path: "/messages",          element: <MessagingPage /> },
-      { path: "/messages/:convId",  element: <MessagingPage /> },
-      { path: "/login",             element: <Login /> },
-      { path: "/settings",          element: <Settings /> },
-      { path: "/register",          element: <Register /> },
-      { path: "/sprofile",          element: <StudentProfile /> },
-      { path: "/pay/:id",           element: <Pay /> },
-      { path: "/pay/offer/:id",     element: <Pay /> },
-      { path: "/success",           element: <Success /> },
-      { path: "/becomeSeller",      element: <BecomeSeller /> },
-      { path: "/becomeSeller2",     element: <BecomeSeller2 /> },
-      { path: "/profile",           element: <ProfileEdit /> },
+      { path: "/",                    element: <HomeOrDashboard /> },
+      { path: "/gigs",                element: <Gigs /> },
+      { path: "gig/:slug",            element: <Gig /> },
+      { path: "/orders",              element: <Orders /> },
+      { path: "/mygigs",              element: <MyGigs /> },
+      { path: "/add",                 element: <Add /> },
+      { path: "/messages",            element: <MessagingPage /> },
+      { path: "/messages/:convId",    element: <MessagingPage /> },
+      { path: "/login",               element: <Login /> },
+      { path: "/settings",            element: <Settings /> },
+      { path: "/register",            element: <Register /> },
+      { path: "/sprofile",            element: <StudentProfile /> },
+      { path: "/pay/:id",             element: <Pay /> },
+      { path: "/pay/offer/:id",       element: <Pay /> },
+      { path: "/success",             element: <Success /> },
+      { path: "/becomeSeller",        element: <BecomeSeller /> },
+      { path: "/becomeSeller2",       element: <BecomeSeller2 /> },
+      { path: "/profile",             element: <ProfileEdit /> },
+
+      
+      { path: "/about",               element: <About /> },
+      { path: "/faq",                 element: <FAQ /> },
+      { path: "/privacy-policy",      element: <PrivacyPolicy /> },
+      { path: "/terms-of-service",    element: <TermsOfService /> },
+      { path: "/refund-policy",       element: <RefundPolicy /> },
+      { path: "/disclaimer",          element: <Disclaimer /> },
+      { path: "/support",             element: <Support /> },
     ]
   }
 ]);
