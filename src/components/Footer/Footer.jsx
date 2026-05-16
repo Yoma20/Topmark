@@ -47,9 +47,6 @@ const Footer = () => {
             <h4 className="site-footer__heading">Quick Links</h4>
             <ul className="site-footer__list">
               <li><Link to="/about">About Us</Link></li>
-              <li><Link to="/services">Our Services</Link></li>
-              <li><span onClick={handleBrowseGigs} style={{ cursor: 'pointer' }}>Browse Gigs</span></li>
-              <li><Link to="/blog">Blog</Link></li>
               <li><Link to="/faq">FAQ</Link></li>
             </ul>
           </div>
@@ -71,8 +68,8 @@ const Footer = () => {
             <h4 className="site-footer__heading">Contact</h4>
             <ul className="site-footer__contact">
               <li><Mail size={15} /><span>info@topmark.pro</span></li>
-              <li><Phone size={15} /><span>+1 (123) 456-7890</span></li>
-              <li><MapPin size={15} /><span>123 Academic Way, Learning City</span></li>
+              <li><Phone size={15} /><span>+1 (123) 000-0000</span></li>
+              <li><MapPin size={15} /><span>......</span></li>
             </ul>
             <h4 className="site-footer__heading" style={{ marginTop: '20px' }}>We Accept</h4>
             <div className="site-footer__payments">

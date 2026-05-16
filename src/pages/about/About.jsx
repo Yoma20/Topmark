@@ -5,7 +5,10 @@ const About = () => {
   return (
     <div className="about">
       <section className="about__hero">
-        <h1>About <span>TopMark</span></h1>
+        <h1>About <span className="site-footer__logo">
+              <span className="site-footer__logo--top">Top</span>
+              <span className="site-footer__logo--mark">Mark</span>
+            </span></h1>
         <p>Connecting students with expert academic professionals worldwide.</p>
       </section>
 

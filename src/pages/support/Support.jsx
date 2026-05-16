@@ -24,29 +24,9 @@ const Support = () => {
         <p>We're here to help. Send us a message and we'll get back to you within 24 hours.</p>
       </div>
 
-      <div className="support__container">
-
-        <div className="support__cards">
-          <div className="support__card">
-            <span>📧</span>
-            <h3>Email Us</h3>
-            <p>info@topmark.pro</p>
-          </div>
-          <div className="support__card">
-            <span>⏱️</span>
-            <h3>Response Time</h3>
-            <p>Within 24 hours</p>
-          </div>
-          <div className="support__card">
-            <span>📋</span>
-            <h3>Before You Write</h3>
-            <p>Check our <a href="/faq">FAQ</a> — your question may already be answered.</p>
-          </div>
-        </div>
-
         {submitted ? (
           <div className="support__success">
-            <span>✅</span>
+            <span></span>
             <h2>Message sent!</h2>
             <p>Thank you for reaching out. We'll get back to you at <strong>{form.email}</strong> within 24 hours.</p>
           </div>
@@ -110,7 +90,7 @@ const Support = () => {
         )}
 
       </div>
-    </div>
+    
   );
 };
 
