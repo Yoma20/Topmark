@@ -18,8 +18,8 @@ const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
 const Gigs           = lazy(() => import('./pages/gigs/Gigs.jsx'));
 const StudentProfile = lazy(() => import('./pages/studentProfile/Studentprofile.jsx'));
 const Home           = lazy(() => import('./pages/home/Home.jsx'));
-const AdminEarnings  = lazy(() => import('./pages/Earnings/Adminearnings.jsx'));
-const SellerEarnings = lazy(() => import('./pages/Earnings/Sellerearnings.jsx'));
+const AdminEarnings  = lazy(() => import('./pages/Earning/Adminearnings.jsx'));
+const SellerEarnings = lazy(() => import('./pages/Earning/Sellerearnings.jsx'));
 const Pay            = lazy(() => import('./pages/pay/Pay.jsx'));
 const Success        = lazy(() => import('./pages/success/Success.jsx'));
 const Login          = lazy(() => import('./pages/login/Login.jsx'));
@@ -100,8 +100,8 @@ const router = createBrowserRouter([
       { path: "/sprofile",            element: <StudentProfile /> },
       { path: "/pay/:id",             element: <Pay /> },
       { path: "/pay/offer/:id",       element: <Pay /> },
-      { path: "/admin/earnings",      element: <AdminRoute><Adminearnings /></AdminRoute> },
-      { path: "/earnings",            element: <Sellerearnings /> },
+      { path: "/admin/earnings", element: <AdminRoute><AdminEarnings /></AdminRoute> },
+      { path: "/earnings",       element: <SellerEarnings /> },
       { path: "/success",             element: <Success /> },
       { path: "/becomeSeller",        element: <BecomeSeller /> },
       { path: "/becomeSeller2",       element: <BecomeSeller2 /> },
