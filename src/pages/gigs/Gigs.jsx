@@ -1,37 +1,80 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import './gigs.scss';
 import GigCard from '../../components/GigCard/GigCard';
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
 const Gigs = () => {
-  const [open, setOpen] = useState(false);
-  const [sort, setSort] = useState("sales");
+  const [open, setOpen]           = useState(false);
+  const [sort, setSort]           = useState("sales");
+  const [selectedCat, setSelectedCat] = useState("");
+  const [categories, setCategories]   = useState([]);
   const minRef = useRef();
   const maxRef = useRef();
   const { search } = useLocation();
+  const navigate   = useNavigate();
 
-  const params = new URLSearchParams(search);
-  const category = params.get("cat") || "";
+  const params       = new URLSearchParams(search);
+  const searchQuery  = params.get("search") || "";
+  const catFromUrl   = params.get("category") || "";
 
-  // sort is included in the queryKey so React Query automatically refetches
-  // when it changes — no useEffect needed.
+  // Sync category from URL on load
+  useEffect(() => {
+    setSelectedCat(catFromUrl);
+  }, [catFromUrl]);
+
+  // Fetch categories from backend
+  useEffect(() => {
+    newRequest.get('/gigs/categories/')
+      .then(({ data }) => {
+        const topLevel = (data?.results ?? data ?? []).filter(c => !c.parent);
+        setCategories(topLevel);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Build query string for API
+  const buildQuery = () => {
+    const p = new URLSearchParams();
+    if (searchQuery)                    p.set('search',   searchQuery);
+    if (selectedCat)                    p.set('category', selectedCat);
+    if (minRef.current?.value)          p.set('min',      minRef.current.value);
+    if (maxRef.current?.value)          p.set('max',      maxRef.current.value);
+    p.set('sort', sort);
+    return p.toString();
+  };
+
   const { isLoading, error, data, refetch } = useQuery({
-    queryKey: ['gigs', sort, search],
+    queryKey: ['gigs', sort, search, selectedCat],
     queryFn: () =>
-      newRequest.get(
-        `/gigs/?${search ? search.slice(1) + '&' : ''}min=${minRef.current?.value || ''}&max=${maxRef.current?.value || ''}&sort=${sort}`
-      ).then((res) => res.data?.results ?? res.data),
+      newRequest.get(`/gigs/?${buildQuery()}`)
+        .then((res) => res.data?.results ?? res.data),
   });
 
-  const pageTitle = category
-    ? `${category} Experts for Hire — Topmark`
-    : "Browse Academic Experts — Topmark";
+  // When category pill clicked, update URL and state
+  const handleCategorySelect = (catId) => {
+    setSelectedCat(catId);
+    const p = new URLSearchParams(search);
+    if (catId) {
+      p.set('category', catId);
+    } else {
+      p.delete('category');
+    }
+    navigate(`/gigs?${p.toString()}`, { replace: true });
+  };
 
-  const pageDescription = category
-    ? `Find verified ${category} experts on Topmark. Compare packages, read reviews, and get quality help fast.`
+  const activeCategoryName = categories.find(c => String(c.id) === String(selectedCat))?.name || "";
+
+  const pageTitle = activeCategoryName
+    ? `${activeCategoryName} Experts for Hire — Topmark`
+    : searchQuery
+      ? `${searchQuery} Experts — Topmark`
+      : "Browse Academic Experts — Topmark";
+
+  const pageDescription = activeCategoryName
+    ? `Find verified ${activeCategoryName} experts on Topmark. Compare packages, read reviews, and get quality help fast.`
     : "Browse hundreds of verified academic experts on Topmark. Tutoring, essay writing, programming, data science and more.";
 
   return (
@@ -42,9 +85,32 @@ const Gigs = () => {
       </Helmet>
 
       <div className="container">
-        <span className="breadcrumbs">TOPMARK &gt; BROWSE GIGS</span>
+        <span className="breadcrumbs">TOPMARK &gt; BROWSE EXPERTS</span>
         <h1>Find an Expert</h1>
         <p>Browse academic services from verified experts</p>
+
+        {/* ── Category filter pills ── */}
+        {categories.length > 0 && (
+          <div className="gigs-cats">
+            <button
+              className={`gigs-cat-pill${!selectedCat ? " gigs-cat-pill--active" : ""}`}
+              onClick={() => handleCategorySelect("")}
+            >
+              All
+            </button>
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                className={`gigs-cat-pill${String(selectedCat) === String(cat.id) ? " gigs-cat-pill--active" : ""}`}
+                onClick={() => handleCategorySelect(String(cat.id))}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── Budget + Sort bar ── */}
         <div className="menu">
           <div className="left">
             <span>Budget</span>
@@ -57,7 +123,11 @@ const Gigs = () => {
             <span className="sortType">
               {sort === "sales" ? "Best Selling" : "Newest"}
             </span>
-            <img src="/images/down.png" alt="toggle sort options" onClick={() => setOpen(!open)} />
+            <img
+              src="/images/down.png"
+              alt="toggle sort options"
+              onClick={() => setOpen(!open)}
+            />
             {open && (
               <div className="rightMenu">
                 {sort === "sales"
@@ -68,13 +138,24 @@ const Gigs = () => {
             )}
           </div>
         </div>
+
+        {/* ── Results ── */}
         <div className="cards">
           {isLoading
             ? <div className="loader"></div>
             : error
               ? <h4 style={{ color: "red" }}>Something went wrong</h4>
               : !data?.length
-                ? <h4>No gigs found</h4>
+                ? (
+                  <div className="gigs-empty">
+                    <p>No experts found{activeCategoryName ? ` in ${activeCategoryName}` : searchQuery ? ` for "${searchQuery}"` : ""}.</p>
+                    {selectedCat && (
+                      <button className="gigs-reset-btn" onClick={() => handleCategorySelect("")}>
+                        Clear filter
+                      </button>
+                    )}
+                  </div>
+                )
                 : data.map((gig) => <GigCard key={gig.slug} item={gig} />)
           }
         </div>

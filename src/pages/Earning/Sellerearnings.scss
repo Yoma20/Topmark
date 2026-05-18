@@ -215,9 +215,15 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     white-space: nowrap;
 
+    // payment_status values (match Order model exactly)
+    &--released    { background: #e6f9f0; color: #1a9e60; }
+    &--held        { background: #fff8e6; color: #d98b1a; }
+    &--unpaid      { background: #fde8e8; color: #d94f4f; }
+    &--refunded    { background: #f0f0f0; color: #888; }
+
+    // keep these for any legacy/edge cases
     &--paid        { background: #e6f9f0; color: #1a9e60; }
     &--pending     { background: #fff8e6; color: #d98b1a; }
-    &--unpaid      { background: #fde8e8; color: #d94f4f; }
     &--in_progress { background: #e8f0fe; color: #3b7ef8; }
     &--completed   { background: #e6f9f0; color: #1a9e60; }
     &--submitted   { background: #f0e8fe; color: #8b3bf8; }

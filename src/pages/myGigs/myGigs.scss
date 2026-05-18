@@ -1,129 +1,174 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+ 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 :root {
-  --green:      #1a9e60;
-  --green-lt:   #f0fdf4;
-  --green-mid:  #bbf7d0;
-  --green-dark: #15803d;
-  --red:        #dc2626;
-  --red-lt:     #fef2f2;
-  --ink:        #111827;
-  --ink-2:      #374151;
-  --muted:      #6b7280;
-  --border:     #e5e7eb;
-  --surface:    #ffffff;
-  --bg:         #f3f4f6;
-  --sidebar-bg: #0f1923;
-  --sidebar-w:  240px;
-  --radius:     12px;
-  --shadow-sm:  0 1px 4px rgba(0,0,0,.06);
-  --shadow-md:  0 4px 16px rgba(0,0,0,.08);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,.14);
+  // Brand palette
+  --green:        #1a9e60;
+  --green-lt:     #f0fdf4;
+  --green-mid:    #bbf7d0;
+  --green-dark:   #15803d;
+  --green-glow:   rgba(26, 158, 96, 0.18);
+  --red:          #dc2626;
+  --red-lt:       #fef2f2;
+ 
+  // Ink system
+  --ink:          #0d1117;
+  --ink-2:        #374151;
+  --muted:        #6b7280;
+  --border:       #e5e7eb;
+  --surface:      #ffffff;
+  --bg:           #f3f4f6;
+ 
+  // Sidebar — warm off-white, refined
+  --sidebar-bg:        #fafaf8;
+  --sidebar-border:    #e8e6e1;
+  --sidebar-w:         232px;
+ 
+  // Type
+  --font-ui:      'Macan', 'DM Sans', 'Georgia', serif;
+  --font-size-ui: 12px;
+  --fw-ui:        600;
+  --ls-ui:        0.01em;
+ 
+  // Radius / shadows
+  --radius:       10px;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,.05);
+  --shadow-md:    0 4px 16px rgba(0,0,0,.07);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,.12);
 }
-
+ 
 // ── Root layout ────────────────────────────────────────────────────────────────
 .myGigs {
   display: flex;
   min-height: 100vh;
   background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-ui);
+  font-weight: var(--fw-ui);
+  letter-spacing: var(--ls-ui);
   color: var(--ink);
-  position: relative;
 }
-
+ 
 // ── Sidebar ────────────────────────────────────────────────────────────────────
 .mg-sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
-  background: #f0fdf4;
+  height: 100vh;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  padding: 0 0 24px;
+  padding-bottom: 24px;
   position: sticky;
   top: 0;
-  height: 100vh;
   overflow-y: auto;
-  .mg-sidebar:hover{
-    background-color: #f2f3f5;
-  -webkit-transition: all ease 0.3s;
-  -moz-transition: all ease 0.3s;
-  -o-transition: all ease 0.3s;
-  transition: all ease 0.3s;
-  }
-
+  overflow-x: hidden;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+ 
+  // ── Brand strip ──────────────────────────────────────────────────────────
   &__brand {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 24px 20px 20px;
-    font-family: 'Space Mono', monospace;
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: #fff;
-    letter-spacing: -0.01em;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 9px;
+    padding: 22px 20px 18px;
+    font-family: 'DM Serif Display', 'Georgia', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    border-bottom: 1px solid var(--sidebar-border);
+    user-select: none;
   }
-
+ 
   &__brand-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--green);
-    box-shadow: 0 0 8px var(--green);
+    box-shadow: 0 0 0 3px var(--green-glow);
     flex-shrink: 0;
   }
-
+ 
+  // ── Profile block ─────────────────────────────────────────────────────────
   &__profile {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 20px 18px 14px;
+    gap: 10px;
+    padding: 18px 18px 12px;
   }
-
+ 
   &__avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.12);
+    border: 1.5px solid var(--sidebar-border);
+    box-shadow: var(--shadow-sm);
     flex-shrink: 0;
   }
-
+ 
   &__name {
+    font-size: 12px;
     font-weight: 700;
-    font-size: 0.9rem;
-    color: #fff;
+    color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.005em;
   }
-
+ 
   &__role {
-    font-size: 0.76rem;
-    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
     margin-top: 1px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
-
+ 
+  // ── Availability pill ─────────────────────────────────────────────────────
   &__avail {
-    padding: 0 16px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 14px 14px;
+    border-bottom: 1px solid var(--sidebar-border);
+ 
+    label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green-dark);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+ 
+    input[type='checkbox'] {
+      accent-color: var(--green);
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+    }
   }
-
+ 
+  // ── Nav items ─────────────────────────────────────────────────────────────
   &__nav {
     flex: 1;
-    padding: 12px 0;
+    padding: 10px 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
   }
-
+ 
+  // ── Footer / logout ───────────────────────────────────────────────────────
   &__footer {
-    padding: 16px 16px 0;
+    padding: 12px 14px 0;
+    border-top: 1px solid var(--sidebar-border);
   }
 }
-
 // ── Nav item ──────────────────────────────────────────────────────────────────
 .mg-nav-item {
   display: flex;

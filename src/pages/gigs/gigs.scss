@@ -121,3 +121,54 @@
         }
     }
 }
+
+// Category filter pills
+.gigs-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.gigs-cat-pill {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #1dbf73;
+    color: #1dbf73;
+  }
+
+  &--active {
+    background: #1dbf73;
+    color: #fff;
+    border-color: #1dbf73;
+  }
+}
+
+// Empty state
+.gigs-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.gigs-reset-btn {
+  margin-top: 12px;
+  padding: 8px 20px;
+  border: 1px solid #1dbf73;
+  color: #1dbf73;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background: #1dbf73;
+    color: #fff;
+  }
+}

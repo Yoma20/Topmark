@@ -3,12 +3,14 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
 import { useMessaging } from '../../MessagingContext';
+import newRequest from '../../utils/newRequest';
 
 const Navbar = () => {
     const [active, setactive]   = useState(false);
     const [active1, setactive1] = useState(false);
     const [open, setopen]       = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
     const { pathname } = useLocation();
     const dropdownRef  = useRef(null);
 
@@ -22,6 +24,31 @@ const Navbar = () => {
             window.removeEventListener('scroll', isActive);
             window.removeEventListener('scroll', isActive1);
         };
+    }, []);
+
+    // Fetch top-level categories from backend
+    useEffect(() => {
+        newRequest.get('/gigs/categories/')
+            .then(({ data }) => {
+                // Only top-level categories (no parent), limit to 8
+                const topLevel = (data?.results ?? data ?? [])
+                    .filter(c => !c.parent)
+                    .slice(0, 8);
+                setCategories(topLevel);
+            })
+            .catch(() => {
+                // Fallback to hardcoded if API fails
+                setCategories([
+                    { id: 1, name: 'Law & Legal' },
+                    { id: 2, name: 'Nursing' },
+                    { id: 3, name: 'Cybersecurity' },
+                    { id: 4, name: 'Biology' },
+                    { id: 5, name: 'History' },
+                    { id: 6, name: 'Data Science' },
+                    { id: 7, name: 'Computer Science' },
+                    { id: 8, name: 'Business' },
+                ]);
+            });
     }, []);
 
     useEffect(() => {
@@ -66,7 +93,7 @@ const Navbar = () => {
         || currentUser?.profile_picture
         || null;
 
-    // Role label shown in dropdown header — clean, no email
+    // Role label shown in dropdown header
     const roleLabel = isExpert ? 'Expert' : 'Student';
 
     // Avatar element — reused in multiple places
@@ -154,14 +181,12 @@ const Navbar = () => {
                             </svg>
 
                             {open && (
-                                <div className="options" onClick={e => e.stopPropagation()}>
-
-                                    {/* ── Header: avatar + name + role (NO email) ── */}
+                                <div className="options">
                                     <div className="options-header">
                                         <AvatarImg size="md" />
-                                        <div className="options-user-info">
+                                        <div className="options-header-text">
                                             <span className="options-username">{currentUser.username}</span>
-                                            
+                                            <span className="options-role">{roleLabel}</span>
                                         </div>
                                     </div>
 
@@ -169,11 +194,11 @@ const Navbar = () => {
 
                                     <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
                                     <Link to='/messages' onClick={() => setopen(false)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        Messages
-                        {unreadCount > 0 && (
-                            <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
-                        )}
-                    </Link>
+                                        Messages
+                                        {unreadCount > 0 && (
+                                            <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                                        )}
+                                    </Link>
 
                                     <div className="options-divider" />
 
@@ -188,10 +213,10 @@ const Navbar = () => {
 
                                     <Link to='/settings'  onClick={() => setopen(false)}>Account Settings</Link>
                                     <Link
-                                    to={currentUser?.user_type === 'student' ? '/sprofile' : '/profile'}
-                                    onClick={() => setopen(false)}
+                                        to={currentUser?.user_type === 'student' ? '/sprofile' : '/profile'}
+                                        onClick={() => setopen(false)}
                                     >
-                                    My Profile
+                                        My Profile
                                     </Link>
 
                                     <div className="options-divider" />
@@ -214,11 +239,11 @@ const Navbar = () => {
                                 <div className="options">
                                     <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
                                     <Link to='/messages' onClick={() => setopen(false)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        Messages
-                        {unreadCount > 0 && (
-                            <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
-                        )}
-                    </Link>
+                                        Messages
+                                        {unreadCount > 0 && (
+                                            <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                                        )}
+                                    </Link>
                                     {isExpert ? (
                                         <>
                                             <Link to='/mygigs' onClick={() => setopen(false)}>My Gigs</Link>
@@ -267,11 +292,11 @@ const Navbar = () => {
                                 </div>
                                 <Link className="mobile-nav-link" to='/orders'   onClick={() => setMenuOpen(false)}>My Orders</Link>
                                 <Link className="mobile-nav-link" to='/messages' onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    Messages
-                    {unreadCount > 0 && (
-                        <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
-                    )}
-                </Link>
+                                    Messages
+                                    {unreadCount > 0 && (
+                                        <span className="nav-unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                                    )}
+                                </Link>
                                 {isExpert ? (
                                     <>
                                         <Link className="mobile-nav-link" to='/mygigs' onClick={() => setMenuOpen(false)}>My Gigs</Link>
@@ -301,15 +326,15 @@ const Navbar = () => {
                 <>
                     <hr className="nav-hr" />
                     <div className="menu">
-                        <Link className='link menulink' to='/gigs?search=Law'>Law &amp; Legal</Link>
-                        <Link className='link menulink' to='/gigs?search=Nursing'>Nursing</Link>
-                        <Link className='link menulink' to='/gigs?search=Cybersecurity'>Cybersecurity</Link>
-                        <Link className='link menulink' to='/gigs?search=Biology'>Biology</Link>
-                        <Link className='link menulink' to='/gigs?search=History'>History</Link>
-                        <Link className='link menulink' to='/gigs?search=Data Science'>Data Science</Link>
-                        <Link className='link menulink' to='/gigs?search=Computer Science'>Computer Science</Link>
-                        <Link className='link menulink' to='/gigs?search=Business'>Business</Link>
-                        <Link className='link menulink' to='/gigs?search=Essay Writing'>Essay Writing</Link>
+                        {categories.map(cat => (
+                            <Link
+                                key={cat.id}
+                                className='link menulink'
+                                to={`/gigs?search=${encodeURIComponent(cat.name)}`}
+                            >
+                                {cat.name}
+                            </Link>
+                        ))}
                     </div>
                     <hr className="nav-hr" />
                 </>

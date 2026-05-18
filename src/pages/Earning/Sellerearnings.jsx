@@ -10,12 +10,10 @@ const PERIODS = [
 ];
 
 const STATUS_LABELS = {
-  paid:       'Paid',
-  pending:    'Pending',
-  unpaid:     'Unpaid',
-  in_progress:'In Progress',
-  completed:  'Completed',
-  submitted:  'Submitted',
+  unpaid:    'Unpaid',
+  held:      'Held',
+  released:  'Paid Out',
+  refunded:  'Refunded',
 };
 
 const SellerEarnings = () => {
@@ -86,15 +84,7 @@ const SellerEarnings = () => {
         </div>
       </div>
 
-      {/* ── Notice ── */}
-      <div className="se__notice">
-        <span>ℹ️</span>
-        <p>
-          Payments are processed manually by TopMark every week. 
-          If you have a pending balance, you will be contacted directly 
-          via your registered email with payment details.
-        </p>
-      </div>
+      
 
       {/* ── Orders table ── */}
       <div className="se__section">

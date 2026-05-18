@@ -7,39 +7,25 @@ import newRequest from "../../utils/newRequest";
 import GigCard from "../../components/GigCard/GigCard";
 import "./Dashboard.scss";
 
-const CATEGORIES = [
-  { icon: "/images/Legal.webp",             label: "Law & Legal",     search: "Law",            placeholder: "#e8e4f0" },
-  { icon: "/images/Nursing.webp",         label: "Nursing",         search: "Nursing",         placeholder: "#e4f0ea" },
-  { icon: "/images/Cybersecurity.webp",   label: "Cybersecurity",   search: "Cybersecurity",   placeholder: "#e4eaf0" },
-  { icon: "/images/Biology.webp",         label: "Biology",         search: "Biology",          placeholder: "#e4f0e8" },
-  { icon: "/images/history.webp",         label: "History",         search: "History",          placeholder: "#f0ece4" },
-  { icon: "/images/data science.webp",    label: "Data Science",    search: "Data Science",    placeholder: "#ede4f0" },
-  { icon: "/images/computerscience.webp",label: "Computer Science",search: "Computer Science",placeholder: "#e4edf0" },
-  { icon: "/images/business.webp",        label: "Business",        search: "Business",         placeholder: "#f0e4e4" },
-  { icon: "/images/psychology.webp",      label: "Psychology",      search: "Psychology",       placeholder: "#f0e8e4" },
-  { icon: "/images/essay.webp",           label: "Essay Writing",   search: "Essay Writing",   placeholder: "#e4f0ec" },
-  { icon: "/images/chemistry.webp",       label: "Chemistry",       search: "Chemistry",        placeholder: "#e4ecf0" },
-  { icon: "/images/maths.webp",     label: "Mathematics",     search: "Mathematics",      placeholder: "#ebe4f0" },
-];
+// Local image map — matches category names to local assets
+const CATEGORY_IMAGE_MAP = {
+  "Law & Legal":      { icon: "/images/Legal.webp",          placeholder: "#e8e4f0" },
+  "Nursing":          { icon: "/images/Nursing.webp",        placeholder: "#e4f0ea" },
+  "Cybersecurity":    { icon: "/images/Cybersecurity.webp",  placeholder: "#e4eaf0" },
+  "Biology":          { icon: "/images/Biology.webp",        placeholder: "#e4f0e8" },
+  "History":          { icon: "/images/history.webp",        placeholder: "#f0ece4" },
+  "Data Science":     { icon: "/images/data science.webp",   placeholder: "#ede4f0" },
+  "Computer Science": { icon: "/images/computerscience.webp",placeholder: "#e4edf0" },
+  "Business":         { icon: "/images/business.webp",       placeholder: "#f0e4e4" },
+  "Psychology":       { icon: "/images/psychology.webp",     placeholder: "#f0e8e4" },
+  "Essay Writing":    { icon: "/images/essay.webp",          placeholder: "#e4f0ec" },
+  "Chemistry":        { icon: "/images/chemistry.webp",      placeholder: "#e4ecf0" },
+  "Mathematics":      { icon: "/images/maths.webp",          placeholder: "#ebe4f0" },
+};
 
-
-// ── Search bar ────────────────────────────────────────────────────────────────
-const STATIC_SUBJECTS = [
-  "Law & Legal", "Nursing", "Cybersecurity", "Biology", "History",
-  "Data Science", "Computer Science", "Business", "Psychology",
-  "Essay Writing", "Chemistry", "Mathematics",
-];
-
-const CATEGORY_FILTERS = [
-  { label: "All",              value: "" },
-  { label: "Law & Legal",      value: "Law" },
-  { label: "Nursing",          value: "Nursing" },
-  { label: "Computer Science", value: "Computer Science" },
-  { label: "Data Science",     value: "Data Science" },
-  { label: "Business",         value: "Business" },
-  { label: "Mathematics",      value: "Mathematics" },
-  { label: "Essay Writing",    value: "Essay Writing" },
-  { label: "Chemistry",        value: "Chemistry" },
+const FALLBACK_COLORS = [
+  "#e8e4f0","#e4f0ea","#e4eaf0","#e4f0e8",
+  "#f0ece4","#ede4f0","#e4edf0","#f0e4e4",
 ];
 
 const RECENT_KEY  = "search_recent";
@@ -60,7 +46,8 @@ function removeRecent(term) {
   return next;
 }
 
-function SearchBar() {
+// ── Search bar ────────────────────────────────────────────────────────────────
+function SearchBar({ categories }) {
   const navigate = useNavigate();
   const [query,       setQuery]       = useState("");
   const [category,    setCategory]    = useState("");
@@ -72,6 +59,9 @@ function SearchBar() {
   const inputRef    = useRef(null);
   const dropRef     = useRef(null);
   const debounceRef = useRef(null);
+
+  // Build category name list for suggestions
+  const categoryNames = categories.map(c => c.name);
 
   useEffect(() => {
     function onClickOutside(e) {
@@ -85,7 +75,7 @@ function SearchBar() {
   }, []);
 
   const fetchSuggestions = useCallback(async (term) => {
-    const staticMatches = STATIC_SUBJECTS.filter(s =>
+    const staticMatches = categoryNames.filter(s =>
       s.toLowerCase().includes(term.toLowerCase())
     );
     setLoading(true);
@@ -102,7 +92,7 @@ function SearchBar() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [categoryNames]); // eslint-disable-line
 
   useEffect(() => {
     clearTimeout(debounceRef.current);
@@ -117,6 +107,9 @@ function SearchBar() {
 
   const showDropdown = open && (loading || suggestions.length > 0 || (!query.trim() && recent.length > 0));
   const dropItems    = query.trim() ? suggestions : recent;
+
+  // Category filter pills: All + top-level categories
+  const filterPills = [{ id: "", name: "All" }, ...categories];
 
   function goSearch(term = query, cat = category) {
     const q = term.trim();
@@ -137,16 +130,16 @@ function SearchBar() {
 
   return (
     <div className="sb">
-      {/* Category filter pills */}
+      {/* Category filter pills — dynamic from backend */}
       <div className="sb__filters">
-        {CATEGORY_FILTERS.map(f => (
+        {filterPills.map(f => (
           <button
-            key={f.value}
-            className={`sb__filter-pill${category === f.value ? " sb__filter-pill--active" : ""}`}
-            onClick={() => setCategory(f.value)}
+            key={f.id}
+            className={`sb__filter-pill${category === f.name ? " sb__filter-pill--active" : ""}`}
+            onClick={() => setCategory(f.id === "" ? "" : f.name)}
             type="button"
           >
-            {f.label}
+            {f.name}
           </button>
         ))}
       </div>
@@ -238,62 +231,21 @@ function SearchBar() {
   );
 }
 
-// ── Profile menu ──────────────────────────────────────────────────────────────
-function ProfileMenu({ user, navigate, activeOrders, unreadData }) {
-  const [open, setOpen] = useState(false);
-
-  const menuItems = [
-    { icon: "person-outline",      label: "Profile",  path: "/profile" },
-    {
-      icon: "chatbox-outline",
-      label: unreadData?.unread_count > 0 ? `Messages (${unreadData.unread_count})` : "Messages",
-      path: "/messages",
-    },
-    {
-      icon: "notifications-outline",
-      label: activeOrders.length > 0 ? `Orders (${activeOrders.length})` : "Orders",
-      path: "/orders",
-    },
-    { icon: "cog-outline",     label: "Settings", path: "/settings" },
-    { icon: "log-out-outline", label: "Logout",   path: "/logout" },
-  ];
-
-  return (
-    <div className={`dash-nav${open ? " dash-nav--open" : ""}`}>
-      <div className="dash-nav__user-box">
-        <div className="dash-nav__avatar">
-          <img src={user?.img || "/images/noavatar.jpeg"} alt={user?.username} />
-        </div>
-        <span className="dash-nav__username">{user?.username}</span>
-      </div>
-
-      <div className="dash-nav__toggle" onClick={() => setOpen(o => !o)} />
-
-      <ul className="dash-nav__menu">
-        {menuItems.map(item => (
-          <li key={item.label}>
-            <a href="#" onClick={e => { e.preventDefault(); setOpen(false); navigate(item.path); }}>
-              <ion-icon name={item.icon} />
-              {item.label}
-            </a>
-          </li>
-        ))}
-        {user?.user_type === "expert" && (
-          <li>
-            <a href="#" onClick={e => { e.preventDefault(); setOpen(false); navigate("/add"); }}>
-              <ion-icon name="add-circle-outline" />
-              Add New Gig
-            </a>
-          </li>
-        )}
-      </ul>
-    </div>
-  );
-}
-
+// ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+
+  // Fetch categories once
+  useEffect(() => {
+    newRequest.get('/gigs/categories/')
+      .then(({ data }) => {
+        const topLevel = (data?.results ?? data ?? []).filter(c => !c.parent);
+        setCategories(topLevel);
+      })
+      .catch(() => {});
+  }, []);
 
   const { data: gigs, isLoading } = useQuery({
     queryKey: ["dashboard-gigs"],
@@ -305,7 +257,7 @@ export default function Dashboard() {
 
       {/* ── Search ── */}
       <section className="dashboard-search">
-        <SearchBar />
+        <SearchBar categories={categories} />
       </section>
 
       {/* ── Recommended Experts ── */}
@@ -341,32 +293,43 @@ export default function Dashboard() {
           <span onClick={() => navigate("/gigs")}>See all →</span>
         </div>
         <div className="dashboard-cats">
-          {CATEGORIES.map((cat) => (
-            <div
-              key={cat.label}
-              className="dashboard-cat"
-              onClick={() => navigate(`/gigs?search=${encodeURIComponent(cat.search)}`)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.search)}`)}
-            >
+          {categories.map((cat, idx) => {
+            const asset = CATEGORY_IMAGE_MAP[cat.name];
+            const placeholder = asset?.placeholder || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+            return (
               <div
-                className="dashboard-cat__img-wrap"
-                style={{ background: cat.placeholder }}
+                key={cat.id}
+                className="dashboard-cat"
+                onClick={() => navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
               >
-                <img
-                  src={cat.icon}
-                  alt={cat.label}
-                  loading="lazy"
-                  className="dashboard-cat__img"
-                  onLoad={e => e.currentTarget.classList.add("dashboard-cat__img--loaded")}
-                />
-                <div className="dashboard-cat__overlay">
-                  <span className="dashboard-cat__label">{cat.label}</span>
+                <div
+                  className="dashboard-cat__img-wrap"
+                  style={{ background: placeholder }}
+                >
+                  {asset?.icon ? (
+                    <img
+                      src={asset.icon}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="dashboard-cat__img"
+                      onLoad={e => e.currentTarget.classList.add("dashboard-cat__img--loaded")}
+                    />
+                  ) : (
+                    // No local image — show first letter as fallback
+                    <span className="dashboard-cat__letter">
+                      {cat.name.charAt(0)}
+                    </span>
+                  )}
+                  <div className="dashboard-cat__overlay">
+                    <span className="dashboard-cat__label">{cat.name}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

@@ -350,9 +350,7 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="auth-expert-note">
-            <span>Are you an expert?</span> Use the same form — you'll be taken straight to your dashboard.
-          </div>
+          
 
           <p className="auth-legal">
             By signing in, you agree to TopMark's{" "}

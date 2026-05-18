@@ -284,13 +284,13 @@
     .menu {
         width: 100%;
         max-width: 1400px;
-        padding: 4px 24px;        // was 10px — now just 4px top/bottom
+        padding: 4px 24px;        
         display: flex;
         justify-content: space-between;
-        font-weight: 400;
+        font-weight: 600;
         color: #666;
         font-family: 'Montserrat', sans-serif;
-        font-size: 13px;           // was 14px — slightly tighter
+        font-size: 15px;          
     
         .menulink {
             white-space: nowrap;

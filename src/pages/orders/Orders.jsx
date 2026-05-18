@@ -8,12 +8,21 @@ import { startConversation } from "../../api/messaging";
 const FILTERS = ["all", "pending", "in_progress", "submitted", "completed", "archived"];
 
 const STATUS_LABELS = {
-  all: "All",
-  pending: "Pending",
+  all:         "All",
+  pending:     "Pending",
   in_progress: "In Progress",
-  submitted: "Submitted",
-  completed: "Completed",
-  archived: "Archived",
+  submitted:   "Submitted",
+  completed:   "Completed",
+  archived:    "Archived",
+};
+
+// Matches Order.PAYMENT_STATUS_CHOICES exactly
+const PAYMENT_LABELS = {
+  unpaid:   "Unpaid",
+  held:     "Held",
+  released: "Paid Out",
+  refunded: "Refunded",
+  pending:  "Pending",   // legacy / bank transfer
 };
 
 const Orders = () => {
@@ -103,8 +112,8 @@ const Orders = () => {
                       </span>
                     </td>
                     <td>
-                      <span className={`orders__badge orders__badge--${order.payment_status}`}>
-                        {order.payment_status}
+                      <span className={`orders__badge orders__badge--pay-${order.payment_status}`}>
+                        {PAYMENT_LABELS[order.payment_status] || order.payment_status}
                       </span>
                     </td>
                     <td>
