@@ -814,3 +814,19 @@ $orange: #E38968;
   .msg-main--hidden-mobile    { display: none !important; }
   .msg-back-btn               { display: block; }
 }
+
+.msg-back-btn--page {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #1a9e60;
+  }
+}

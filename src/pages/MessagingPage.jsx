@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AuthContext from "../AuthContext";
 import { getConversations } from "../api/messaging";
 import { useMessaging } from "../MessagingContext";
@@ -47,6 +47,7 @@ export default function MessagingPage() {
   const [mobileView, setMobileView]         = useState("list");
   const [convError, setConvError]           = useState(null);
   const [darkMode, setDarkMode]             = useState(false);
+  const navigate = useNavigate();
 
   const fetchConversationsRef = useRef(null);
 
@@ -123,6 +124,15 @@ export default function MessagingPage() {
         <aside className={`msg-sidebar ${mobileView === "chat" ? "msg-sidebar--hidden-mobile" : ""}`}>
           <div className="msg-sidebar__header">
             <div className="msg-sidebar__title-row">
+              <button
+                className="msg-back-btn msg-back-btn--page"
+                onClick={() => navigate(-1)}
+                aria-label="Go back"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M19 12H5M12 5l-7 7 7 7" />
+                </svg>
+              </button>
               <h1 className="msg-sidebar__title">
                 Messages
                 {unreadTotal > 0 && (
