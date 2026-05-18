@@ -18,8 +18,8 @@ const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
 const Gigs           = lazy(() => import('./pages/gigs/Gigs.jsx'));
 const StudentProfile = lazy(() => import('./pages/studentProfile/Studentprofile.jsx'));
 const Home           = lazy(() => import('./pages/home/Home.jsx'));
-const AdminEarnings  = lazy(() => import('./pages/earnings/Adminearnings.jsx'));
-const SellerEarnings = lazy(() => import('./pages/earnings/Sellerearnings.jsx'));
+const AdminEarnings  = lazy(() => import('./pages/Earnings/Adminearnings.jsx'));
+const SellerEarnings = lazy(() => import('./pages/Earnings/Sellerearnings.jsx'));
 const Pay            = lazy(() => import('./pages/pay/Pay.jsx'));
 const Success        = lazy(() => import('./pages/success/Success.jsx'));
 const Login          = lazy(() => import('./pages/login/Login.jsx'));
@@ -29,7 +29,7 @@ const BecomeSeller   = lazy(() => import('./components/becomeSeller/BecomeSeller
 const BecomeSeller2  = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
 const ProfileEdit    = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
 
-// New pages
+
 const About          = lazy(() => import('./pages/about/About.jsx'));
 const FAQ            = lazy(() => import('./pages/faq/FAQ.jsx'));
 const PrivacyPolicy  = lazy(() => import('./pages/legal/PrivacyPolicy.jsx'));
@@ -100,7 +100,7 @@ const router = createBrowserRouter([
       { path: "/sprofile",            element: <StudentProfile /> },
       { path: "/pay/:id",             element: <Pay /> },
       { path: "/pay/offer/:id",       element: <Pay /> },
-      { path: "/admin/earnings",      element: <AdminRoute><AdminEarnings /></AdminRoute> },
+      { path: "/admin/earnings",      element: <AdminRoute><Adminearnings /></AdminRoute> },
       { path: "/earnings",            element: <Sellerearnings /> },
       { path: "/success",             element: <Success /> },
       { path: "/becomeSeller",        element: <BecomeSeller /> },
