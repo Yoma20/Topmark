@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import newRequest from '../../utils/newRequest';
-import './adminearnings.scss';
+import './Adminearnings.scss';
 
 const today = new Date();
 const fmt = (d) => d.toISOString().split('T')[0];
