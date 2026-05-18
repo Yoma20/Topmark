@@ -6,12 +6,10 @@ import { useState, useEffect, useContext } from "react";
 import AuthContext from "../../AuthContext";
 
 // ─── Sidebar nav item ─────────────────────────────────────────────────────────
-function NavItem({ icon, label, active, to, onClick }) {
+function NavItem({ label, active, to, onClick }) {
   const content = (
     <div className={`mg-nav-item ${active ? "mg-nav-item--active" : ""}`} onClick={onClick}>
-      <span className="mg-nav-item__icon">{icon}</span>
       <span className="mg-nav-item__label">{label}</span>
-      {active && <span className="mg-nav-item__bar" />}
     </div>
   );
   return to ? <Link to={to} style={{ textDecoration: "none" }}>{content}</Link> : content;
@@ -313,10 +311,10 @@ function MyGigs() {
         {/* Nav */}
         <nav className="mg-sidebar__nav">
           
-          <NavItem icon="📦" label="Orders"   active={activeNav === "orders"}   onClick={() => setActiveNav("orders")}   to="/orders" />
-          <NavItem icon="💬" label="Messages"  active={activeNav === "messages"}  onClick={() => setActiveNav("messages")}  to="/messages" />
-          <NavItem icon="👤" label="Profile"   active={activeNav === "profile"}   onClick={() => setActiveNav("profile")}   to="/profile" />
-          <NavItem icon="💰" label="Earnings"  active={activeNav === "earnings"}  onClick={() => setActiveNav("earnings")}  to="/earnings" />
+          <NavItem label="Orders"   active={activeNav === "orders"}   onClick={() => setActiveNav("orders")}   to="/orders" />
+          <NavItem label="Messages"  active={activeNav === "messages"}  onClick={() => setActiveNav("messages")}  to="/messages" />
+          <NavItem label="Profile"   active={activeNav === "profile"}   onClick={() => setActiveNav("profile")}   to="/profile" />
+          <NavItem label="Earnings"  active={activeNav === "earnings"}  onClick={() => setActiveNav("earnings")}  to="/earnings" />
         </nav>
 
         {/* Quick link */}
