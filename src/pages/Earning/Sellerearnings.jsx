@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import newRequest from '../../utils/newRequest';
-import './sellerEarnings.scss';
+import './Sellerearnings.scss';
 
 const PERIODS = [
   { label: 'This Week',  value: 'week' },
