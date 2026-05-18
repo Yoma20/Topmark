@@ -18,6 +18,8 @@ const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
 const Gigs           = lazy(() => import('./pages/gigs/Gigs.jsx'));
 const StudentProfile = lazy(() => import('./pages/studentProfile/Studentprofile.jsx'));
 const Home           = lazy(() => import('./pages/home/Home.jsx'));
+const AdminEarnings  = lazy(() => import('./pages/admin/AdminEarnings.jsx'));
+const SellerEarnings = lazy(() => import('./pages/sellerEarnings/SellerEarnings.jsx'))
 const Pay            = lazy(() => import('./pages/pay/Pay.jsx'));
 const Success        = lazy(() => import('./pages/success/Success.jsx'));
 const Login          = lazy(() => import('./pages/login/Login.jsx'));
@@ -90,6 +92,8 @@ const router = createBrowserRouter([
       { path: "/register",            element: <Register /> },
       { path: "/sprofile",            element: <StudentProfile /> },
       { path: "/pay/:id",             element: <Pay /> },
+      { path: "/admin/earnings",      element: <AdminRoute><AdminEarnings /></AdminRoute> },
+      { path: "/earnings",            element: <SellerEarnings /> },
       { path: "/pay/offer/:id",       element: <Pay /> },
       { path: "/success",             element: <Success /> },
       { path: "/becomeSeller",        element: <BecomeSeller /> },

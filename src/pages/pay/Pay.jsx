@@ -1,78 +1,282 @@
 import { useEffect, useState } from "react";
-import "./pay.scss";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import newRequest from "../../utils/newRequest";
-import { useParams, useSearchParams } from "react-router-dom";
-import CheckoutForm from "../../components/checkOutForm/CheckOutForm";
+import "./pay.scss";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const BANK_DETAILS = {
+  accountName: "TopMark Academic Services",
+  bankName:    "Grey (USD Account)",
+  accountNumber: "YOUR_GREY_ACCOUNT_NUMBER",
+  routingNumber: "YOUR_GREY_ROUTING_NUMBER",
+  swift:        "YOUR_SWIFT_CODE",
+  reference:    "ORDER-",   // append orderId
+};
 
-/**
- * Pay handles two entry points:
- *
- * 1. Offer-based (new flow):
- *    URL: /pay/offer/:orderId
- *    The client_secret was stored in sessionStorage by OfferCard after acceptance.
- *    No need to create a new payment intent — it already exists.
- *
- * 2. Legacy package-based flow (kept for backward compat, can be removed later):
- *    URL: /pay/:gigId?package=:packageId
- */
 const Pay = () => {
-  const { id, orderId } = useParams();   // id = gigId (legacy), orderId = from offer flow
+  const { id, orderId } = useParams();
   const [searchParams] = useSearchParams();
   const packageId = searchParams.get("package");
+  const navigate = useNavigate();
 
   const isOfferFlow = Boolean(orderId);
 
-  const [clientSecret, setClientSecret] = useState("");
+  const [method, setMethod]             = useState(null);      // 'paypal' | 'bank'
+  const [orderAmount, setOrderAmount]   = useState(null);
   const [resolvedOrderId, setResolvedOrderId] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError]               = useState("");
+  const [bankConfirmed, setBankConfirmed] = useState(false);
+  const [confirming, setConfirming]     = useState(false);
 
+  // ── Resolve order + amount ─────────────────────────────────────────────────
   useEffect(() => {
     if (isOfferFlow) {
-      // Retrieve client_secret that was stored by OfferCard on acceptance
       const stored = sessionStorage.getItem(`pi_${orderId}`);
       if (stored) {
-        setClientSecret(stored);
-        setResolvedOrderId(parseInt(orderId));
+        // stored may be client_secret (old Stripe) or just amount JSON
+        // Try to parse amount if stored as JSON, otherwise fetch order
+        try {
+          const parsed = JSON.parse(stored);
+          setOrderAmount(parsed.amount);
+          setResolvedOrderId(parseInt(orderId));
+        } catch {
+          // fallback — fetch order details
+          newRequest.get(`/gigs/orders/${orderId}/`)
+            .then(res => {
+              setOrderAmount(res.data.total_price);
+              setResolvedOrderId(parseInt(orderId));
+            })
+            .catch(() => setError("Could not load order details."));
+        }
         sessionStorage.removeItem(`pi_${orderId}`);
       } else {
-        setError("Payment session expired. Please go back and try again.");
+        // fetch directly
+        newRequest.get(`/gigs/orders/${orderId}/`)
+          .then(res => {
+            setOrderAmount(res.data.total_price);
+            setResolvedOrderId(parseInt(orderId));
+          })
+          .catch(() => setError("Payment session expired. Please go back and try again."));
       }
       return;
     }
 
-    // ── Legacy flow ──────────────────────────────────────────────────────────
+    // Legacy package flow
     if (!packageId) { setError("No package selected."); return; }
     newRequest
       .post(`/gigs/orders/create-payment-intent/`, { package_id: packageId })
-      .then((res) => {
-        setClientSecret(res.data.client_secret);
+      .then(res => {
+        setOrderAmount(res.data.amount || res.data.total_price);
         setResolvedOrderId(res.data.order_id);
       })
-      .catch(() => setError("Failed to initialise payment. Please try again."));
+      .catch(() => setError("Failed to load order. Please try again."));
   }, [isOfferFlow, orderId, packageId]);
 
+  // ── PayPal approval handler ────────────────────────────────────────────────
+  const handlePayPalApprove = async (data, actions) => {
+    await actions.order.capture();
+    await newRequest.post(`/gigs/orders/${resolvedOrderId}/confirm-payment/`, {
+      method: "paypal",
+      paypal_order_id: data.orderID,
+    });
+    navigate(`/success?order_id=${resolvedOrderId}`);
+  };
+
+  // ── Bank transfer confirmation ─────────────────────────────────────────────
+  const handleBankConfirm = async () => {
+    setConfirming(true);
+    try {
+      await newRequest.post(`/gigs/orders/${resolvedOrderId}/confirm-payment/`, {
+        method: "bank_transfer",
+      });
+      setBankConfirmed(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  // ── Error state ────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="pay">
-        <p style={{ color: "red" }}>{error}</p>
+      <div className="pay pay--error">
+        <div className="pay__error-box">
+          <span>⚠️</span>
+          <p>{error}</p>
+          <button onClick={() => navigate(-1)}>Go Back</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Loading ────────────────────────────────────────────────────────────────
+  if (!orderAmount || !resolvedOrderId) {
+    return (
+      <div className="pay pay--loading">
+        <div className="pay__spinner" />
+        <p>Loading order details…</p>
       </div>
     );
   }
 
   return (
     <div className="pay">
-      {clientSecret && (
-        <Elements
-          options={{ clientSecret, appearance: { theme: "stripe" } }}
-          stripe={stripePromise}
-        >
-          <CheckoutForm orderId={resolvedOrderId} />
-        </Elements>
-      )}
+      <div className="pay__card">
+
+        {/* Header */}
+        <div className="pay__header">
+          <h1 className="pay__title">Complete Payment</h1>
+          <div className="pay__amount">
+            <span className="pay__amount-label">Order Total</span>
+            <span className="pay__amount-value">${parseFloat(orderAmount).toFixed(2)}</span>
+          </div>
+          <p className="pay__order-ref">Order #{resolvedOrderId}</p>
+        </div>
+
+        {/* Method selection */}
+        {!method && (
+          <div className="pay__methods">
+            <p className="pay__methods-label">Choose a payment method</p>
+
+            <button
+              className="pay__method-btn pay__method-btn--paypal"
+              onClick={() => setMethod('paypal')}
+            >
+              <img
+                src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png"
+                alt="PayPal"
+                className="pay__method-logo"
+              />
+              <div className="pay__method-info">
+                <span className="pay__method-name">Pay with PayPal</span>
+                <span className="pay__method-desc">Fast, secure checkout. Supports all major cards.</span>
+              </div>
+              <span className="pay__method-arrow">→</span>
+            </button>
+
+            <div className="pay__divider"><span>or</span></div>
+
+            <button
+              className="pay__method-btn pay__method-btn--bank"
+              onClick={() => setMethod('bank')}
+            >
+              <div className="pay__method-icon">🏦</div>
+              <div className="pay__method-info">
+                <span className="pay__method-name">Bank Transfer</span>
+                <span className="pay__method-desc">Transfer directly to our USD account. Manual confirmation.</span>
+              </div>
+              <span className="pay__method-arrow">→</span>
+            </button>
+          </div>
+        )}
+
+        {/* PayPal flow */}
+        {method === 'paypal' && (
+          <div className="pay__paypal">
+            <button className="pay__back" onClick={() => setMethod(null)}>← Back</button>
+            <p className="pay__section-title">Pay securely with PayPal</p>
+            <PayPalScriptProvider options={{
+              "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
+              currency: "USD",
+            }}>
+              <PayPalButtons
+                style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                createOrder={(data, actions) =>
+                  actions.order.create({
+                    purchase_units: [{
+                      amount: { value: parseFloat(orderAmount).toFixed(2) },
+                      description: `TopMark Order #${resolvedOrderId}`,
+                    }],
+                  })
+                }
+                onApprove={handlePayPalApprove}
+                onError={() => setError("PayPal payment failed. Please try again.")}
+              />
+            </PayPalScriptProvider>
+          </div>
+        )}
+
+        {/* Bank transfer flow */}
+        {method === 'bank' && !bankConfirmed && (
+          <div className="pay__bank">
+            <button className="pay__back" onClick={() => setMethod(null)}>← Back</button>
+            <p className="pay__section-title">Bank Transfer Instructions</p>
+
+            <div className="pay__bank-box">
+              <p className="pay__bank-note">
+                Transfer exactly <strong>${parseFloat(orderAmount).toFixed(2)} USD</strong> to the account below. 
+                Your order will be activated once we confirm receipt (usually within 24 hours).
+              </p>
+
+              <div className="pay__bank-details">
+                <div className="pay__bank-row">
+                  <span className="pay__bank-label">Account Name</span>
+                  <span className="pay__bank-value">{BANK_DETAILS.accountName}</span>
+                </div>
+                <div className="pay__bank-row">
+                  <span className="pay__bank-label">Bank</span>
+                  <span className="pay__bank-value">{BANK_DETAILS.bankName}</span>
+                </div>
+                <div className="pay__bank-row">
+                  <span className="pay__bank-label">Account Number</span>
+                  <span className="pay__bank-value">{BANK_DETAILS.accountNumber}</span>
+                </div>
+                <div className="pay__bank-row">
+                  <span className="pay__bank-label">Routing Number</span>
+                  <span className="pay__bank-value">{BANK_DETAILS.routingNumber}</span>
+                </div>
+                <div className="pay__bank-row">
+                  <span className="pay__bank-label">SWIFT / BIC</span>
+                  <span className="pay__bank-value">{BANK_DETAILS.swift}</span>
+                </div>
+                <div className="pay__bank-row pay__bank-row--highlight">
+                  <span className="pay__bank-label">Reference</span>
+                  <span className="pay__bank-value">{BANK_DETAILS.reference}{resolvedOrderId}</span>
+                </div>
+              </div>
+
+              <p className="pay__bank-warning">
+                ⚠️ Always include the reference number so we can match your payment to your order.
+              </p>
+            </div>
+
+            <p className="pay__bank-confirm-text">
+              Once you have made the transfer, click below to notify us.
+            </p>
+
+            <button
+              className="pay__confirm-btn"
+              onClick={handleBankConfirm}
+              disabled={confirming}
+            >
+              {confirming ? "Submitting…" : "I've Made the Transfer"}
+            </button>
+          </div>
+        )}
+
+        {/* Bank transfer confirmed */}
+        {method === 'bank' && bankConfirmed && (
+          <div className="pay__bank-success">
+            <span className="pay__success-icon">✅</span>
+            <h2>Transfer Noted!</h2>
+            <p>
+              We'll verify your payment and activate your order within <strong>24 hours</strong>.
+              You'll receive an email confirmation at that point.
+            </p>
+            <p className="pay__bank-ref">
+              Reference: <strong>{BANK_DETAILS.reference}{resolvedOrderId}</strong>
+            </p>
+            <button
+              className="pay__confirm-btn"
+              onClick={() => navigate('/orders')}
+            >
+              View My Orders
+            </button>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 };
