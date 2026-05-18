@@ -313,10 +313,10 @@ function MyGigs() {
         {/* Nav */}
         <nav className="mg-sidebar__nav">
           
-          <NavItem img src="/images/orders.svg" label="Orders" active={false} to="/orders" />
-          <NavItem img src="/images/messages.svg" label="Messages" active={false} to="/messages" />
-          <NavItem img src="/images/profile.svg" label="Profile" active={false} to="/profile" />
-          <NavItem img src="/images/earnings.svg" label="Earnings" active={false} to="/earnings" />
+          <NavItem icon="📦" label="Orders"   active={activeNav === "orders"}   onClick={() => setActiveNav("orders")}   to="/orders" />
+          <NavItem icon="💬" label="Messages"  active={activeNav === "messages"}  onClick={() => setActiveNav("messages")}  to="/messages" />
+          <NavItem icon="👤" label="Profile"   active={activeNav === "profile"}   onClick={() => setActiveNav("profile")}   to="/profile" />
+          <NavItem icon="💰" label="Earnings"  active={activeNav === "earnings"}  onClick={() => setActiveNav("earnings")}  to="/earnings" />
         </nav>
 
         {/* Quick link */}
