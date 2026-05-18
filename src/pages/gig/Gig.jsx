@@ -10,7 +10,7 @@ import "./Gig.scss";
 /* ─── Star Rating ──────────────────────────────────────────── */
 const StarRating = ({ rating, reviewCount }) => {
   const value = parseFloat(rating);
-  if (!value) return <span className="rating-new">New</span>;
+  if (!value) return <span className="rating-new"></span>;
   const full = Math.round(value);
   return (
     <div className="stars">
