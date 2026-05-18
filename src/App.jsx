@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useContext, useEffect } from 'react';
 import './App.scss';
-import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import AuthContext from './AuthContext.jsx';
@@ -18,8 +18,8 @@ const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
 const Gigs           = lazy(() => import('./pages/gigs/Gigs.jsx'));
 const StudentProfile = lazy(() => import('./pages/studentProfile/Studentprofile.jsx'));
 const Home           = lazy(() => import('./pages/home/Home.jsx'));
-const AdminEarnings  = lazy(() => import('./pages/admin/AdminEarnings.jsx'));
-const SellerEarnings = lazy(() => import('./pages/sellerEarnings/SellerEarnings.jsx'))
+const AdminEarnings  = lazy(() => import('./pages/earnings/Adminearnings.jsx'));
+const SellerEarnings = lazy(() => import('./pages/earnings/Sellerearnings.jsx'));
 const Pay            = lazy(() => import('./pages/pay/Pay.jsx'));
 const Success        = lazy(() => import('./pages/success/Success.jsx'));
 const Login          = lazy(() => import('./pages/login/Login.jsx'));
@@ -39,6 +39,13 @@ const Disclaimer     = lazy(() => import('./pages/legal/Disclaimer.jsx'));
 const Support        = lazy(() => import('./pages/support/Support.jsx'));
 
 const queryClient = new QueryClient();
+
+function AdminRoute({ children }) {
+  const { user } = useContext(AuthContext);
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.user_type !== 'admin') return <Navigate to="/" replace />;
+  return children;
+}
 
 function Layout() {
   const { pathname } = useLocation();
@@ -92,15 +99,14 @@ const router = createBrowserRouter([
       { path: "/register",            element: <Register /> },
       { path: "/sprofile",            element: <StudentProfile /> },
       { path: "/pay/:id",             element: <Pay /> },
+      { path: "/pay/offer/:id",       element: <Pay /> },
       { path: "/admin/earnings",      element: <AdminRoute><AdminEarnings /></AdminRoute> },
       { path: "/earnings",            element: <SellerEarnings /> },
-      { path: "/pay/offer/:id",       element: <Pay /> },
       { path: "/success",             element: <Success /> },
       { path: "/becomeSeller",        element: <BecomeSeller /> },
       { path: "/becomeSeller2",       element: <BecomeSeller2 /> },
       { path: "/profile",             element: <ProfileEdit /> },
 
-      
       { path: "/about",               element: <About /> },
       { path: "/faq",                 element: <FAQ /> },
       { path: "/privacy-policy",      element: <PrivacyPolicy /> },
