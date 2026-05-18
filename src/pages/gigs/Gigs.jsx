@@ -86,6 +86,12 @@ const Gigs = () => {
 
       <div className="container">
         <span className="breadcrumbs">TOPMARK &gt; BROWSE EXPERTS</span>
+        <button className="gigs-back-btn" onClick={() => navigate(-1)}>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M19 12H5M12 5l-7 7 7 7" />
+          </svg>
+          Back
+        </button>
         <h1>Find an Expert</h1>
         <p>Browse academic services from verified experts</p>
 

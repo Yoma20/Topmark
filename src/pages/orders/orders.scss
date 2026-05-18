@@ -152,3 +152,18 @@
     &--error { color: #d94f4f; }
   }
 }
+
+.orders__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  font-size: 0.875rem;
+  padding: 4px 0;
+  margin-bottom: 8px;
+
+  &:hover { color: #1a9e60; }
+}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import newRequest from '../../utils/newRequest';
 import './Sellerearnings.scss';
+import { useNavigate } from 'react-router-dom';
 
 const PERIODS = [
   { label: 'This Week',  value: 'week' },
@@ -17,6 +18,7 @@ const STATUS_LABELS = {
 };
 
 const SellerEarnings = () => {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState('month');
 
   const { data, isLoading, isError } = useQuery({
@@ -38,6 +40,12 @@ const SellerEarnings = () => {
       {/* ── Top bar ── */}
       <div className="se__topbar">
         <div className="se__topbar-left">
+          <button className="se__back-btn" onClick={() => navigate(-1)}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back
+          </button>
           <h1 className="se__title">My Earnings</h1>
           <p className="se__subtitle">Track your income and order payments</p>
         </div>

@@ -1,4 +1,6 @@
 import { useState, useEffect, useContext, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import AuthContext from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import "./settings.scss";
@@ -33,6 +35,20 @@ const uploadToImgBB = async (file) => {
 export default function Settings() {
   const { user: currentUser, login } = useContext(AuthContext);
   const isExpert = currentUser?.user_type === "expert";
+  const navigate = useNavigate();
+  return (
+    <div>
+      <h1>Settings</h1>
+      <button className="settings-back-btn" onClick={() => navigate(-1)}>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M19 12H5M12 5l-7 7 7 7" />
+        </svg>
+        Back
+      </button>
+    </div>
+  );
+
+
 
   const [activePanel, setActivePanel] = useState("profile");
 
