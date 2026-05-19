@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext";
-import { getOrders, submitWork } from "../../api/gigs";
-import { startConversation } from "../../api/messages";
-import "./Orders.scss";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import AuthContext from "../../AuthContext.jsx";
+import newRequest from "../../utils/newRequest.js";
+import "./orders.scss";
 
 export default function Orders() {
-  const { user } = useAuth();
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isExpert = user?.user_type === "expert";
 
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(isExpert ? "active" : "all");
   const [submitting, setSubmitting] = useState(null);
 
-  useEffect(() => {
-    getOrders()
-      .then(setOrders)
-      .finally(() => setLoading(false));
-  }, []);
+  // ── Data fetching ──────────────────────────────────────────────────────────
+
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ["orders"],
+    queryFn: () => newRequest.get("/orders/").then(res => res.data),
+  });
 
   // ── Tab logic ──────────────────────────────────────────────────────────────
 
@@ -44,8 +44,8 @@ export default function Orders() {
   async function handleContact(order) {
     const recipientId = isExpert ? order.student_user_id : order.expert_user_id;
     try {
-      const conv = await startConversation(recipientId);
-      navigate(`/messages/${conv.id}`);
+      const res = await newRequest.post("/conversations/", { recipient_id: recipientId });
+      navigate(`/messages/${res.data.id}`);
     } catch (e) {
       console.error("Could not start conversation", e);
     }
@@ -55,10 +55,10 @@ export default function Orders() {
     if (!window.confirm("Mark this order as submitted? The student will be notified.")) return;
     setSubmitting(orderId);
     try {
-      await submitWork(orderId);
-      setOrders(prev => prev.map(o =>
-        o.id === orderId ? { ...o, status: "submitted" } : o
-      ));
+      await newRequest.post(`/orders/${orderId}/submit/`);
+      queryClient.setQueryData(["orders"], prev =>
+        prev.map(o => o.id === orderId ? { ...o, status: "submitted" } : o)
+      );
     } catch (e) {
       alert("Failed to submit work. Please try again.");
     } finally {
@@ -68,7 +68,7 @@ export default function Orders() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
-  if (loading) return (
+  if (isLoading) return (
     <div className="orders__spinner">
       <div className="orders__spinner-ring" />
     </div>
