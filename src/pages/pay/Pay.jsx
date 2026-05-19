@@ -26,6 +26,7 @@ const Pay = () => {
   const [method, setMethod]                   = useState(null);   // 'paypal' | 'bank'
   const [orderAmount, setOrderAmount]         = useState(null);
   const [resolvedOrderId, setResolvedOrderId] = useState(null);
+  const [resolvedToken, setResolvedToken]     = useState(null);   // keep token alive for confirm step
   const [error, setError]                     = useState("");
   const [bankConfirmed, setBankConfirmed]     = useState(false);
   const [confirming, setConfirming]           = useState(false);
@@ -33,12 +34,13 @@ const Pay = () => {
   // ── Resolve order + amount ────────────────────────────────────────────────
   useEffect(() => {
     if (isTokenFlow) {
-      // Redeem the one-time token — server validates user + expiry, then deletes it
+      // Redeem the one-time token — server validates user + expiry
       newRequest
         .post("/messaging/pay-token/redeem/", { token })
         .then(res => {
           setOrderAmount(res.data.amount);
           setResolvedOrderId(res.data.order_id);
+          setResolvedToken(token);   // keep it so confirm-payment can delete it server-side
         })
         .catch(() =>
           setError("Payment link expired or invalid. Please go back and try again.")
@@ -62,20 +64,32 @@ const Pay = () => {
 
   // ── PayPal approval handler ───────────────────────────────────────────────
   const handlePayPalApprove = async (data, actions) => {
-    await actions.order.capture();
-    await newRequest.post(`/gigs/orders/${resolvedOrderId}/confirm-payment/`, {
-      method: "paypal",
-      paypal_order_id: data.orderID,
-    });
-    navigate(`/success?order_id=${resolvedOrderId}`);
+    try {
+      await actions.order.capture();
+      const confirmUrl = isTokenFlow
+        ? `/messaging/orders/${resolvedOrderId}/confirm-payment/`
+        : `/gigs/orders/${resolvedOrderId}/confirm-payment/`;
+      await newRequest.post(confirmUrl, {
+        method: "paypal",
+        paypal_order_id: data.orderID,
+        ...(isTokenFlow && { pay_token: resolvedToken }),
+      });
+      navigate(`/success?order_id=${resolvedOrderId}`);
+    } catch {
+      setError("Payment captured but confirmation failed. Please contact support.");
+    }
   };
 
   // ── Bank transfer confirmation ────────────────────────────────────────────
   const handleBankConfirm = async () => {
     setConfirming(true);
     try {
-      await newRequest.post(`/gigs/orders/${resolvedOrderId}/confirm-payment/`, {
+      const confirmUrl = isTokenFlow
+        ? `/messaging/orders/${resolvedOrderId}/confirm-payment/`
+        : `/gigs/orders/${resolvedOrderId}/confirm-payment/`;
+      await newRequest.post(confirmUrl, {
         method: "bank_transfer",
+        ...(isTokenFlow && { pay_token: resolvedToken }),
       });
       setBankConfirmed(true);
     } catch {
