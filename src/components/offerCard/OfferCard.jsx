@@ -19,9 +19,9 @@ const OfferCard = ({ offer, currentUserId, onResponded }) => {
       const res = await newRequest.post(`/messaging/offers/${offer.id}/respond/`, { action });
       if (action === "accept") {
         // Navigate to payment using the client_secret returned from backend
-        const { order_id, client_secret } = res.data;
-        // Store in sessionStorage so Pay.jsx can pick it up without re-creating the intent
-        sessionStorage.setItem(`pi_${order_id}`, client_secret);
+        const { order_id, amount } = res.data;
+        // Store amount in sessionStorage so Pay.jsx can read the order total
+        sessionStorage.setItem(`pi_${order_id}`, JSON.stringify({ amount }));
         window.location.href = `/pay/offer/${order_id}`;
       } else {
         onResponded?.();
