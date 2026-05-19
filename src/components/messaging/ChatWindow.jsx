@@ -43,7 +43,6 @@ function EmojiPicker({ onSelect, onClose }) {
 function AttachmentPreview({ file, onRemove }) {
   const isImage = file.type.startsWith("image/");
   const isVideo = file.type.startsWith("video/");
-
   const icon = isImage ? "🖼️" : isVideo ? "🎬" : "📄";
   const name = file.name.length > 22 ? file.name.slice(0, 20) + "…" : file.name;
 
@@ -55,6 +54,43 @@ function AttachmentPreview({ file, onRemove }) {
         ✕
       </button>
     </div>
+  );
+}
+
+// ── Renders a file message bubble ─────────────────────────────────────────────
+function FileBubble({ fileUrl, fileName }) {
+  if (!fileUrl) return <span className="msg-file-missing">File unavailable</span>;
+
+  const ext = fileName?.split(".").pop()?.toLowerCase() ?? "";
+  const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(ext);
+  const isVideo = ["mp4", "webm", "mov"].includes(ext);
+
+  if (isImage) {
+    return (
+      <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="msg-file-image-link">
+        <img src={fileUrl} alt={fileName} className="msg-file-image" />
+      </a>
+    );
+  }
+
+  if (isVideo) {
+    return (
+      <video controls className="msg-file-video" preload="metadata">
+        <source src={fileUrl} />
+        Your browser does not support the video tag.
+      </video>
+    );
+  }
+
+  // Generic file download link
+  const icon = ext === "pdf" ? "📄" : ext === "zip" ? "🗜️" : "📎";
+  const displayName = fileName?.length > 30 ? fileName.slice(0, 28) + "…" : fileName;
+  return (
+    <a href={fileUrl} download={fileName} className="msg-file-link" target="_blank" rel="noopener noreferrer">
+      <span className="msg-file-link__icon">{icon}</span>
+      <span className="msg-file-link__name">{displayName}</span>
+      <span className="msg-file-link__dl">↓</span>
+    </a>
   );
 }
 
@@ -136,43 +172,70 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     const content = text.trim();
     if ((!content && attachments.length === 0) || sending) return;
 
-    const optimisticMsg = {
-      id: `opt-${Date.now()}`,
-      sender: { id: currentUserId },
-      content: content || (attachments.length > 0 ? `📎 ${attachments[0].name}` : ""),
-      message_type: "text",
-      is_read: false,
-      created_at: new Date().toISOString(),
-      _optimistic: true,
-    };
-    setMessages((prev) => [...prev, optimisticMsg]);
+    // Build optimistic messages — one per file + one for text
+    const optimisticIds = [];
+    const optimisticMessages = [];
+
+    if (content) {
+      const opt = {
+        id: `opt-${Date.now()}-text`,
+        sender: { id: currentUserId },
+        content,
+        message_type: "text",
+        is_read: false,
+        created_at: new Date().toISOString(),
+        _optimistic: true,
+      };
+      optimisticMessages.push(opt);
+      optimisticIds.push(opt.id);
+    }
+
+    attachments.forEach((f, i) => {
+      const opt = {
+        id: `opt-${Date.now()}-file-${i}`,
+        sender: { id: currentUserId },
+        content: "",
+        message_type: "file",
+        file_url: URL.createObjectURL(f),
+        file_name: f.name,
+        is_read: false,
+        created_at: new Date().toISOString(),
+        _optimistic: true,
+      };
+      optimisticMessages.push(opt);
+      optimisticIds.push(opt.id);
+    });
+
+    setMessages((prev) => [...prev, ...optimisticMessages]);
     setText("");
     setAttachments([]);
     setSending(true);
     setSendError("");
 
     try {
-      let res;
-      if (attachments.length > 0) {
-        const formData = new FormData();
-        if (content) formData.append("content", content);
-        attachments.forEach((f) => formData.append("files", f));
-        res = await newRequest.post(
-          `/messaging/conversations/${conversation.id}/send/`,
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-      } else {
-        res = await newRequest.post(
-          `/messaging/conversations/${conversation.id}/send/`,
-          { content }
-        );
-      }
-      setMessages((prev) => prev.map((m) => (m.id === optimisticMsg.id ? res.data : m)));
+      const formData = new FormData();
+      if (content) formData.append("content", content);
+      attachments.forEach((f) => formData.append("files", f));
+
+      const res = await newRequest.post(
+        `/messaging/conversations/${conversation.id}/send/`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      // Server returns a single object or an array
+      const serverMessages = Array.isArray(res.data) ? res.data : [res.data];
+
+      setMessages((prev) => {
+        // Remove all optimistic placeholders, then append the real messages
+        const withoutOptimistic = prev.filter((m) => !optimisticIds.includes(m.id));
+        return [...withoutOptimistic, ...serverMessages];
+      });
       onMessageSent?.();
-    } catch {
-      setSendError("Failed to send. Click to retry.");
-      setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));
+    } catch (err) {
+      const detail = err?.response?.data?.detail || "Failed to send. Click to retry.";
+      setSendError(detail);
+      setMessages((prev) => prev.filter((m) => !optimisticIds.includes(m.id)));
     } finally {
       setSending(false);
     }
@@ -202,7 +265,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
-    setAttachments((prev) => [...prev, ...files].slice(0, 5)); // max 5 attachments
+    setAttachments((prev) => [...prev, ...files].slice(0, 5));
     e.target.value = "";
   };
 
@@ -210,7 +273,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ── No conversation selected ────────────────────────────────────────────────
   if (!conversation) {
     return (
       <div className="chat-window">
@@ -238,14 +300,13 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
             {gigTitle && <> · {gigTitle}</>}
           </div>
         </div>
-
         {isExpert && (
           <button
             className="chat-offer-btn"
             onClick={() => setShowOfferModal(true)}
             title="Send a custom offer"
           >
-            📋 Send Offer
+             Send Offer
           </button>
         )}
       </div>
@@ -280,19 +341,30 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
             );
           }
 
+          if (msg.message_type === "file") {
+            return (
+              <div
+                key={msg.id}
+                className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${msg._optimistic ? "msg--optimistic" : ""}`}
+              >
+                {!isMine && <Avatar user={otherParticipant} size={28} className="conv-avatar" />}
+                <div className="msg-bubble msg-bubble--file">
+                  <FileBubble fileUrl={msg.file_url} fileName={msg.file_name} />
+                </div>
+                <span className="msg-meta">
+                  {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {isMine && msg.is_read && <span className="msg-read-indicator"> ✓✓</span>}
+                </span>
+              </div>
+            );
+          }
+
           return (
             <div
               key={msg.id}
               className={`msg ${isMine ? "msg--mine" : "msg--theirs"} ${msg._optimistic ? "msg--optimistic" : ""}`}
             >
-              {/* Avatar only on incoming messages */}
-              {!isMine && (
-                <Avatar
-                  user={otherParticipant}
-                  size={28}
-                  className="conv-avatar"
-                />
-              )}
+              {!isMine && <Avatar user={otherParticipant} size={28} className="conv-avatar" />}
               <div className="msg-bubble">{msg.content}</div>
               <span className="msg-meta">
                 {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -328,52 +400,28 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
 
       {/* Input row */}
       <div className="chat-input-row">
-        {/* Hidden file inputs */}
         <input ref={fileInputRef}  type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={handleFileChange} />
         <input ref={imageInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={handleFileChange} />
         <input ref={videoInputRef} type="file" accept="video/*" multiple style={{ display: "none" }} onChange={handleFileChange} />
 
-        {/* Attach buttons */}
         <div className="chat-attach-group">
-          <button
-            className="chat-attach-btn"
-            onClick={() => imageInputRef.current?.click()}
-            title="Attach photo"
-            aria-label="Attach photo"
-            disabled={sending}
-          >
-            {/* Photo icon */}
+          <button className="chat-attach-btn" onClick={() => imageInputRef.current?.click()} title="Attach photo" aria-label="Attach photo" disabled={sending}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
             </svg>
           </button>
-          <button
-            className="chat-attach-btn"
-            onClick={() => videoInputRef.current?.click()}
-            title="Attach video"
-            aria-label="Attach video"
-            disabled={sending}
-          >
-            {/* Video icon */}
+          <button className="chat-attach-btn" onClick={() => videoInputRef.current?.click()} title="Attach video" aria-label="Attach video" disabled={sending}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
             </svg>
           </button>
-          <button
-            className="chat-attach-btn"
-            onClick={() => fileInputRef.current?.click()}
-            title="Attach document"
-            aria-label="Attach document"
-            disabled={sending}
-          >
-            {/* Paperclip icon */}
+          <button className="chat-attach-btn" onClick={() => fileInputRef.current?.click()} title="Attach document" aria-label="Attach document" disabled={sending}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
             </svg>
           </button>
         </div>
 
-        {/* Emoji toggle */}
         <div className="chat-emoji-wrap">
           <button
             className={`chat-attach-btn ${showEmoji ? "chat-attach-btn--active" : ""}`}
@@ -413,7 +461,6 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
         </button>
       </div>
 
-      {/* Send Offer Modal */}
       {showOfferModal && (
         <SendOfferModal
           convId={conversation.id}
