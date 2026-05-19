@@ -4,6 +4,8 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import newRequest from "../../utils/newRequest";
 import "./pay.scss";
 
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
 const BANK_DETAILS = {
   accountName:   "TopMark Academic Services",
   bankName:      "Grey (USD Account)",
@@ -141,21 +143,37 @@ const Pay = () => {
           <div className="pay__methods">
             <p className="pay__methods-label">Choose a payment method</p>
 
-            <button
-              className="pay__method-btn pay__method-btn--paypal"
-              onClick={() => setMethod("paypal")}
-            >
-              <img
-                src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png"
-                alt="PayPal"
-                className="pay__method-logo"
-              />
-              <div className="pay__method-info">
-                <span className="pay__method-name">Pay with PayPal</span>
-                <span className="pay__method-desc">Fast, secure checkout. Supports all major cards.</span>
+            {PAYPAL_CLIENT_ID ? (
+              <button
+                className="pay__method-btn pay__method-btn--paypal"
+                onClick={() => setMethod("paypal")}
+              >
+                <img
+                  src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png"
+                  alt="PayPal"
+                  className="pay__method-logo"
+                />
+                <div className="pay__method-info">
+                  <span className="pay__method-name">Pay with PayPal</span>
+                  <span className="pay__method-desc">Fast, secure checkout. Supports all major cards.</span>
+                </div>
+                <span className="pay__method-arrow">→</span>
+              </button>
+            ) : (
+              <div className="pay__method-btn pay__method-btn--disabled" aria-disabled="true">
+                <img
+                  src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png"
+                  alt="PayPal"
+                  className="pay__method-logo pay__method-logo--muted"
+                />
+                <div className="pay__method-info">
+                  <span className="pay__method-name">Pay with PayPal</span>
+                  <span className="pay__method-desc pay__method-desc--warn">
+                    PayPal is temporarily unavailable. Please use bank transfer.
+                  </span>
+                </div>
               </div>
-              <span className="pay__method-arrow">→</span>
-            </button>
+            )}
 
             <div className="pay__divider"><span>or</span></div>
 
@@ -174,12 +192,12 @@ const Pay = () => {
         )}
 
         {/* PayPal flow */}
-        {method === "paypal" && (
+        {method === "paypal" && PAYPAL_CLIENT_ID && (
           <div className="pay__paypal">
             <button className="pay__back" onClick={() => setMethod(null)}>← Back</button>
             <p className="pay__section-title">Pay securely with PayPal</p>
             <PayPalScriptProvider options={{
-              "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
+              "client-id": PAYPAL_CLIENT_ID,
               currency: "USD",
             }}>
               <PayPalButtons
