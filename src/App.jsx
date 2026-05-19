@@ -99,7 +99,7 @@ const router = createBrowserRouter([
       { path: "/register",            element: <Register /> },
       { path: "/sprofile",            element: <StudentProfile /> },
       { path: "/pay/:id",             element: <Pay /> },
-      { path: "/pay/offer/:id",       element: <Pay /> },
+      { path: "/pay/token/:token",    element: <Pay /> },
       { path: "/admin/earnings", element: <AdminRoute><AdminEarnings /></AdminRoute> },
       { path: "/earnings",       element: <SellerEarnings /> },
       { path: "/success",             element: <Success /> },

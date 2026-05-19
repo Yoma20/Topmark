@@ -18,11 +18,9 @@ const OfferCard = ({ offer, currentUserId, onResponded }) => {
     try {
       const res = await newRequest.post(`/messaging/offers/${offer.id}/respond/`, { action });
       if (action === "accept") {
-        // Navigate to payment using the client_secret returned from backend
-        const { order_id, amount } = res.data;
-        // Store amount in sessionStorage so Pay.jsx can read the order total
-        sessionStorage.setItem(`pi_${order_id}`, JSON.stringify({ amount }));
-        window.location.href = `/pay/offer/${order_id}`;
+        const { pay_token } = res.data;
+        // Redirect to secure token-based payment URL — no order ID exposed
+        window.location.href = `/pay/token/${pay_token}`;
       } else {
         onResponded?.();
       }

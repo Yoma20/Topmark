@@ -5,64 +5,52 @@ import newRequest from "../../utils/newRequest";
 import "./pay.scss";
 
 const BANK_DETAILS = {
-  accountName: "TopMark Academic Services",
-  bankName:    "Grey (USD Account)",
+  accountName:   "TopMark Academic Services",
+  bankName:      "Grey (USD Account)",
   accountNumber: "YOUR_GREY_ACCOUNT_NUMBER",
   routingNumber: "YOUR_GREY_ROUTING_NUMBER",
-  swift:        "YOUR_SWIFT_CODE",
-  reference:    "ORDER-",   // append orderId
+  swift:         "YOUR_SWIFT_CODE",
+  reference:     "ORDER-",   // append orderId
 };
 
 const Pay = () => {
-  const { id, orderId } = useParams();
-  const [searchParams] = useSearchParams();
-  const packageId = searchParams.get("package");
-  const navigate = useNavigate();
+  const { id, token }       = useParams();
+  const [searchParams]      = useSearchParams();
+  const packageId           = searchParams.get("package");
+  const navigate            = useNavigate();
 
-  const isOfferFlow = Boolean(orderId);
+  // token flow  → /pay/token/:token   (offer-based, secure)
+  // legacy flow → /pay/:id?package=X  (gig package)
+  const isTokenFlow = Boolean(token);
 
-  const [method, setMethod]             = useState(null);      // 'paypal' | 'bank'
-  const [orderAmount, setOrderAmount]   = useState(null);
+  const [method, setMethod]                   = useState(null);   // 'paypal' | 'bank'
+  const [orderAmount, setOrderAmount]         = useState(null);
   const [resolvedOrderId, setResolvedOrderId] = useState(null);
-  const [error, setError]               = useState("");
-  const [bankConfirmed, setBankConfirmed] = useState(false);
-  const [confirming, setConfirming]     = useState(false);
+  const [error, setError]                     = useState("");
+  const [bankConfirmed, setBankConfirmed]     = useState(false);
+  const [confirming, setConfirming]           = useState(false);
 
-  // ── Resolve order + amount ─────────────────────────────────────────────────
+  // ── Resolve order + amount ────────────────────────────────────────────────
   useEffect(() => {
-    if (isOfferFlow) {
-      const stored = sessionStorage.getItem(`pi_${orderId}`);
-      if (stored) {
-        // stored may be client_secret (old Stripe) or just amount JSON
-        // Try to parse amount if stored as JSON, otherwise fetch order
-        try {
-          const parsed = JSON.parse(stored);
-          setOrderAmount(parsed.amount);
-          setResolvedOrderId(parseInt(orderId));
-        } catch {
-          // fallback — fetch order details
-          newRequest.get(`/gigs/orders/${orderId}/`)
-            .then(res => {
-              setOrderAmount(res.data.total_price);
-              setResolvedOrderId(parseInt(orderId));
-            })
-            .catch(() => setError("Could not load order details."));
-        }
-        sessionStorage.removeItem(`pi_${orderId}`);
-      } else {
-        // fetch directly
-        newRequest.get(`/gigs/orders/${orderId}/`)
-          .then(res => {
-            setOrderAmount(res.data.total_price);
-            setResolvedOrderId(parseInt(orderId));
-          })
-          .catch(() => setError("Payment session expired. Please go back and try again."));
-      }
+    if (isTokenFlow) {
+      // Redeem the one-time token — server validates user + expiry, then deletes it
+      newRequest
+        .post("/messaging/pay-token/redeem/", { token })
+        .then(res => {
+          setOrderAmount(res.data.amount);
+          setResolvedOrderId(res.data.order_id);
+        })
+        .catch(() =>
+          setError("Payment link expired or invalid. Please go back and try again.")
+        );
       return;
     }
 
-    // Legacy package flow
-    if (!packageId) { setError("No package selected."); return; }
+    // Legacy gig-package flow
+    if (!packageId) {
+      setError("No package selected.");
+      return;
+    }
     newRequest
       .post(`/gigs/orders/create-payment-intent/`, { package_id: packageId })
       .then(res => {
@@ -70,9 +58,9 @@ const Pay = () => {
         setResolvedOrderId(res.data.order_id);
       })
       .catch(() => setError("Failed to load order. Please try again."));
-  }, [isOfferFlow, orderId, packageId]);
+  }, [isTokenFlow, token, packageId]);
 
-  // ── PayPal approval handler ────────────────────────────────────────────────
+  // ── PayPal approval handler ───────────────────────────────────────────────
   const handlePayPalApprove = async (data, actions) => {
     await actions.order.capture();
     await newRequest.post(`/gigs/orders/${resolvedOrderId}/confirm-payment/`, {
@@ -82,7 +70,7 @@ const Pay = () => {
     navigate(`/success?order_id=${resolvedOrderId}`);
   };
 
-  // ── Bank transfer confirmation ─────────────────────────────────────────────
+  // ── Bank transfer confirmation ────────────────────────────────────────────
   const handleBankConfirm = async () => {
     setConfirming(true);
     try {
@@ -97,7 +85,7 @@ const Pay = () => {
     }
   };
 
-  // ── Error state ────────────────────────────────────────────────────────────
+  // ── Error state ───────────────────────────────────────────────────────────
   if (error) {
     return (
       <div className="pay pay--error">
@@ -110,7 +98,7 @@ const Pay = () => {
     );
   }
 
-  // ── Loading ────────────────────────────────────────────────────────────────
+  // ── Loading ───────────────────────────────────────────────────────────────
   if (!orderAmount || !resolvedOrderId) {
     return (
       <div className="pay pay--loading">
@@ -141,7 +129,7 @@ const Pay = () => {
 
             <button
               className="pay__method-btn pay__method-btn--paypal"
-              onClick={() => setMethod('paypal')}
+              onClick={() => setMethod("paypal")}
             >
               <img
                 src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png"
@@ -159,7 +147,7 @@ const Pay = () => {
 
             <button
               className="pay__method-btn pay__method-btn--bank"
-              onClick={() => setMethod('bank')}
+              onClick={() => setMethod("bank")}
             >
               <div className="pay__method-icon">🏦</div>
               <div className="pay__method-info">
@@ -172,7 +160,7 @@ const Pay = () => {
         )}
 
         {/* PayPal flow */}
-        {method === 'paypal' && (
+        {method === "paypal" && (
           <div className="pay__paypal">
             <button className="pay__back" onClick={() => setMethod(null)}>← Back</button>
             <p className="pay__section-title">Pay securely with PayPal</p>
@@ -198,15 +186,16 @@ const Pay = () => {
         )}
 
         {/* Bank transfer flow */}
-        {method === 'bank' && !bankConfirmed && (
+        {method === "bank" && !bankConfirmed && (
           <div className="pay__bank">
             <button className="pay__back" onClick={() => setMethod(null)}>← Back</button>
             <p className="pay__section-title">Bank Transfer Instructions</p>
 
             <div className="pay__bank-box">
               <p className="pay__bank-note">
-                Transfer exactly <strong>${parseFloat(orderAmount).toFixed(2)} USD</strong> to the account below. 
-                Your order will be activated once we confirm receipt (usually within 24 hours).
+                Transfer exactly <strong>${parseFloat(orderAmount).toFixed(2)} USD</strong> to
+                the account below. Your order will be activated once we confirm receipt (usually
+                within 24 hours).
               </p>
 
               <div className="pay__bank-details">
@@ -256,7 +245,7 @@ const Pay = () => {
         )}
 
         {/* Bank transfer confirmed */}
-        {method === 'bank' && bankConfirmed && (
+        {method === "bank" && bankConfirmed && (
           <div className="pay__bank-success">
             <span className="pay__success-icon">✅</span>
             <h2>Transfer Noted!</h2>
@@ -269,7 +258,7 @@ const Pay = () => {
             </p>
             <button
               className="pay__confirm-btn"
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate("/orders")}
             >
               View My Orders
             </button>
