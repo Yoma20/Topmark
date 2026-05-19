@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../AuthContext";
 import { getOrders, submitWork } from "../../api/gigs";
 import { startConversation } from "../../api/messages";
 import "./Orders.scss";
