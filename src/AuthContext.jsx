@@ -63,6 +63,16 @@ export const AuthProvider = ({ children }) => {
   const userRef = useRef(user);
   useEffect(() => { userRef.current = user; }, [user]);
 
+  // Hydrate profile_picture on app load so Navbar always shows the correct avatar
+  useEffect(() => {
+    if (!user) return;
+    newRequest.get("/users/me/")
+      .then(({ data }) => {
+        updateUser({ profile_picture: data.profile_picture });
+      })
+      .catch(() => {});
+  }, []);
+
   const refreshProfile = useCallback(async () => {
     if (!userRef.current) return;
     const enriched = await fetchAndMergeProfile(userRef.current);

@@ -56,12 +56,8 @@ const Gigs = () => {
   // When category pill clicked, update URL and state
   const handleCategorySelect = (catId) => {
     setSelectedCat(catId);
-    const p = new URLSearchParams(search);
-    if (catId) {
-      p.set('category', catId);
-    } else {
-      p.delete('category');
-    }
+    const p = new URLSearchParams();  // start fresh — don't carry over search param
+    if (catId) p.set('category', catId);
     navigate(`/gigs?${p.toString()}`, { replace: true });
   };
 
