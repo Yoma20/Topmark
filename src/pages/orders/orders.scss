@@ -1,169 +1,624 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tokens
+// ─────────────────────────────────────────────────────────────────────────────
+
+:root {
+  // Surface
+  --bg-base:        #f4f3f0;
+  --bg-card:        #ffffff;
+  --bg-subtle:      #f9f8f6;
+  --bg-hover:       #f5f4f1;
+
+  // Borders
+  --border-default: #e6e4de;
+  --border-strong:  #ccc9c0;
+
+  // Text
+  --text-primary:   #141210;
+  --text-secondary: #6b6760;
+  --text-muted:     #a09d97;
+  --text-link:      #1a56db;
+
+  // Accent — warm amber
+  --accent:         #e67e22;
+  --accent-light:   #fef3e8;
+  --accent-mid:     #fde3c5;
+
+  // Status — order
+  --s-pending-bg:    #eef2ff;  --s-pending-fg:    #4360e0;
+  --s-progress-bg:   #fef9ec;  --s-progress-fg:   #b45309;
+  --s-submitted-bg:  #f5eeff;  --s-submitted-fg:  #7c3aed;
+  --s-completed-bg:  #edfcf5;  --s-completed-fg:  #0d7a4e;
+  --s-archived-bg:   #f2f2f2;  --s-archived-fg:   #888;
+
+  // Status — payment
+  --p-unpaid-bg:    #fff0f0;  --p-unpaid-fg:    #c0392b;
+  --p-held-bg:      #fffbec;  --p-held-fg:      #a16207;
+  --p-released-bg:  #edfcf5;  --p-released-fg:  #0d7a4e;
+  --p-refunded-bg:  #f2f2f2;  --p-refunded-fg:  #888;
+  --p-pending-bg:   #fffbec;  --p-pending-fg:   #a16207;
+
+  // Radius
+  --r-sm:  6px;
+  --r-md:  12px;
+  --r-lg:  18px;
+  --r-pill: 999px;
+
+  // Shadow
+  --shadow-card:  0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+
+  // Motion
+  --ease-out:  cubic-bezier(.16,1,.3,1);
+  --ease-in:   cubic-bezier(.4,0,1,1);
+  --duration:  180ms;
+
+  // Font families
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mixins
+// ─────────────────────────────────────────────────────────────────────────────
+
+@mixin badge-variant($bg, $fg) {
+  background: $bg;
+  color: $fg;
+}
+
+@mixin focus-ring($color: var(--accent)) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.25);
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Base reset for the page
+// ─────────────────────────────────────────────────────────────────────────────
 
 .orders {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-base);
   min-height: 100vh;
-  background: #f7f7f7;
-  padding: 40px 24px 80px;
+  padding: 48px 24px 96px;
+  -webkit-font-smoothing: antialiased;
 
-  &__container {
-    max-width: 1100px;
-    margin: 0 auto;
+  *, *::before, *::after { box-sizing: border-box; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Layout
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Header
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__header {
+  margin-bottom: 28px;
+}
+
+.orders__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.orders__subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 400;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tab navigation
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  border-bottom: 1.5px solid var(--border-default);
+  margin-bottom: 24px;
+}
+
+.orders__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px 10px;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  cursor: pointer;
+  transition: color var(--duration) var(--ease-out),
+              background var(--duration) var(--ease-out);
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1.5px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    border-radius: 2px 2px 0 0;
+    transition: background var(--duration) var(--ease-out);
   }
 
-  &__header {
-    margin-bottom: 24px;
-
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #111;
-    }
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
   }
 
-  // ── Filter tabs ────────────────────────────────────────────────────────────
-  &__filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 20px;
-  }
+  &:focus-visible { @include focus-ring; }
 
-  &__filter-btn {
-    background: #fff;
-    border: 1px solid #e8e8e8;
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #888;
-    cursor: pointer;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    transition: all 0.15s;
-
-    &:hover {
-      border-color: #111;
-      color: #111;
-    }
-
-    &--active {
-      background: #111;
-      border-color: #111;
-      color: #fff;
-      font-weight: 600;
-    }
-  }
-
-  // ── Card ───────────────────────────────────────────────────────────────────
-  &__card {
-    background: #fff;
-    border: 1px solid #e8e8e8;
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  // ── Table ──────────────────────────────────────────────────────────────────
-  &__table {
-    width: 100%;
-    border-collapse: collapse;
-
-    th {
-      padding: 12px 16px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: #999;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      text-align: left;
-      background: #fafafa;
-      border-bottom: 1px solid #e8e8e8;
-    }
-
-    tbody tr {
-      border-bottom: 1px solid #f5f5f5;
-      transition: background 0.1s;
-
-      &:hover { background: #fafafa; }
-      &:last-child { border-bottom: none; }
-
-      td {
-        padding: 13px 16px;
-        font-size: 0.875rem;
-        color: #444;
-        vertical-align: middle;
-      }
-    }
-  }
-
-  &__cover {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-    border-radius: 8px;
-    display: block;
-  }
-
-  &__price {
+  &--active {
+    color: var(--text-primary);
     font-weight: 600;
-    color: #111;
-  }
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-default);
+    border-bottom-color: var(--bg-card);
 
-  &__msg-icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.15s;
-
-    &:hover { opacity: 1; }
-  }
-
-  // ── Order status badges ────────────────────────────────────────────────────
-  &__badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    white-space: nowrap;
-
-    // Order status
-    &--pending     { background: #e8f0fe; color: #3b7ef8; }
-    &--in_progress { background: #fff8e6; color: #d98b1a; }
-    &--submitted   { background: #f0e8fe; color: #8b3bf8; }
-    &--completed   { background: #e6f9f0; color: #1a9e60; }
-    &--archived    { background: #f0f0f0; color: #888;    }
-
-    // Payment status — prefixed with pay- to avoid collisions
-    &--pay-unpaid   { background: #fde8e8; color: #d94f4f; }
-    &--pay-held     { background: #fff8e6; color: #d98b1a; }
-    &--pay-released { background: #e6f9f0; color: #1a9e60; }
-    &--pay-refunded { background: #f0f0f0; color: #888;    }
-    &--pay-pending  { background: #fff8e6; color: #d98b1a; }
-  }
-
-  // ── Feedback ───────────────────────────────────────────────────────────────
-  &__feedback {
-    padding: 48px;
-    text-align: center;
-    color: #aaa;
-    font-size: 0.875rem;
-
-    &--error { color: #d94f4f; }
+    &::after { background: var(--accent); }
   }
 }
 
+.orders__tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition: background var(--duration), color var(--duration);
+
+  .orders__tab--active & {
+    background: var(--accent-mid);
+    color: var(--accent);
+  }
+
+  .orders__tab:not(.orders__tab--active) & {
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Notice banner
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  margin-bottom: 16px;
+
+  &--payout {
+    background: #fffaee;
+    border: 1px solid #f5e0a0;
+    color: #7a5100;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 1rem;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Empty state
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  color: var(--text-muted);
+  text-align: center;
+  gap: 8px;
+}
+
+.orders__empty-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  opacity: .7;
+}
+
+.orders__empty-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Loading spinner
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+}
+
+.orders__spinner-ring {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Order list
+// ─────────────────────────────────────────────────────────────────────────────
+
+.orders__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Order card
+// ─────────────────────────────────────────────────────────────────────────────
+
+.order-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--duration) var(--ease-out),
+              border-color var(--duration) var(--ease-out),
+              transform var(--duration) var(--ease-out);
+  cursor: default;
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+
+  &--overdue {
+    border-color: #f5c6c6;
+    background: #fffafa;
+  }
+}
+
+// Cover image / placeholder
+.order-card__cover {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+  background: var(--bg-subtle);
+}
+
+.order-card__cover-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-md);
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.4rem;
+}
+
+// Body
+.order-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.order-card__title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--text-primary);
+  margin: 0;
+  @include truncate;
+}
+
+.order-card__meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 3px 0 0;
+  font-weight: 400;
+
+  strong {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+}
+
+.order-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+// Info row
+.order-card__info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 0 0;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.order-card__price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  letter-spacing: -.01em;
+}
+
+.order-card__deadline {
+  &--overdue {
+    color: #c0392b;
+    font-weight: 600;
+  }
+}
+
+.order-card__hint {
+  &--warn  { color: #b45309; }
+  &--ok    { color: var(--s-completed-fg); }
+  &--pay   { color: #b45309; }
+  &--paid  { color: var(--s-completed-fg); font-weight: 600; }
+}
+
+// Actions
+.order-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Buttons
+// ─────────────────────────────────────────────────────────────────────────────
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background var(--duration) var(--ease-out),
+              color var(--duration) var(--ease-out),
+              border-color var(--duration) var(--ease-out),
+              box-shadow var(--duration) var(--ease-out),
+              transform 80ms var(--ease-out);
+  white-space: nowrap;
+  text-decoration: none;
+
+  &:focus-visible { @include focus-ring; }
+
+  &:active { transform: scale(.97); }
+
+  &:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Variants
+  &--ghost {
+    background: var(--bg-subtle);
+    color: var(--text-secondary);
+    border-color: var(--border-default);
+
+    &:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+  }
+
+  &--primary {
+    background: var(--text-primary);
+    color: #fff;
+    border-color: var(--text-primary);
+
+    &:hover {
+      background: #2d2a25;
+      border-color: #2d2a25;
+    }
+  }
+
+  &--accent {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+
+    &:hover {
+      background: #cf6d17;
+      border-color: #cf6d17;
+      box-shadow: 0 2px 10px rgba(230,126,34,.35);
+    }
+  }
+
+  &--success {
+    background: #0d7a4e;
+    color: #fff;
+    border-color: #0d7a4e;
+
+    &:hover {
+      background: #0a6040;
+      border-color: #0a6040;
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: var(--text-link);
+    border-color: #c3d2fa;
+
+    &:hover {
+      background: #eef2ff;
+      border-color: #a5b8f7;
+    }
+  }
+}
+
+// Back button
 .orders__back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 4px 0;
   background: none;
   border: none;
   cursor: pointer;
-  color: #555;
-  font-size: 0.875rem;
-  padding: 4px 0;
-  margin-bottom: 8px;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  transition: color var(--duration);
 
-  &:hover { color: #1a9e60; }
+  svg { transition: transform var(--duration) var(--ease-out); }
+
+  &:hover {
+    color: var(--text-primary);
+    svg { transform: translateX(-3px); }
+  }
+
+  &:focus-visible { @include focus-ring; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Badges
+// ─────────────────────────────────────────────────────────────────────────────
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: capitalize;
+  white-space: nowrap;
+  line-height: 1.4;
+
+  // Order status
+  &--pending     { @include badge-variant(var(--s-pending-bg),   var(--s-pending-fg)); }
+  &--in_progress { @include badge-variant(var(--s-progress-bg),  var(--s-progress-fg)); }
+  &--submitted   { @include badge-variant(var(--s-submitted-bg), var(--s-submitted-fg)); }
+  &--completed   { @include badge-variant(var(--s-completed-bg), var(--s-completed-fg)); }
+  &--archived    { @include badge-variant(var(--s-archived-bg),  var(--s-archived-fg)); }
+
+  // Payment status
+  &--pay-unpaid   { @include badge-variant(var(--p-unpaid-bg),   var(--p-unpaid-fg)); }
+  &--pay-held     { @include badge-variant(var(--p-held-bg),     var(--p-held-fg)); }
+  &--pay-released { @include badge-variant(var(--p-released-bg), var(--p-released-fg)); }
+  &--pay-refunded { @include badge-variant(var(--p-refunded-bg), var(--p-refunded-fg)); }
+  &--pay-pending  { @include badge-variant(var(--p-pending-bg),  var(--p-pending-fg)); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive
+// ─────────────────────────────────────────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .orders {
+    padding: 28px 16px 72px;
+  }
+
+  .order-card {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .order-card__cover,
+  .order-card__cover-placeholder {
+    width: 44px;
+    height: 44px;
+  }
+
+  .orders__tabs {
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .orders__tab {
+    padding: 8px 12px 10px;
+  }
 }
