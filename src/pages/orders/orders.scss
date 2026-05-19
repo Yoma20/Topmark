@@ -56,8 +56,8 @@
   --duration:  180ms;
 
   // Font families
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Syne', ui-sans-serif;
+  --font-body:    'DM Sans', ui-sans-serif;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -186,7 +186,7 @@
     border: 1.5px solid var(--border-default);
     border-bottom-color: var(--bg-card);
 
-    &::after { background: var(--accent); }
+    &::after { background: #1a9e60; }
   }
 }
 
@@ -209,7 +209,7 @@
   }
 
   .orders__tab:not(.orders__tab--active) & {
-    background: var(--bg-subtle);
+    background: #1a9e60;
     color: var(--text-muted);
   }
 }

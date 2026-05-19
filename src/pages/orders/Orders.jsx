@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AuthContext from "../../AuthContext.jsx";
 import newRequest from "../../utils/newRequest.js";
-import "./orders.scss";
+import "./Orders.scss";
 
 export default function Orders() {
   const { user } = useContext(AuthContext);
@@ -18,7 +18,7 @@ export default function Orders() {
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["orders"],
-    queryFn: () => newRequest.get("/orders/").then(res => res.data),
+    queryFn: () => newRequest.get("/gigs/orders/").then(res => res.data),
   });
 
   // ── Tab logic ──────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ export default function Orders() {
   async function handleContact(order) {
     const recipientId = isExpert ? order.student_user_id : order.expert_user_id;
     try {
-      const res = await newRequest.post("/conversations/", { recipient_id: recipientId });
+      const res = await newRequest.post("/messaging/conversations/start/", { recipient_id: recipientId });
       navigate(`/messages/${res.data.id}`);
     } catch (e) {
       console.error("Could not start conversation", e);
@@ -55,7 +55,7 @@ export default function Orders() {
     if (!window.confirm("Mark this order as submitted? The student will be notified.")) return;
     setSubmitting(orderId);
     try {
-      await newRequest.post(`/orders/${orderId}/submit/`);
+      await newRequest.post(`/gigs/orders/${orderId}/submit/`);
       queryClient.setQueryData(["orders"], prev =>
         prev.map(o => o.id === orderId ? { ...o, status: "submitted" } : o)
       );
@@ -107,7 +107,7 @@ export default function Orders() {
         {/* Payout notice */}
         {isExpert && tab === "awaiting" && visible.length > 0 && (
           <div className="orders__notice orders__notice--payout">
-            <span className="orders__notice__icon">💳</span>
+            <span className="orders__notice__icon"></span>
             Payouts are processed manually every two weeks. Your net earnings
             (after 10% platform fee) will be transferred to your registered account.
           </div>
@@ -116,7 +116,7 @@ export default function Orders() {
         {/* List / empty state */}
         {visible.length === 0 ? (
           <div className="orders__empty">
-            <p className="orders__empty-icon">📭</p>
+            <p className="orders__empty-icon"></p>
             <p className="orders__empty-text">No orders here yet.</p>
           </div>
         ) : (
@@ -156,7 +156,7 @@ function OrderCard({ order, isExpert, submitting, onContact, onSubmitWork, onVie
           className="order-card__cover"
         />
       ) : (
-        <div className="order-card__cover-placeholder">📄</div>
+        <div className="order-card__cover-placeholder"></div>
       )}
 
       {/* Body */}
