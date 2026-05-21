@@ -185,7 +185,7 @@ const Navbar = () => {
                                     <div className="options-header">
                                         <AvatarImg size="md" />
                                         <div className="options-header-text">
-                                            <span className="options-username">{currentUser.username}</span>
+                                            <span className="options-username">{currentUser.username}</span><br />
                                             <span className="options-role">{roleLabel}</span>
                                         </div>
                                     </div>
