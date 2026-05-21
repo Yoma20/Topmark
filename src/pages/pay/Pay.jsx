@@ -181,10 +181,12 @@ const Pay = () => {
               className="pay__method-btn pay__method-btn--bank"
               onClick={() => setMethod("bank")}
             >
-              <div className="pay__method-icon">🏦</div>
+              <div className="pay__method-icon" style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--color-background-secondary)', border: '0.5px solid var(--color-border-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <i className="ti ti-building-bank" style={{ fontSize: 20 }} />
+              </div>
               <div className="pay__method-info">
                 <span className="pay__method-name">Bank Transfer</span>
-                <span className="pay__method-desc">Transfer directly to our USD account. Manual confirmation.</span>
+                <span className="pay__method-desc">Transfer directly to our USD account.</span>
               </div>
               <span className="pay__method-arrow">→</span>
             </button>
@@ -258,7 +260,7 @@ const Pay = () => {
               </div>
 
               <p className="pay__bank-warning">
-                ⚠️ Always include the reference number so we can match your payment to your order.
+                IN BETA! Please use Paypal the Paypal Card Processor instead
               </p>
             </div>
 

@@ -88,8 +88,7 @@ const Gigs = () => {
           </svg>
           Back
         </button>
-        <h1>Find an Expert</h1>
-        <p>Browse academic services from verified experts</p>
+        <h3>Find an Expert</h3>
 
         {/* ── Category filter pills ── */}
         {categories.length > 0 && (

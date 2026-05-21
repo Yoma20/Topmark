@@ -1,54 +1,49 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./review.scss";
 
 const Review = ({ review }) => {
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
+  const [vote, setVote] = useState(null); // 'helpful' | 'not_helpful' | null
 
-  // Django serializer embeds the full student object — no extra fetch needed
   const student = review.student;
 
   return (
     <div className="review">
-      <div className="user">
+      <div className="review__user">
         <img
-          className="pp"
+          className="review__avatar"
           src={student?.img || "/images/noavtar.jpeg"}
           alt={student?.username || "Reviewer"}
         />
-        <div className="info">
-          <span>{student?.username || "Anonymous"}</span>
-          <div className="country">
-            <span>{student?.country || ""}</span>
-          </div>
+        <div className="review__info">
+          <span className="review__name">{student?.username || "Anonymous"}</span>
+          {student?.country && (
+            <span className="review__country">{student.country}</span>
+          )}
         </div>
       </div>
 
-      {/* review.rating replaces review.star */}
-      <div className="stars">
-        {Array(review.rating).fill().map((_, i) => (
-          <img src="/images/star.png" alt="★" key={i} />
-        ))}
-        <span>{review.rating}</span>
+      <div className="review__stars">
+        {"★".repeat(review.rating ?? 0)}
+        {"☆".repeat(5 - (review.rating ?? 0))}
+        <span className="review__rating-num">{review.rating}/5</span>
       </div>
 
-      {/* review.comment replaces review.desc */}
-      <p>{review.comment}</p>
+      <p className="review__comment">{review.comment}</p>
 
-      <div className="helpful">
+      <div className="review__helpful">
         <span>Helpful?</span>
-        <img
-          src={liked ? "/images/like.png" : "/images/likeColor.png"}
-          alt="like"
-          onClick={() => setLiked(true)}
-        />
-        <span>Yes</span>
-        <img
-          src={disliked ? "/images/dislike.png" : "/images/dislike_color.png"}
-          alt="dislike"
-          onClick={() => setDisliked(true)}
-        />
-        <span>No</span>
+        <button
+          className={`review__vote${vote === "helpful" ? " review__vote--active" : ""}`}
+          onClick={() => setVote(v => v === "helpful" ? null : "helpful")}
+        >
+          👍 Yes
+        </button>
+        <button
+          className={`review__vote${vote === "not_helpful" ? " review__vote--active" : ""}`}
+          onClick={() => setVote(v => v === "not_helpful" ? null : "not_helpful")}
+        >
+          👎 No
+        </button>
       </div>
     </div>
   );
