@@ -9,31 +9,31 @@ import "./Dashboard.scss";
 
 // Local image map — matches category names to local assets
 const CATEGORY_IMAGE_MAP = {
-  // --- Existing entries ---
   "Law & Legal":                   { icon: "/images/Law & Legal.webp",                      placeholder: "#e8e4f0" },
-  "Nursing":                       { icon: "/images/Nursing.webp",                         placeholder: "#e4f0ea" },
-  "Cybersecurity":                 { icon: "/images/Cybersecurity.webp",                   placeholder: "#e4eaf0" },
-  "Biology":                       { icon: "/images/Biology.webp",                         placeholder: "#e4f0e8" },
-  "History":                       { icon: "/images/history.webp",                         placeholder: "#f0ece4" },
-  "Data Science":                  { icon: "/images/data science.webp",                    placeholder: "#ede4f0" },
-  "Computer Science":              { icon: "/images/computerscience.webp",                 placeholder: "#e4edf0" },
-  "Business":                      { icon: "/images/business.webp",                        placeholder: "#f0e4e4" },
-  "Psychology":                    { icon: "/images/psychology.webp",                      placeholder: "#f0e8e4" },
-  "Essay Writing":                 { icon: "/images/essay.webp",                           placeholder: "#e4f0ec" },
-  "Chemistry":                     { icon: "/images/chemistry.webp",                       placeholder: "#e4ecf0" },
-  "Mathematics":                   { icon: "/images/maths.webp",                           placeholder: "#ebe4f0" },
+  "Nursing":                       { icon: "/images/Nursing.webp",                          placeholder: "#e4f0ea" },
+  "Cybersecurity":                 { icon: "/images/Cybersecurity.webp",                    placeholder: "#e4eaf0" },
+  "Biology":                       { icon: "/images/Biology.webp",                          placeholder: "#e4f0e8" },
+  "History":                       { icon: "/images/history.webp",                          placeholder: "#f0ece4" },
+  "Data Science":                  { icon: "/images/data science.webp",                     placeholder: "#ede4f0" },
+  "Computer Science":              { icon: "/images/computerscience.webp",                  placeholder: "#e4edf0" },
+  "Business":                      { icon: "/images/business.webp",                         placeholder: "#f0e4e4" },
+  "Psychology":                    { icon: "/images/psychology.webp",                       placeholder: "#f0e8e4" },
+  "Essay Writing":                 { icon: "/images/essay.webp",                            placeholder: "#e4f0ec" },
+  "Chemistry":                     { icon: "/images/chemistry.webp",                        placeholder: "#e4ecf0" },
+  "Mathematics":                   { icon: "/images/maths.webp",                            placeholder: "#ebe4f0" },
   "AI Services":                   { icon: "/images/AI Services.webp",                      placeholder: "#e4f0fb" },
   "Music & Audio":                 { icon: "/images/Music & Audio.webp",                    placeholder: "#f5e4f0" },
   "Writing & Translation":         { icon: "/images/Writing & Translation.webp",            placeholder: "#e4f5ec" },
   "Graphics & Design":             { icon: "/images/Graphics & Design.webp",                placeholder: "#fdf0e4" },
   "Programming & Tech":            { icon: "/images/Programming & Tech.webp",               placeholder: "#e4eaf5" },
-  "Consulting":                    { icon: "/images/Consulting.webp",                        placeholder: "#f5f0e4" },
+  "Consulting":                    { icon: "/images/Consulting.webp",                       placeholder: "#f5f0e4" },
   "Video & Animation":             { icon: "/images/Video & Animation.webp",                placeholder: "#f5e4e4" },
   "Digital Marketing":             { icon: "/images/Digital Marketing.webp",                placeholder: "#e4f5f0" },
   "Data Science & Analytics":      { icon: "/images/Data Science & Analytics.webp",         placeholder: "#ede4f5" },
   "Physics & Engineering":         { icon: "/images/Physics & Engineering.webp",            placeholder: "#e4f0f5" },
   "Technical & Scientific Writing":{ icon: "/images/Technical & Scientific Writing.webp",   placeholder: "#f0f5e4" },
 };
+
 const FALLBACK_COLORS = [
   "#e8e4f0","#e4f0ea","#e4eaf0","#e4f0e8",
   "#f0ece4","#ede4f0","#e4edf0","#f0e4e4",
@@ -71,7 +71,6 @@ function SearchBar({ categories }) {
   const dropRef     = useRef(null);
   const debounceRef = useRef(null);
 
-  // Build category name list for suggestions
   const categoryNames = categories.map(c => c.name);
 
   useEffect(() => {
@@ -118,9 +117,7 @@ function SearchBar({ categories }) {
 
   const showDropdown = open && (loading || suggestions.length > 0 || (!query.trim() && recent.length > 0));
   const dropItems    = query.trim() ? suggestions : recent;
-
-  // Category filter pills: All + top-level categories
-  const filterPills = [{ id: "", name: "All" }, ...categories];
+  const filterPills  = [{ id: "", name: "All" }, ...categories];
 
   function goSearch(term = query, cat = category) {
     const q = term.trim();
@@ -141,7 +138,6 @@ function SearchBar({ categories }) {
 
   return (
     <div className="sb">
-      {/* Category filter pills — dynamic from backend */}
       <div className="sb__filters">
         {filterPills.map(f => (
           <button
@@ -155,7 +151,6 @@ function SearchBar({ categories }) {
         ))}
       </div>
 
-      {/* Search bar */}
       <div className="sb__bar-wrap">
         <div className="sb__bar">
           <svg className="sb__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -179,10 +174,8 @@ function SearchBar({ categories }) {
           <button className="sb__btn" type="button" onClick={() => goSearch()}>Search</button>
         </div>
 
-        {/* Dropdown */}
         {showDropdown && (
           <ul ref={dropRef} className="sb__drop">
-            {/* Recent searches */}
             {!query.trim() && recent.length > 0 && (
               <>
                 <li className="sb__drop-label">
@@ -209,7 +202,6 @@ function SearchBar({ categories }) {
               </>
             )}
 
-            {/* Live suggestions */}
             {query.trim() && (
               <>
                 {loading && suggestions.length === 0 && <li className="sb__drop-label">Searching…</li>}
@@ -248,7 +240,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
 
-  // Fetch categories once
+  // Fetch all categories for the search bar pills
   useEffect(() => {
     newRequest.get('/gigs/categories/')
       .then(({ data }) => {
@@ -258,9 +250,18 @@ export default function Dashboard() {
       .catch(() => {});
   }, []);
 
-  const { data: gigs, isLoading } = useQuery({
+  // Fetch recommended gigs
+  const { data: gigs, isLoading: gigsLoading } = useQuery({
     queryKey: ["dashboard-gigs"],
     queryFn: () => newRequest.get("/gigs/?sort=sales").then(r => r.data?.results ?? r.data),
+  });
+
+  // Fetch popular categories — top 6 by completed order count (one grid row)
+  const { data: popularCats, isLoading: catsLoading } = useQuery({
+    queryKey: ["popular-categories"],
+    queryFn: () =>
+      newRequest.get("/gigs/categories/popular/?limit=6").then(r => r.data?.results ?? r.data),
+    staleTime: 1000 * 60 * 10, // cache for 10 minutes
   });
 
   return (
@@ -277,7 +278,7 @@ export default function Dashboard() {
           <h2>Recommended Experts</h2>
           <span onClick={() => navigate("/gigs")}>See all →</span>
         </div>
-        {isLoading ? (
+        {gigsLoading ? (
           <div className="dashboard-loading">Loading experts…</div>
         ) : !gigs?.length ? (
           <div className="dashboard-empty">
@@ -297,53 +298,79 @@ export default function Dashboard() {
         )}
       </section>
 
-      {/* ── Browse by Subject ── */}
+      {/* ── Popular Subjects ── */}
       <section className="dashboard-section">
         <div className="dashboard-section__header">
-          <h2>Browse by Subject</h2>
+          <h2>Popular Subjects</h2>
           <span onClick={() => navigate("/gigs")}>See all →</span>
         </div>
-        <div className="dashboard-cats">
-          {categories.map((cat, idx) => {
-            const asset = CATEGORY_IMAGE_MAP[cat.name];
-            const placeholder = asset?.placeholder || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
-            return (
-              <div
+
+        {catsLoading ? (
+          <div className="dashboard-loading">Loading categories…</div>
+        ) : !popularCats?.length ? (
+          // Fallback: show first 6 categories if no order data yet
+          <div className="dashboard-cats">
+            {categories.slice(0, 6).map((cat, idx) => (
+              <CategoryCard
                 key={cat.id}
-                className="dashboard-cat"
-                onClick={() => navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
-              >
-                <div
-                  className="dashboard-cat__img-wrap"
-                  style={{ background: placeholder }}
-                >
-                  {asset?.icon ? (
-                    <img
-                      src={asset.icon}
-                      alt={cat.name}
-                      loading="lazy"
-                      className="dashboard-cat__img"
-                      onLoad={e => e.currentTarget.classList.add("dashboard-cat__img--loaded")}
-                    />
-                  ) : (
-                    // No local image — show first letter as fallback
-                    <span className="dashboard-cat__letter">
-                      {cat.name.charAt(0)}
-                    </span>
-                  )}
-                  <div className="dashboard-cat__overlay">
-                    <span className="dashboard-cat__label">{cat.name}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                cat={cat}
+                idx={idx}
+                navigate={navigate}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="dashboard-cats">
+            {popularCats.map((cat, idx) => (
+              <CategoryCard
+                key={cat.id}
+                cat={cat}
+                idx={idx}
+                navigate={navigate}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
+    </div>
+  );
+}
+
+// ── Category card (extracted for reuse) ──────────────────────────────────────
+function CategoryCard({ cat, idx, navigate }) {
+  const asset = CATEGORY_IMAGE_MAP[cat.name];
+  const placeholder = asset?.placeholder || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+
+  return (
+    <div
+      className="dashboard-cat"
+      onClick={() => navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
+    >
+      <div
+        className="dashboard-cat__img-wrap"
+        style={{ background: placeholder }}
+      >
+        {asset?.icon ? (
+          <img
+            src={asset.icon}
+            alt={cat.name}
+            loading="lazy"
+            className="dashboard-cat__img"
+            onLoad={e => e.currentTarget.classList.add("dashboard-cat__img--loaded")}
+          />
+        ) : (
+          <span className="dashboard-cat__letter">
+            {cat.name.charAt(0)}
+          </span>
+        )}
+        <div className="dashboard-cat__overlay">
+          <span className="dashboard-cat__label">{cat.name}</span>
+        </div>
+      </div>
     </div>
   );
 }

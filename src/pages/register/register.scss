@@ -45,14 +45,14 @@
 }
 
 .auth-hero-brand {
-  font-size: 22px;
-  letter-spacing: -0.3px;
-  margin-bottom: 3px;
-  color: #fff;
-  font-size: 2rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: 2.5rem;
   font-weight: 900;
   font-style: italic;
+  line-height: 1;
   text-decoration: none;
+  color: #fff;
 }
 
 .auth-hero-content h2 {
