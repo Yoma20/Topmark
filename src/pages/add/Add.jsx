@@ -57,9 +57,7 @@ const Add = () => {
   const draftKey = `add_gig_draft_${user?.id}`;
 
   const [step, setStep] = useState(0);
-
   const [state, setState] = useState(INITIAL_STATE);
-
   const [errors, setErrors] = useState({});
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
@@ -67,7 +65,6 @@ const Add = () => {
   const [featureInput, setFeatureInput] = useState({ basic: '', standard: '', premium: '' });
   const [extraInput, setExtraInput] = useState({ name: '', description: '', price: '', extra_days: 0 });
 
-  
   useEffect(() => {
     localStorage.setItem(draftKey, JSON.stringify(state));
   }, [state, draftKey]);
@@ -75,22 +72,9 @@ const Add = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
-    queryFn: async () => {
-      let results = [];
-      let url = "/gigs/categories/";
-      while (url) {
-        const res = await newRequest.get(url);
-        results = [...results, ...(res.data.results ?? [])];
-        // Extract just the path+query from the next URL
-        url = res.data.next
-          ? res.data.next.replace(/^https?:\/\/[^/]+/, "")
-          : null;
-      }
-      return results;
-    },
+    queryFn: () => newRequest.get("/gigs/categories/").then(r => r.data.results ?? r.data),
   });
 
   const handleChange = (e) => {
@@ -199,24 +183,18 @@ const Add = () => {
 
           <div className="field-group">
             <label>Category</label>
-            // Replace the select rendering with this:
             <select name="category" onChange={handleChange} value={state.category}>
               <option value="">Select a category</option>
-              {(Array.isArray(categoriesData) ? categoriesData : [])
-                .filter(cat => !cat.parent)  // top-level only
-                .map(cat => {
-                  const subs = categoriesData.filter(c => c.parent === cat.id);
-                  return (
-                    <optgroup key={cat.id} label={cat.name}>
-                      {subs.length > 0
-                        ? subs.map(sub => (
-                            <option key={sub.id} value={sub.id}>{sub.name}</option>
-                          ))
-                        : <option value={cat.id}>{cat.name}</option>
-                      }
-                    </optgroup>
-                  );
-                })}
+              {(Array.isArray(categoriesData) ? categoriesData : []).map(cat => (
+                <optgroup key={cat.id} label={cat.name}>
+                  {cat.subcategories?.length > 0
+                    ? cat.subcategories.map(sub => (
+                        <option key={sub.id} value={sub.id}>{sub.name}</option>
+                      ))
+                    : <option value={cat.id}>{cat.name}</option>
+                  }
+                </optgroup>
+              ))}
             </select>
             {errors.category && <span className="field-error">{errors.category}</span>}
           </div>
