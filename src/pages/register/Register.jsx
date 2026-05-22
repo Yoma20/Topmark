@@ -5,6 +5,24 @@ import newRequest from "../../utils/newRequest";
 import "./register.scss";
 import { useAuth } from "../../AuthContext";
 
+// ─── Lazy-load the Google GSI script ─────────────────────────────────────────
+// Identical helper to Login.jsx — loads GSI only on first interaction with the
+// Google button, saving ~95-100 KiB of JS parse/execute on page load.
+function loadGsiScript(onLoad) {
+  if (document.getElementById("gsi-script")) {
+    if (window.google?.accounts?.id) { onLoad(); return; }
+    document.getElementById("gsi-script").addEventListener("load", onLoad, { once: true });
+    return;
+  }
+  const s = document.createElement("script");
+  s.id = "gsi-script";
+  s.src = "https://accounts.google.com/gsi/client";
+  s.async = true;
+  s.defer = true;
+  s.addEventListener("load", onLoad, { once: true });
+  document.head.appendChild(s);
+}
+
 // ─── OTP Verification Screen ─────────────────────────────────────────────────
 function VerifyEmail({ userId, email, onVerified }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -60,8 +78,9 @@ function VerifyEmail({ userId, email, onVerified }) {
     } catch { /* silently fail */ }
   };
 
+  // A11Y: <main> landmark on OTP screen too
   return (
-    <div className="auth-page">
+    <main className="auth-page">
       <div className="auth-form-side otp-only">
         <div className="auth-form-inner">
           <div className="verify-icon">📧</div>
@@ -96,7 +115,7 @@ function VerifyEmail({ userId, email, onVerified }) {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -105,6 +124,7 @@ export default function Register() {
   const navigate = useNavigate();
   const turnstileRef = useRef(null);
   const googleBtnRef = useRef(null);
+  const gsiLoadedRef = useRef(false);
 
   const { login } = useAuth();
 
@@ -127,7 +147,7 @@ export default function Register() {
     navigate("/");
   }, [login, navigate]);
 
-  // ── Cloudflare Turnstile setup ─────────────────────────────────────────────
+  // ── Cloudflare Turnstile ───────────────────────────────────────────────────
   useEffect(() => {
     if (!document.getElementById("cf-turnstile-script")) {
       const script = document.createElement("script");
@@ -161,38 +181,41 @@ export default function Register() {
     }
   }, []);
 
-  // ── Google Sign-In setup ───────────────────────────────────────────────────
-  useEffect(() => {
-    const initGoogle = () => {
-      if (!window.google?.accounts?.id) return;
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com",
-        callback: (response) => {
-          window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
-        },
-      });
-      if (googleBtnRef.current) {
-        window.google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: "outline",
-          size: "large",
-          width: googleBtnRef.current.offsetWidth || 400,
-          text: "continue_with",
-        });
-      }
-    };
+  // ── Google Sign-In — lazy init ─────────────────────────────────────────────
+  const initGoogle = useCallback(() => {
+    if (gsiLoadedRef.current) return;
+    if (!window.google?.accounts?.id) return;
+    gsiLoadedRef.current = true;
 
-    if (window.google?.accounts?.id) {
-      initGoogle();
-    } else {
-      const interval = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          initGoogle();
-          clearInterval(interval);
-        }
-      }, 200);
-      return () => clearInterval(interval);
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com",
+      callback: (response) => {
+        window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
+      },
+    });
+
+    if (googleBtnRef.current) {
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: "outline",
+        size: "large",
+        width: googleBtnRef.current.offsetWidth || 400,
+        text: "continue_with",
+      });
     }
   }, []);
+
+  // PERF: load GSI only on first hover/focus over the Google button area
+  useEffect(() => {
+    const el = googleBtnRef.current;
+    if (!el) return;
+    const handleInteraction = () => loadGsiScript(initGoogle);
+    el.addEventListener("pointerenter", handleInteraction, { once: true });
+    el.addEventListener("focusin",      handleInteraction, { once: true });
+    return () => {
+      el.removeEventListener("pointerenter", handleInteraction);
+      el.removeEventListener("focusin",      handleInteraction);
+    };
+  }, [initGoogle]);
 
   const handleGoogleSignIn = useCallback(async (response) => {
     setError(null);
@@ -287,7 +310,8 @@ export default function Register() {
   }
 
   return (
-    <div className="auth-page">
+    // A11Y: <main> landmark so screen readers can skip straight to content
+    <main className="auth-page">
       <div className="auth-hero-side">
         <div className="auth-hero-overlay" />
         <div className="auth-hero-content">
@@ -309,10 +333,19 @@ export default function Register() {
 
           <h1>Create an account</h1>
 
-          {/* Google rendered button */}
+          {/*
+            PERF: Google button container — GSI loads lazily on first
+            hover/focus, same pattern as Login.jsx.
+          */}
           <div
             ref={googleBtnRef}
             style={{ width: "100%", minHeight: "44px", marginBottom: "16px" }}
+            aria-label="Continue with Google"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") loadGsiScript(initGoogle);
+            }}
           />
 
           <div className="divider"><span>or</span></div>
@@ -356,11 +389,13 @@ export default function Register() {
                   required
                   autoComplete="new-password"
                 />
+                {/* A11Y: min 44×44 px touch target */}
                 <button
                   type="button"
                   className="eye-btn"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  style={{ minWidth: 44, minHeight: 44 }}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -379,11 +414,13 @@ export default function Register() {
                   required
                   autoComplete="new-password"
                 />
+                {/* A11Y: min 44×44 px touch target */}
                 <button
                   type="button"
                   className="eye-btn"
                   onClick={() => setShowConfirm((v) => !v)}
                   aria-label={showConfirm ? "Hide password" : "Show password"}
+                  style={{ minWidth: 44, minHeight: 44 }}
                 >
                   {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -426,6 +463,6 @@ export default function Register() {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

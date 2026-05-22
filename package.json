@@ -27,12 +27,13 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node critical-css.mjs",
     "preview": "vite preview",
     "postinstall": "chmod +x node_modules/.bin/vite"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "critters": "^0.0.25",
     "vite": "^5.4.19",
     "vitest": "^1.5.0"
   }

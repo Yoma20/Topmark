@@ -20,12 +20,10 @@ const Gigs = () => {
   const searchQuery  = params.get("search") || "";
   const catFromUrl   = params.get("category") || "";
 
-  // Sync category from URL on load
   useEffect(() => {
     setSelectedCat(catFromUrl);
   }, [catFromUrl]);
 
-  // Fetch categories from backend
   useEffect(() => {
     newRequest.get('/gigs/categories/')
       .then(({ data }) => {
@@ -35,7 +33,6 @@ const Gigs = () => {
       .catch(() => {});
   }, []);
 
-  // Build query string for API
   const buildQuery = () => {
     const p = new URLSearchParams();
     if (searchQuery)                    p.set('search',   searchQuery);
@@ -53,10 +50,9 @@ const Gigs = () => {
         .then((res) => res.data?.results ?? res.data),
   });
 
-  // When category pill clicked, update URL and state
   const handleCategorySelect = (catId) => {
     setSelectedCat(catId);
-    const p = new URLSearchParams();  // start fresh — don't carry over search param
+    const p = new URLSearchParams();
     if (catId) p.set('category', catId);
     navigate(`/gigs?${p.toString()}`, { replace: true });
   };
@@ -74,25 +70,30 @@ const Gigs = () => {
     : "Browse hundreds of verified academic experts on Topmark. Tutoring, essay writing, programming, data science and more.";
 
   return (
-    <div className="gigs">
+    // A11Y: <main> landmark so screen readers can skip straight to content.
+    <main className="gigs">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
       </Helmet>
 
       <div className="container">
-        
+
         <button className="gigs-back-btn" onClick={() => navigate(-1)}>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <path d="M19 12H5M12 5l-7 7 7 7" />
           </svg>
           Back
         </button>
-        <h3>Find an Expert</h3>
+
+        {/* A11Y + SEO: was <h3> with no h1/h2 above it — violates heading
+            hierarchy. This is the page title so h1 is correct here.
+            The visual size is controlled by CSS so nothing changes visually. */}
+        <h1 className="gigs-title">Find an Expert</h1>
 
         {/* ── Category filter pills ── */}
         {categories.length > 0 && (
-          <div className="gigs-cats">
+          <div className="gigs-cats" role="group" aria-label="Filter by category">
             <button
               className={`gigs-cat-pill${!selectedCat ? " gigs-cat-pill--active" : ""}`}
               onClick={() => handleCategorySelect("")}
@@ -124,9 +125,12 @@ const Gigs = () => {
             <span className="sortType">
               {sort === "sales" ? "Best Selling" : "Newest"}
             </span>
+            {/* PERF (CLS): explicit dimensions prevent layout shift when icon loads */}
             <img
               src="/images/down.png"
               alt="toggle sort options"
+              width={15}
+              height={15}
               onClick={() => setOpen(!open)}
             />
             {open && (
@@ -143,9 +147,9 @@ const Gigs = () => {
         {/* ── Results ── */}
         <div className="cards">
           {isLoading
-            ? <div className="loader"></div>
+            ? <div className="loader" role="status" aria-label="Loading gigs"></div>
             : error
-              ? <h4 style={{ color: "red" }}>Something went wrong</h4>
+              ? <h2 style={{ color: "red" }}>Something went wrong</h2>
               : !data?.length
                 ? (
                   <div className="gigs-empty">
@@ -161,7 +165,7 @@ const Gigs = () => {
           }
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

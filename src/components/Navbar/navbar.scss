@@ -145,8 +145,8 @@
             // Badge on the avatar itself in the navbar bar
             .nav-trigger-badge {
                 position: absolute;
-                top: -3px;
-                right: 28px;
+                top: -4px;
+                right: -4px;
                 min-width: 17px;
                 height: 17px;
                 padding: 0 4px;
@@ -159,6 +159,7 @@
                 text-align: center;
                 border: 2px solid white;
                 pointer-events: none;
+                z-index: 1;
             }
 
             .options {
@@ -296,7 +297,7 @@
             white-space: nowrap;
             text-decoration: none;
             color: #555;
-            padding-bottom: 2px;   // was 4px
+            padding-bottom: 2px;
             transition: color 0.15s, border-bottom 0.15s;
     
             &:hover {
@@ -487,6 +488,26 @@
                         border-radius: 50%;
                         object-fit: cover;
                         border: 2px solid #eee;
+                    }
+
+                    // Badge on mobile avatar
+                    .nav-trigger-badge {
+                        position: absolute;
+                        top: -4px;
+                        right: -4px;
+                        min-width: 17px;
+                        height: 17px;
+                        padding: 0 4px;
+                        border-radius: 9px;
+                        background: #e74c3c;
+                        color: #fff;
+                        font-size: 10px;
+                        font-weight: 700;
+                        line-height: 17px;
+                        text-align: center;
+                        border: 2px solid white;
+                        pointer-events: none;
+                        z-index: 1;
                     }
 
                     .options {

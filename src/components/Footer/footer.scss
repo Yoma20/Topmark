@@ -9,6 +9,20 @@ $border: #e4e5e7;
   margin-top: 0;
   font-family: inherit;
 
+  // PERF (CLS): Reserve the footer's painted height so the browser doesn't
+  // shift content upward when the footer renders late. 280px covers the
+  // desktop layout; the media queries below relax this for smaller viewports
+  // where the grid stacks and the footer grows taller naturally.
+  min-height: 280px;
+
+  @media (max-width: 900px) {
+    min-height: 480px;  // 2-col grid is roughly this tall
+  }
+
+  @media (max-width: 560px) {
+    min-height: 760px;  // 1-col stacked layout
+  }
+
   &__inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -130,6 +144,9 @@ $border: #e4e5e7;
       opacity: 0.8;
       transition: opacity 0.15s;
 
+      // PERF (CLS): width/height HTML attributes set in JSX reserve intrinsic
+      // space; object-fit:contain then scales within that box. No change
+      // to visual appearance.
       &:hover { opacity: 1; }
     }
   }

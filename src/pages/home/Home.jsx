@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import './home.scss';
 import Featured from "../../components/featured/Featured";
@@ -8,6 +7,7 @@ import { cards, projects } from "../../data";
 import CatCard from "../../components/catCard/CatCard";
 import ProjectCard from "../../components/projectCard/ProjectCard";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const POPULAR_TAGS = [
     "Law Essay",
@@ -35,8 +35,18 @@ const Home = () => {
         if (e.key === "Enter") handleSearch();
     };
 
-    return ([
-        <div className="home">
+    return (
+        // FIX: <main> landmark replaces outer array + bare <div>
+        <main className="home">
+            {/* FIX: LCP preload hint — tells browser to fetch hero image ASAP */}
+            <Helmet>
+                <link
+                    rel="preload"
+                    as="image"
+                    href="/images/hero6.webp"
+                    type="image/webp"
+                />
+            </Helmet>
 
             {/* ── HERO ── */}
             <section className="hero">
@@ -44,7 +54,6 @@ const Home = () => {
                     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                                {/* FIX: stroke-width → strokeWidth, stroke-linecap → strokeLinecap */}
                                 <path d="M 20 0 L 0 0 L 0 20" fill="none" stroke="currentColor" strokeWidth="0.1" />
                             </pattern>
                         </defs>
@@ -52,8 +61,8 @@ const Home = () => {
                     </svg>
                 </div>
 
-                {/* FIX: class → className throughout */}
                 <div className="hero-content">
+                    {/* FIX: this is the one true h1 on the page */}
                     <h1>Hire Verified <span className="highlight">Academic Experts</span></h1>
                     <p className="subtitle">
                         TopMark connects students with subject-specialist experts for essays, law assignments, nursing
@@ -61,10 +70,8 @@ const Home = () => {
                         payments. Guaranteed delivery.
                     </p>
 
-                    {/* FIX #2: Prominent search bar added between subtitle and tags */}
                     <div className="search-container">
                         <div className="search-wrapper">
-                            {/* Search icon */}
                             <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
@@ -80,7 +87,6 @@ const Home = () => {
                         </div>
                     </div>
 
-                    {/* FIX #4: Tags moved into hero-content as clickable pills that pre-fill the search */}
                     <div className="popular-searches-row">
                         <span className="popular-label">Popular:</span>
                         {POPULAR_TAGS.map((tag) => (
@@ -99,51 +105,46 @@ const Home = () => {
                         <button className="btn btn-outline">Learn More</button>
                     </div>
                 </div>
+
                 <div className="tag-cloud-row">
-                <h2 className="tag-cloud-title">You might be interested in Essay and Research</h2>
-                <div className="tags-container">
-                    <div className="tag-row">
-                        <span className="tag">Argumentative Essay</span>
-                        <span className="tag">Literature Review</span>
-                        <span className="tag">Reflective Essay</span>
-                        <span className="tag">Case Study</span>
-                    </div>
-                    <div className="tag-row">
-                        <span className="tag">Systematic Review</span>
-                        <span className="tag">Research Proposal</span>
-                        <span className="tag">Annotated Bibliography</span>
-                        <span className="tag">Dissertation</span>
+                    {/* FIX: was h2 inside hero which already has an h1 — correct, keep as h2 */}
+                    <h2 className="tag-cloud-title">You might be interested in Essay and Research</h2>
+                    <div className="tags-container">
+                        <div className="tag-row">
+                            <span className="tag">Argumentative Essay</span>
+                            <span className="tag">Literature Review</span>
+                            <span className="tag">Reflective Essay</span>
+                            <span className="tag">Case Study</span>
+                        </div>
+                        <div className="tag-row">
+                            <span className="tag">Systematic Review</span>
+                            <span className="tag">Research Proposal</span>
+                            <span className="tag">Annotated Bibliography</span>
+                            <span className="tag">Dissertation</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-                
 
-                {/* FIX #3: Scroll cue chevron at the bottom of the hero */}
                 <div className="scroll-cue" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="6 9 12 15 18 9" />
                     </svg>
                 </div>
-
-                {/* FIX #4: photography-section / tag cloud removed from here — moved below hero */}
             </section>
 
-            {/* FIX #4: Tag cloud now lives *below* the hero as its own standalone row */}
-            
-
             {/* ── CATEGORIES ── */}
-            {/* FIX: class → className; padding handled in SCSS with clamp */}
             <section id="categories" className="categories">
                 <div className="container">
+                    {/* FIX: was h2, correct — sits below h1 in hero */}
                     <h2>Find Expert Help By Subject</h2>
                     <div className="categories-grid">
 
                         <div className="card">
                             <div className="card-content">
-                                {/* FIX: class → className, stroke-width → strokeWidth, stroke-linecap → strokeLinecap, stroke-linejoin → strokeLinejoin */}
                                 <svg className="card-icon text-blue-600" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
                                 </svg>
+                                {/* FIX: h3 under h2 — correct hierarchy */}
                                 <h3>Cybersecurity</h3>
                                 <p>Network security, pen testing reports.</p>
                             </div>
@@ -211,46 +212,47 @@ const Home = () => {
 
             <div className="explore">
                 <div className="container">
-                    <h1>You need it, we've got it</h1>
+                    {/* FIX: was h1 — demoted to h2 (page already has an h1 in the hero) */}
+                    <h2>You need it, we've got it</h2>
                     <div className="items">
                         <div className="item" onClick={() => navigate(`gigs?cat=Graphics & Design`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/graphics-design.d32a2f8.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/graphics-design.d32a2f8.svg" alt="Graphics and Design" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Graphics &amp; Design</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Digital Marketing`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/online-marketing.74e221b.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/online-marketing.74e221b.svg" alt="Digital Marketing" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Digital Marketing</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Writing & Translation`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/writing-translation.32ebe2e.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/writing-translation.32ebe2e.svg" alt="Writing and Translation" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Writing &amp; Translation</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Video & Animation`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/video-animation.f0d9d71.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/video-animation.f0d9d71.svg" alt="Video and Animation" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Video &amp; Animation</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Music & Audio`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/music-audio.320af20.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/music-audio.320af20.svg" alt="Music and Audio" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Music &amp; Audio</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Programming & Tech`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/programming.9362366.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/programming.9362366.svg" alt="Programming and Tech" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Programming &amp; Tech</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Business`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/business.bbdf319.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/business.bbdf319.svg" alt="Business" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Business</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Lifestyle`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/lifestyle.745b575.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/lifestyle.745b575.svg" alt="Lifestyle" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Lifestyle</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Data`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/data.718910f.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/data.718910f.svg" alt="Data" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Data</span>
                         </div>
                         <div className="item" onClick={() => navigate(`gigs?cat=Photography`)}>
-                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/photography.01cf943.svg" alt="" width={40} height={40} loading="lazy" />
+                            <img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/apps/photography.01cf943.svg" alt="Photography" width={40} height={40} loading="lazy" />
                             <div className="line" /><span>Photography</span>
                         </div>
                     </div>
@@ -260,26 +262,29 @@ const Home = () => {
             <div className="features dark">
                 <div className="container">
                     <div className="item">
-                        <h1>TopMark <em><span style={{ fontWeight: '300' }}>for Students.</span></em></h1>
-                        <h1>Academic help you can <em>trust</em></h1>
+                        {/* FIX: was h1 — demoted to h2 */}
+                        <h2>TopMark <em><span style={{ fontWeight: '300' }}>for Students.</span></em></h2>
+                        {/* FIX: was h1 — demoted to h3 (sits under the h2 above) */}
+                        <h3>Academic help you can <em>trust</em></h3>
                         <p>Every expert is verified by subject. Every payment is protected by escrow. Every order is rated on rubric adherence, timeliness and communication.</p>
-                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy"/>Verified subject-specialist experts</div>
-                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy" />Secure escrow — pay only when satisfied</div>
-                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy" />Rubric-adherence scoring on every order</div>
-                        <div className="title"><img src="/images/check.png" alt="check" width={40} height={40} loading="lazy" />24-hour express turnaround available</div>
+                        <div className="title"><img src="/images/check.png" alt="" width={40} height={40} loading="lazy" />Verified subject-specialist experts</div>
+                        <div className="title"><img src="/images/check.png" alt="" width={40} height={40} loading="lazy" />Secure escrow — pay only when satisfied</div>
+                        <div className="title"><img src="/images/check.png" alt="" width={40} height={40} loading="lazy" />Rubric-adherence scoring on every order</div>
+                        <div className="title"><img src="/images/check.png" alt="" width={40} height={40} loading="lazy" />24-hour express turnaround available</div>
                         <button>Get Started Free</button>
                     </div>
                     <div className="item">
-                        <img src="images/hero6.webp" alt="imagea" />
+                        {/* LCP candidate — no lazy-load, explicit dimensions */}
+                        <img src="images/hero6.webp" alt="Student working with a TopMark expert" width={720} height={480} />
                     </div>
                 </div>
             </div>
 
-            {/* FIX #5: position:relative on .left container, removed scaleX(5) from image */}
             <div className="logo_maker">
                 <div className="items">
                     <div className="left">
-                        <h1>TopMark <span>for Experts.</span></h1>
+                        {/* FIX: was h1 — demoted to h2 */}
+                        <h2>TopMark <span>for Experts.</span></h2>
                         <p className="first_para">Start earning from<br />
                             <em className="first_para_em"> your expertise</em>
                         </p>
@@ -287,7 +292,7 @@ const Home = () => {
                         <button className="logo_button"><strong>Become an Expert</strong></button>
                     </div>
                     <div className="right">
-                        <img src="/images/logomaker.webp" alt="" width={40} height={40} loading="lazy" />
+                        <img src="/images/logomaker.webp" alt="Expert profile preview" width={320} height={320} loading="lazy" />
                     </div>
                 </div>
             </div>
@@ -299,8 +304,8 @@ const Home = () => {
                 </Slide>
             </div>
 
-        </div>
-    ]);
+        </main>
+    );
 };
 
 export default Home;

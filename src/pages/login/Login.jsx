@@ -61,7 +61,8 @@ function VerifyEmail({ userId, email, onVerified }) {
   };
 
   return (
-    <div className="auth-page">
+    // A11Y: <main> landmark so screen readers can jump straight to content
+    <main className="auth-page">
       <div className="auth-form-side otp-only">
         <div className="auth-form-inner">
           <div className="verify-icon">📧</div>
@@ -98,8 +99,28 @@ function VerifyEmail({ userId, email, onVerified }) {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
+}
+
+// ─── Lazy-load the Google GSI script ─────────────────────────────────────────
+// Called once, on first user interaction with the Google button area.
+// Saves ~95-100 KiB of JS parse/execute on every page load.
+function loadGsiScript(onLoad) {
+  if (document.getElementById("gsi-script")) {
+    // Already injected (e.g. navigated back) — fire callback immediately if
+    // the API is already available, otherwise wait for the existing script.
+    if (window.google?.accounts?.id) { onLoad(); return; }
+    document.getElementById("gsi-script").addEventListener("load", onLoad, { once: true });
+    return;
+  }
+  const s = document.createElement("script");
+  s.id = "gsi-script";
+  s.src = "https://accounts.google.com/gsi/client";
+  s.async = true;
+  s.defer = true;
+  s.addEventListener("load", onLoad, { once: true });
+  document.head.appendChild(s);
 }
 
 // ─── Main Login ───────────────────────────────────────────────────────────────
@@ -113,6 +134,8 @@ const Login = () => {
   const [cfToken, setCfToken] = useState(null);
   const turnstileRef = useRef(null);
   const googleBtnRef = useRef(null);
+  // Tracks whether the GSI script has been loaded + button rendered
+  const gsiLoadedRef = useRef(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -160,35 +183,47 @@ const Login = () => {
     }
   }, []);
 
-  // ── Google Sign-In ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    const initGoogle = () => {
-      if (!window.google?.accounts?.id) return;
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com",
-        callback: (response) => {
-          window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
-        },
-      });
-      if (googleBtnRef.current) {
-        window.google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: "outline",
-          size: "large",
-          width: googleBtnRef.current.offsetWidth || 400,
-          text: "signin_with",
-        });
-      }
-    };
+  // ── Google Sign-In — lazy init ─────────────────────────────────────────────
+  // Renders the Google button once the GSI script is available.
+  const initGoogle = useCallback(() => {
+    if (gsiLoadedRef.current) return;
+    if (!window.google?.accounts?.id) return;
+    gsiLoadedRef.current = true;
 
-    if (window.google?.accounts?.id) {
-      initGoogle();
-    } else {
-      const interval = setInterval(() => {
-        if (window.google?.accounts?.id) { initGoogle(); clearInterval(interval); }
-      }, 200);
-      return () => clearInterval(interval);
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com",
+      callback: (response) => {
+        window.dispatchEvent(new CustomEvent("google-signin", { detail: response }));
+      },
+    });
+
+    if (googleBtnRef.current) {
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: "outline",
+        size: "large",
+        width: googleBtnRef.current.offsetWidth || 400,
+        text: "signin_with",
+      });
     }
   }, []);
+
+  // PERF: Load the GSI script only when the user moves toward the Google button.
+  // We listen for pointer/focus events on the button container so the script
+  // is in-flight before the click, keeping UX instant while saving the eager load.
+  useEffect(() => {
+    const el = googleBtnRef.current;
+    if (!el) return;
+
+    const handleInteraction = () => loadGsiScript(initGoogle);
+
+    el.addEventListener("pointerenter", handleInteraction, { once: true });
+    el.addEventListener("focusin",      handleInteraction, { once: true });
+
+    return () => {
+      el.removeEventListener("pointerenter", handleInteraction);
+      el.removeEventListener("focusin",      handleInteraction);
+    };
+  }, [initGoogle]);
 
   const handleGoogleSignIn = useCallback(async (response) => {
     setError(null);
@@ -258,7 +293,9 @@ const Login = () => {
   }
 
   return (
-    <div className="auth-page">
+    // A11Y: <main> landmark wraps the page content so screen readers can
+    // skip navigation and jump straight here.
+    <main className="auth-page">
       {/* Left panel */}
       <div className="auth-hero-side">
         <div className="auth-hero-overlay" />
@@ -288,10 +325,21 @@ const Login = () => {
             </div>
           )}
 
-          {/* Google rendered button */}
+          {/*
+            PERF: The Google button container is always rendered so the ref
+            is available for the lazy-load interaction listeners above.
+            The GSI script will inject the real button on first hover/focus.
+          */}
           <div
             ref={googleBtnRef}
             style={{ width: "100%", minHeight: "44px", marginBottom: "16px" }}
+            aria-label="Sign in with Google"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              // Allow keyboard users to trigger the lazy load too
+              if (e.key === "Enter" || e.key === " ") loadGsiScript(initGoogle);
+            }}
           />
 
           <div className="divider"><span>or</span></div>
@@ -323,11 +371,17 @@ const Login = () => {
                   required
                   autoComplete="current-password"
                 />
+                {/*
+                  A11Y + PERF: min 44×44 px tap target on the eye button.
+                  Add `min-width: 44px; min-height: 44px;` to .eye-btn in
+                  login.scss if not already set.
+                */}
                 <button
                   type="button"
                   className="eye-btn"
                   onClick={() => setShowPassword(v => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  style={{ minWidth: 44, minHeight: 44 }}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -356,7 +410,7 @@ const Login = () => {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

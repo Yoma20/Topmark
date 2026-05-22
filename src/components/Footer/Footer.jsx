@@ -44,6 +44,8 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="site-footer__col">
+            {/* A11Y: h4 heading is fine here — ensure parent templates have h2/h3
+                above this footer so the heading hierarchy is not broken. */}
             <h4 className="site-footer__heading">Quick Links</h4>
             <ul className="site-footer__list">
               <li><Link to="/about">About Us</Link></li>
@@ -67,15 +69,19 @@ const Footer = () => {
           <div className="site-footer__col">
             <h4 className="site-footer__heading">Contact</h4>
             <ul className="site-footer__contact">
-              <li><Mail size={15} /><span>info@topmark.pro</span></li>
+              <li><Mail size={15} /><span>davischuuck@gmail.com</span></li>
               <li><Phone size={15} /><span>+1 (123) 000-0000</span></li>
-              <li><MapPin size={15} /><span>......</span></li>
+              <li><MapPin size={15} /><span>Reserve Cir, Clearwater, FL 33759 , USA</span></li>
             </ul>
             <h4 className="site-footer__heading" style={{ marginTop: '20px' }}>We Accept</h4>
             <div className="site-footer__payments">
-              <img src={visaLogo} alt="Visa" />
-              <img src={mastercardLogo} alt="Mastercard" />
-              <img src={paypalLogo} alt="PayPal" />
+              {/* PERF + CLS: explicit width/height so browser reserves space
+                  before the SVGs load, eliminating layout shift.
+                  Intrinsic size matches the rendered height (24 px) with a
+                  standard card aspect ratio of ~1.586:1. */}
+              <img src={visaLogo}       alt="Visa"       width={38} height={24} />
+              <img src={mastercardLogo} alt="Mastercard" width={38} height={24} />
+              <img src={paypalLogo}     alt="PayPal"     width={38} height={24} />
             </div>
           </div>
 

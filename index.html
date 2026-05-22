@@ -26,9 +26,15 @@
     <meta name="twitter:description" content="Connect with verified subject-specialist experts for essays, law, nursing, cybersecurity, biology and more." />
     <meta name="twitter:image" content="https://topmark.pro/images/logo-white.png" />
 
-    <link rel="icon" type="image/png" href="/images/logow.png" />
-    <link rel="shortcut icon" href="/images/logow.png" />
-    <link rel="apple-touch-icon" href="/images/logow.png" />
+    <!-- PERF: WebP favicon saves ~75 KiB. PNG kept as fallback for old browsers. -->
+    <link rel="icon" type="image/webp" href="/images/logow.webp" />
+    <link rel="icon" type="image/png"  href="/images/logow.png" />
+    <link rel="shortcut icon"          href="/images/logow.webp" />
+    <link rel="apple-touch-icon"       href="/images/logow.webp" />
+
+    <!-- PERF: preconnect to third-party origins used on every page -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://accounts.google.com" crossorigin />
 
     <script type="application/ld+json">
     {
@@ -101,12 +107,22 @@
     }
     </script>
 
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- PERF: ionicons loaded with defer so it never blocks rendering -->
+    <script type="module" defer src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <!--
+      PERF: Google GSI script removed from here.
+      It is now loaded lazily in Login.jsx only when the user interacts
+      with the Google Sign-In button, saving ~95-100 KiB of parse/execute
+      cost on every page load.
+
+      The g_id_onload div below is also removed — it triggered an eager
+      One Tap prompt which required the script to be present at load time.
+      Google Sign-In is now fully controlled by Login.jsx.
+    -->
 
     <script>
-      
+      // Global callback still works — Login.jsx dispatches the same event.
       function handleGoogleSignIn(response) {
         window.dispatchEvent(
           new CustomEvent("google-signin", { detail: response })
@@ -116,15 +132,6 @@
   </head>
   <body>
     <div id="root"></div>
-
-    
-    <div
-      id="g_id_onload"
-      data-client_id="653861972364-8tnvpshf36t66p0jmvbcpsg0lg5plhb3.apps.googleusercontent.com"
-      data-callback="handleGoogleSignIn"
-      data-auto_prompt="false"
-    ></div>
-
     <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>

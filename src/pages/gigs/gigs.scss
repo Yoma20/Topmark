@@ -35,12 +35,10 @@
                 input {
                     padding: 5px;
                     border: 1px solid lightgray;
-
                     outline: none;
 
                     &::placeholder {
                         color: gray;
-
                     }
                 }
 
@@ -52,7 +50,6 @@
                     cursor: pointer;
                     padding: 5px 10px;
                     border-radius: 5px;
-
                 }
             }
 
@@ -110,80 +107,86 @@
                 height: 45px;
                 animation: spinner 2s linear infinite;
             }
+
             @keyframes spinner {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
+                0%   { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }
         }
     }
 }
 
+// A11Y: .gigs-title styles the h1 to look identical to the old h3
+// so there is zero visual change — only the semantic element changed.
+.gigs-title {
+    font-size: 1.17rem;   // matches browser default h3 size
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
 // Category filter pills
 .gigs-cats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .gigs-cat-pill {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
 
-  &:hover {
-    border-color: #1dbf73;
-    color: #1dbf73;
-  }
+    &:hover {
+        border-color: #1dbf73;
+        color: #1dbf73;
+    }
 
-  &--active {
-    background: #1dbf73;
-    color: #fff;
-    border-color: #1dbf73;
-  }
+    &--active {
+        background: #1dbf73;
+        color: #fff;
+        border-color: #1dbf73;
+    }
 }
 
 // Empty state
 .gigs-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #666;
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
 }
 
 .gigs-reset-btn {
-  margin-top: 12px;
-  padding: 8px 20px;
-  border: 1px solid #1dbf73;
-  color: #1dbf73;
-  background: transparent;
-  border-radius: 4px;
-  cursor: pointer;
+    margin-top: 12px;
+    padding: 8px 20px;
+    border: 1px solid #1dbf73;
+    color: #1dbf73;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
 
-  &:hover {
-    background: #1dbf73;
-    color: #fff;
-  }
+    &:hover {
+        background: #1dbf73;
+        color: #fff;
+    }
 }
 
-.gigs-back-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #555;
-  font-size: 0.875rem;
-  padding: 4px 0;
-  margin-bottom: 8px;
+.gigs-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    font-size: 0.875rem;
+    padding: 4px 0;
+    margin-bottom: 8px;
 
-  &:hover { color: #1a9e60; }
+    &:hover { color: #1a9e60; }
 }

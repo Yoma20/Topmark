@@ -30,14 +30,12 @@ const Navbar = () => {
     useEffect(() => {
         newRequest.get('/gigs/categories/')
             .then(({ data }) => {
-                // Only top-level categories (no parent), limit to 8
                 const topLevel = (data?.results ?? data ?? [])
                     .filter(c => !c.parent)
                     .slice(0, 8);
                 setCategories(topLevel);
             })
             .catch(() => {
-                // Fallback to hardcoded if API fails
                 setCategories([
                     { id: 1, name: 'Law & Legal' },
                     { id: 2, name: 'Nursing' },
@@ -88,15 +86,12 @@ const Navbar = () => {
     const initials = (name = '') => name.slice(0, 2).toUpperCase() || 'U';
     const isExpert  = currentUser?.isSeller || currentUser?.user_type === 'expert';
 
-    // Resolve profile picture — expert avatar_url takes priority over user profile_picture
     const avatarUrl = currentUser?.profile?.avatar_url
         || currentUser?.profile_picture
         || null;
 
-    // Role label shown in dropdown header
     const roleLabel = isExpert ? 'Expert' : 'Student';
 
-    // Avatar element — reused in multiple places
     const AvatarImg = ({ size = 'md' }) => avatarUrl
         ? <img src={avatarUrl} alt={currentUser.username} className={`nav-avatar-img nav-avatar-img--${size}`} />
         : <span className={`avatar-initials avatar-initials--${size}`}>{initials(currentUser?.username)}</span>;
@@ -116,10 +111,17 @@ const Navbar = () => {
                     <span></span><span></span><span></span>
                 </button>
 
-                {/* LOGO */}
                 <div className="logo">
                     <Link to="/" className="logo-link">
-                        <img src="/images/logow.png" alt="TopMark" width={32} height={38} />
+                        <picture>
+                            <source srcSet="/images/logow.webp" type="image/webp" />
+                            <img
+                                src="/images/logow.png"
+                                alt="TopMark"
+                                width={40}
+                                height={48}
+                            />
+                        </picture>
                         <span className="site-footer__logo">
                             <span className="site-footer__logo--top">Top</span>
                             <span className="site-footer__logo--mark">Mark</span>
@@ -137,7 +139,7 @@ const Navbar = () => {
                             onKeyDown={e => e.key === 'Enter' && handlesubmit()}
                         />
                         <div className="search" onClick={handlesubmit}>
-                            <img src="/images/search.png" alt="search" />
+                            <img src="/images/search.png" alt="Search" width={17} height={17} />
                         </div>
                     </div>
                 )}
@@ -234,7 +236,14 @@ const Navbar = () => {
                         <button className='mobile-join-btn' onClick={() => navigate('/register')}>Join</button>
                     ) : (
                         <div className="user mobile-user" onClick={() => setopen(!open)}>
-                            <AvatarImg size="sm" />
+                            <div style={{ position: 'relative', display: 'inline-flex' }}>
+                                <AvatarImg size="sm" />
+                                {unreadCount > 0 && (
+                                    <span className="nav-trigger-badge">
+                                        {unreadCount > 99 ? '99+' : unreadCount}
+                                    </span>
+                                )}
+                            </div>
                             {open && (
                                 <div className="options">
                                     <Link to='/orders'   onClick={() => setopen(false)}>My Orders</Link>
