@@ -199,18 +199,24 @@ const Add = () => {
 
           <div className="field-group">
             <label>Category</label>
+            // Replace the select rendering with this:
             <select name="category" onChange={handleChange} value={state.category}>
               <option value="">Select a category</option>
-              {(Array.isArray(categoriesData) ? categoriesData : []).map(cat => (
-                <optgroup key={cat.id} label={cat.name}>
-                  {cat.subcategories?.length > 0
-                    ? cat.subcategories.map(sub => (
-                        <option key={sub.id} value={sub.id}>{sub.name}</option>
-                      ))
-                    : <option value={cat.id}>{cat.name}</option>
-                  }
-                </optgroup>
-              ))}
+              {(Array.isArray(categoriesData) ? categoriesData : [])
+                .filter(cat => !cat.parent)  // top-level only
+                .map(cat => {
+                  const subs = categoriesData.filter(c => c.parent === cat.id);
+                  return (
+                    <optgroup key={cat.id} label={cat.name}>
+                      {subs.length > 0
+                        ? subs.map(sub => (
+                            <option key={sub.id} value={sub.id}>{sub.name}</option>
+                          ))
+                        : <option value={cat.id}>{cat.name}</option>
+                      }
+                    </optgroup>
+                  );
+                })}
             </select>
             {errors.category && <span className="field-error">{errors.category}</span>}
           </div>
