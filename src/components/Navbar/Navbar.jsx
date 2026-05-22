@@ -114,7 +114,7 @@ const Navbar = () => {
                 <div className="logo">
                     <Link to="/" className="logo-link">
                         <picture>
-                            <source srcSet="/images/logow.webp" type="image/webp" />
+                            <source srcSet="/images/logow.png" type="image/webp" />
                             <img
                                 src="/images/logow.png"
                                 alt="TopMark"

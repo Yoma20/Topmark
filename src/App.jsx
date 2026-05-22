@@ -11,6 +11,7 @@ import FeedbackButton from './components/FeedbackButton/FeedbackButton.jsx';
 import newRequest from './utils/newRequest.js';
 
 const Add            = lazy(() => import('./pages/add/Add.jsx'));
+const EditGig        = lazy(() => import('./pages/editGig/EditGig.jsx'));
 const MessagingPage  = lazy(() => import('./pages/MessagingPage.jsx'));
 const Orders         = lazy(() => import('./pages/orders/Orders.jsx'));
 const OrderDetail = lazy(() => import('./pages/orderDetail/OrderDetail.jsx'));
@@ -95,6 +96,7 @@ const router = createBrowserRouter([
       { path: "/orders/:orderId",     element: <OrderDetail /> },
       { path: "/mygigs",              element: <MyGigs /> },
       { path: "/add",                 element: <Add /> },
+      { path: "/edit-gig/:slug",      element: <EditGig /> },
       { path: "/messages",            element: <MessagingPage /> },
       { path: "/messages/:convId",    element: <MessagingPage /> },
       { path: "/login",               element: <Login /> },
