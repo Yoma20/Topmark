@@ -78,7 +78,19 @@ const Add = () => {
   
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => newRequest.get("/gigs/categories/").then(r => r.data.results ?? r.data),
+    queryFn: async () => {
+      let results = [];
+      let url = "/gigs/categories/";
+      while (url) {
+        const res = await newRequest.get(url);
+        results = [...results, ...(res.data.results ?? [])];
+        // Extract just the path+query from the next URL
+        url = res.data.next
+          ? res.data.next.replace(/^https?:\/\/[^/]+/, "")
+          : null;
+      }
+      return results;
+    },
   });
 
   const handleChange = (e) => {

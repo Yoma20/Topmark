@@ -1,0 +1,268 @@
+$blue:       #2563eb;
+$blue-dark:  #1d4ed8;
+$blue-light: #eff6ff;
+$border:     #e2e8f0;
+$text:       #1e293b;
+$muted:      #64748b;
+$radius:     12px;
+
+// ── Floating trigger ──────────────────────────────────────────────────────────
+.fb-trigger {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: $blue;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px 10px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: $blue-dark;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ── Overlay ───────────────────────────────────────────────────────────────────
+.fb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1001;
+  animation: fb-fade-in 0.2s ease;
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+.fb-modal {
+  position: fixed;
+  bottom: 90px;
+  right: 32px;
+  z-index: 1002;
+  width: 360px;
+
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+  // Hidden by default
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &--open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid $border;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text;
+      margin: 0;
+    }
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: $muted;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: #f1f5f9;
+      color: $text;
+    }
+  }
+
+  &__body {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  &__success {
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+
+    p {
+      font-size: 0.95rem;
+      color: $text;
+      margin: 0;
+    }
+  }
+
+  &__success-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: $blue-light;
+    color: $blue;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// ── Type pills ────────────────────────────────────────────────────────────────
+.fb-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fb-type-pill {
+  background: #f8fafc;
+  border: 1px solid $border;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: $muted;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: $blue;
+    color: $blue;
+  }
+
+  &--active {
+    background: $blue-light;
+    border-color: $blue;
+    color: $blue;
+    font-weight: 600;
+  }
+}
+
+// ── Form elements ─────────────────────────────────────────────────────────────
+.fb-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fb-textarea {
+  width: 100%;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  color: $text;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+
+  &::placeholder { color: #b0bac4; }
+
+  &:focus {
+    outline: none;
+    border-color: $blue;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+}
+
+.fb-error {
+  font-size: 0.82rem;
+  color: #dc2626;
+  margin: 0;
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+.fb-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &--primary {
+    background: $blue;
+    color: #fff;
+
+    &:hover { background: $blue-dark; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  &--ghost {
+    background: #f1f5f9;
+    color: $muted;
+
+    &:hover { background: #e2e8f0; }
+  }
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
+@keyframes fb-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// ── Mobile ────────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .fb-modal {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 80px;
+  }
+
+  .fb-trigger {
+    right: 16px;
+    bottom: 20px;
+  }
+}

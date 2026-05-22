@@ -33,8 +33,18 @@
                 object-fit: cover;
             }
         }
+
         p {
             color: #111;
+            font-size: 13px;
+            line-height: 1.4;
+            margin: 6px 0;
+
+            // Clamp to 2 lines — prevents card from stretching
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .star {
@@ -66,13 +76,6 @@
         align-items: center;
         justify-content: space-between;
 
-        img {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            object-fit: cover;
-        }
-
         .price {
             h2 {
                 color: #555;
@@ -85,6 +88,37 @@
                 font-size: 12px;
             }
         }
+    }
+}
+
+// Heart button
+.heart-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: transform 0.15s ease;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        stroke: #1dbf73;
+        fill: none;
+        transition: fill 0.2s ease, transform 0.2s ease;
+    }
+
+    &:hover svg {
+        transform: scale(1.2);
+    }
+
+    // Saved state — fill the heart green
+    &--saved svg {
+        fill: #1dbf73;
+        stroke: #1dbf73;
     }
 }
 

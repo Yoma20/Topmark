@@ -7,11 +7,13 @@ import AuthContext from './AuthContext.jsx';
 import { MessagingProvider } from './MessagingContext.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
+import FeedbackButton from './components/FeedbackButton/FeedbackButton.jsx';
 import newRequest from './utils/newRequest.js';
 
 const Add            = lazy(() => import('./pages/add/Add.jsx'));
 const MessagingPage  = lazy(() => import('./pages/MessagingPage.jsx'));
 const Orders         = lazy(() => import('./pages/orders/Orders.jsx'));
+const OrderDetail    = lazy(() => import('./pages/orders/OrderDetail.jsx'));
 const Dashboard      = lazy(() => import('./pages/home/Dashboard.jsx'));
 const MyGigs         = lazy(() => import('./pages/myGigs/MyGigs.jsx'));
 const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
@@ -28,7 +30,6 @@ const Register       = lazy(() => import('./pages/register/Register.jsx'));
 const BecomeSeller   = lazy(() => import('./components/becomeSeller/BecomeSeller.jsx'));
 const BecomeSeller2  = lazy(() => import('./components/becomeSeller2/BecomeSeller2.jsx'));
 const ProfileEdit    = lazy(() => import('./pages/profile/ProfileEdit.jsx'));
-
 
 const About          = lazy(() => import('./pages/about/About.jsx'));
 const FAQ            = lazy(() => import('./pages/faq/FAQ.jsx'));
@@ -72,6 +73,7 @@ function Layout() {
         </Suspense>
       </div>
       {!isMessaging && <Footer />}
+      <FeedbackButton />
     </div>
   );
 }
@@ -90,6 +92,7 @@ const router = createBrowserRouter([
       { path: "/gigs",                element: <Gigs /> },
       { path: "gig/:slug",            element: <Gig /> },
       { path: "/orders",              element: <Orders /> },
+      { path: "/orders/:orderId",     element: <OrderDetail /> },
       { path: "/mygigs",              element: <MyGigs /> },
       { path: "/add",                 element: <Add /> },
       { path: "/messages",            element: <MessagingPage /> },

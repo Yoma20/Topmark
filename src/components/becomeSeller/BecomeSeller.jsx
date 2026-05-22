@@ -346,13 +346,7 @@ export default function BecomeSeller2() {
             <>
               <h1>Create Your Account</h1>
 
-              {/* Google rendered button */}
-              <div
-                ref={googleBtnRef}
-                style={{ width: '100%', minHeight: '44px', marginBottom: '16px' }}
-              />
-
-              <div className="bs2-divider"><span>or fill in your details</span></div>
+              
 
               <div className="bs2-field">
                 <label htmlFor="username">Username</label>

@@ -321,23 +321,6 @@ export default function ProfileEdit() {
       <div className="pe-card">
         <div className="pe-identity">
 
-          {/* Avatar */}
-          <div className="pe-avatar-wrap" onClick={() => fileRef.current?.click()}>
-            {avatarPreview
-              ? <img src={avatarPreview} alt="avatar" className="pe-avatar-img" />
-              : <div className="pe-avatar-placeholder">
-                  <span>{form.displayName?.slice(0, 2).toUpperCase() || 'EX'}</span>
-                </div>
-            }
-            <div className="pe-avatar-overlay">📷 Change</div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={handleAvatarChange}
-            />
-          </div>
 
           {/* Identity fields — inline inputs, no prompt() */}
           <div className="pe-identity-fields">
