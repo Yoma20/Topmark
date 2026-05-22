@@ -3,11 +3,11 @@ import newRequest from '../../utils/newRequest';
 import './FeedbackButton.scss';
 
 const TYPES = [
-  { value: 'bug',      label: '🐛 Bug Report' },
-  { value: 'idea',     label: '💡 Feature Idea' },
-  { value: 'category', label: '📂 Missing Category' },
-  { value: 'other',    label: '💬 Other' },
-];
+    { value: 'bug',      label: 'Bug Report' },
+    { value: 'idea',     label: 'Feature Request' },
+    { value: 'category', label: 'Missing Category' },
+    { value: 'other',    label: 'Other' },
+  ];
 
 const FeedbackButton = () => {
   const [open,        setOpen]    = useState(false);
