@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AuthContext from "../../AuthContext.jsx";
 import newRequest from "../../utils/newRequest";
-import "./Orderdetail.SCSS";
+import "./Orderdetail.scss";
 
 const CITATION_STYLES = ["APA", "MLA", "Harvard", "Chicago", "Vancouver", "None"];
 
