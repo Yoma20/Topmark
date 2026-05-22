@@ -13,7 +13,7 @@ import newRequest from './utils/newRequest.js';
 const Add            = lazy(() => import('./pages/add/Add.jsx'));
 const MessagingPage  = lazy(() => import('./pages/MessagingPage.jsx'));
 const Orders         = lazy(() => import('./pages/orders/Orders.jsx'));
-const OrderDetail    = lazy(() => import('./pages/orders/OrderDetail.jsx'));
+const OrderDetail = lazy(() => import('./pages/orderDetail/OrderDetail.jsx'));
 const Dashboard      = lazy(() => import('./pages/home/Dashboard.jsx'));
 const MyGigs         = lazy(() => import('./pages/myGigs/MyGigs.jsx'));
 const Gig            = lazy(() => import('./pages/gig/Gig.jsx'));
