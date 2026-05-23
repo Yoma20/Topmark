@@ -117,11 +117,7 @@ export default function Orders() {
         {/* Header */}
         <div className="orders__header">
           <h1 className="orders__title">My Orders</h1>
-          <p className="orders__subtitle">
-            {isExpert
-              ? "Track work, submit deliverables, and monitor your payouts."
-              : "Track the status of your orders and communicate with experts."}
-          </p>
+          
         </div>
 
         {/* Tabs */}

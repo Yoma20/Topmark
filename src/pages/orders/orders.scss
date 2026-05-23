@@ -56,7 +56,7 @@
   --duration: 160ms;
 
   // Font
-  --font-body: 'DM Sans', 'Manrope', 'Jakarta Sans', sans-serif;
+  --font-body:'roboto', sans-serif;
 }
 
 
@@ -149,7 +149,7 @@
   color: var(--text-secondary);
   background: var(--bg-card);
   border: 1px solid var(--border-default);
-  border-radius: var(--r-pill);
+  border-radius: 6px;
   cursor: pointer;
   transition: color var(--duration) var(--ease-out),
               background var(--duration) var(--ease-out),
@@ -298,7 +298,7 @@
   padding: 18px 20px;
   background: var(--bg-card);
   border: 1px solid var(--border-default);
-  border-radius: var(--r-lg);
+  border-radius: 8px;
   box-shadow: var(--shadow-card);
   transition: box-shadow var(--duration) var(--ease-out),
               border-color var(--duration) var(--ease-out);
@@ -545,18 +545,41 @@
   line-height: 1.4;
 
   // Order status
-  &--pending     { @include badge-variant(var(--s-pending-bg),   var(--s-pending-fg)); }
-  &--in_progress { @include badge-variant(var(--s-progress-bg),  var(--s-progress-fg)); }
-  &--submitted   { @include badge-variant(var(--s-submitted-bg), var(--s-submitted-fg)); }
-  &--completed   { @include badge-variant(var(--s-completed-bg), var(--s-completed-fg)); }
-  &--archived    { @include badge-variant(var(--s-archived-bg),  var(--s-archived-fg)); }
+  &--pending {
+    @include badge-variant(var(--s-pending-bg), var(--s-pending-fg));
+    border-bottom: ridge;
+    border-radius: 6px;
+  }
+  &--in_progress { 
+    @include badge-variant(var(--s-progress-bg),  var(--s-progress-fg));
+    border-bottom: ridge;
+    border-radius: 6px;}
+  &--submitted   { @include badge-variant(var(--s-submitted-bg), var(--s-submitted-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
+  &--completed   { @include badge-variant(var(--s-completed-bg), var(--s-completed-fg)); 
+      border-bottom: ridge;
+    border-radius: 6px;}
+  &--archived    { @include badge-variant(var(--s-archived-bg),  var(--s-archived-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
 
   // Payment status
-  &--pay-unpaid   { @include badge-variant(var(--p-unpaid-bg),   var(--p-unpaid-fg)); }
-  &--pay-held     { @include badge-variant(var(--p-held-bg),     var(--p-held-fg)); }
-  &--pay-released { @include badge-variant(var(--p-released-bg), var(--p-released-fg)); }
-  &--pay-refunded { @include badge-variant(var(--p-refunded-bg), var(--p-refunded-fg)); }
-  &--pay-pending  { @include badge-variant(var(--p-pending-bg),  var(--p-pending-fg)); }
+  &--pay-unpaid   { @include badge-variant(var(--p-unpaid-bg),   var(--p-unpaid-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
+  &--pay-held     { @include badge-variant(var(--p-held-bg),     var(--p-held-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
+  &--pay-released { @include badge-variant(var(--p-released-bg), var(--p-released-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
+  &--pay-refunded { @include badge-variant(var(--p-refunded-bg), var(--p-refunded-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
+  &--pay-pending  { @include badge-variant(var(--p-pending-bg),  var(--p-pending-fg)); 
+    border-bottom: ridge;
+    border-radius: 6px;}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
