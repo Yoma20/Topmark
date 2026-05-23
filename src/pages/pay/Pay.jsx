@@ -281,7 +281,12 @@ const Pay = () => {
         {/* Bank transfer confirmed */}
         {method === "bank" && bankConfirmed && (
           <div className="pay__bank-success">
-            <span className="pay__success-icon">✅</span>
+            <span className="pay__success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M7 12l4 4 6-8" />
+              </svg>
+            </span>
             <h2>Transfer Noted!</h2>
             <p>
               We'll verify your payment and activate your order within <strong>24 hours</strong>.

@@ -43,7 +43,24 @@ function EmojiPicker({ onSelect, onClose }) {
 function AttachmentPreview({ file, onRemove }) {
   const isImage = file.type.startsWith("image/");
   const isVideo = file.type.startsWith("video/");
-  const icon = isImage ? "🖼️" : isVideo ? "🎬" : "📄";
+  const icon = isImage ? (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="M21 15l-5-5L5 21" />
+    </svg>
+  ) : isVideo ? (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="15" height="16" rx="2" />
+      <path d="M17 8l5-3v14l-5-3V8z" />
+    </svg>
+  ) : (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h8M8 17h5" />
+    </svg>
+  );
   const name = file.name.length > 22 ? file.name.slice(0, 20) + "…" : file.name;
 
   return (
@@ -83,7 +100,24 @@ function FileBubble({ fileUrl, fileName }) {
   }
 
   // Generic file download link
-  const icon = ext === "pdf" ? "📄" : ext === "zip" ? "🗜️" : "📎";
+  const icon = ext === "pdf" ? (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h8M8 17h5" />
+    </svg>
+  ) : ext === "zip" ? (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M10 8v2M10 12v2M10 16v2" strokeWidth="2" />
+      <path d="M8 8h4M8 12h4M8 16h4" />
+    </svg>
+  ) : (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.41a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+    </svg>
+  );
   const displayName = fileName?.length > 30 ? fileName.slice(0, 28) + "…" : fileName;
   return (
     <a href={fileUrl} download={fileName} className="msg-file-link" target="_blank" rel="noopener noreferrer">
@@ -277,7 +311,11 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
     return (
       <div className="chat-window">
         <div className="chat-empty">
-          <span className="chat-empty-icon">💬</span>
+        <span className="chat-empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+        </span>
           <p>Select a conversation to start chatting</p>
         </div>
       </div>

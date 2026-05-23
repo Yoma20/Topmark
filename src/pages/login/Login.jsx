@@ -65,7 +65,12 @@ function VerifyEmail({ userId, email, onVerified }) {
     <main className="auth-page">
       <div className="auth-form-side otp-only">
         <div className="auth-form-inner">
-          <div className="verify-icon">📧</div>
+        <div className="verify-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M2 7l10 7 10-7" />
+          </svg>
+        </div>
           <h1>Verify your email</h1>
           <p className="verify-sub">
             We sent a 6-digit code to <strong>{email}</strong>
@@ -405,8 +410,8 @@ const Login = () => {
 
           <p className="auth-legal">
             By signing in, you agree to TopMark's{" "}
-            <Link to="/terms">Terms of Service</Link> and{" "}
-            <Link to="/privacy">Privacy Policy</Link>.
+            <Link to="/terms-of-service">Terms of Service</Link> and{" "}
+            <Link to="/privacy-policy">Privacy Policy</Link>.
           </p>
         </div>
       </div>
