@@ -5,6 +5,18 @@ import AuthContext from "../../AuthContext.jsx";
 import newRequest from "../../utils/newRequest.js";
 import "./orders.scss";
 
+// Extracts up to 2 initials from a gig title
+// e.g. "Business Economics" → "BE", "Maths" → "M"
+function getInitials(title = "") {
+  return title
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(w => w[0])
+    .join("")
+    .toUpperCase();
+}
+
 export default function Orders() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -148,7 +160,7 @@ function OrderCard({ order, isExpert, submitting, onContact, onSubmitWork, onVie
   return (
     <div className={`order-card${isOverdue ? " order-card--overdue" : ""}`}>
 
-      {/* Cover */}
+      {/* Cover — shows image if available, otherwise green initials */}
       {order.gig_cover ? (
         <img
           src={order.gig_cover}
@@ -156,7 +168,9 @@ function OrderCard({ order, isExpert, submitting, onContact, onSubmitWork, onVie
           className="order-card__cover"
         />
       ) : (
-        <div className="order-card__cover-placeholder"></div>
+        <div className="order-card__cover-placeholder">
+          {getInitials(order.gig_title)}
+        </div>
       )}
 
       {/* Body */}

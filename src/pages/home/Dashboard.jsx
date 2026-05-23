@@ -7,7 +7,6 @@ import newRequest from "../../utils/newRequest";
 import GigCard from "../../components/GigCard/GigCard";
 import "./Dashboard.scss";
 
-// Local image map — matches category names to local assets
 const CATEGORY_IMAGE_MAP = {
   "Law & Legal":                   { icon: "https://cdn.topmark.pro/images/Law & Legal.webp",                      placeholder: "#e8e4f0" },
   "Nursing":                       { icon: "https://cdn.topmark.pro/images/Nursing.webp",                          placeholder: "#e4f0ea" },
@@ -119,6 +118,16 @@ function SearchBar({ categories }) {
   const dropItems    = query.trim() ? suggestions : recent;
   const filterPills  = [{ id: "", name: "All" }, ...categories];
 
+  // FIXED: pills now navigate to /gigs filtered by category
+  function handlePillClick(f) {
+    setCategory(f.id === "" ? "" : f.name);
+    if (f.id === "") {
+      navigate("/gigs");
+    } else {
+      navigate(`/gigs?category=${encodeURIComponent(f.id)}`);
+    }
+  }
+
   function goSearch(term = query, cat = category) {
     const q = term.trim();
     if (!q) return;
@@ -138,12 +147,13 @@ function SearchBar({ categories }) {
 
   return (
     <div className="sb">
-      <div className="sb__filters">
+      {/* FIXED: one row, horizontally scrollable, no wrapping */}
+      <div className="sb__filters sb__filters--nowrap">
         {filterPills.map(f => (
           <button
             key={f.id}
             className={`sb__filter-pill${category === f.name ? " sb__filter-pill--active" : ""}`}
-            onClick={() => setCategory(f.id === "" ? "" : f.name)}
+            onClick={() => handlePillClick(f)}
             type="button"
           >
             {f.name}
@@ -240,7 +250,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
 
-  // Fetch all categories for the search bar pills
   useEffect(() => {
     newRequest.get('/gigs/categories/')
       .then(({ data }) => {
@@ -250,29 +259,25 @@ export default function Dashboard() {
       .catch(() => {});
   }, []);
 
-  // Fetch recommended gigs
   const { data: gigs, isLoading: gigsLoading } = useQuery({
     queryKey: ["dashboard-gigs"],
     queryFn: () => newRequest.get("/gigs/?sort=sales").then(r => r.data?.results ?? r.data),
   });
 
-  // Fetch popular categories — top 6 by completed order count (one grid row)
   const { data: popularCats, isLoading: catsLoading } = useQuery({
     queryKey: ["popular-categories"],
     queryFn: () =>
       newRequest.get("/gigs/categories/popular/?limit=6").then(r => r.data?.results ?? r.data),
-    staleTime: 1000 * 60 * 10, // cache for 10 minutes
+    staleTime: 1000 * 60 * 10,
   });
 
   return (
     <div className="dashboard">
 
-      {/* ── Search ── */}
       <section className="dashboard-search">
         <SearchBar categories={categories} />
       </section>
 
-      {/* ── Recommended Experts ── */}
       <section className="dashboard-section">
         <div className="dashboard-section__header">
           <h2>Recommended Experts</h2>
@@ -298,36 +303,23 @@ export default function Dashboard() {
         )}
       </section>
 
-      {/* ── Popular Subjects ── */}
       <section className="dashboard-section">
         <div className="dashboard-section__header">
           <h2>Popular Subjects</h2>
           <span onClick={() => navigate("/gigs")}>See all →</span>
         </div>
-
         {catsLoading ? (
           <div className="dashboard-loading">Loading categories…</div>
         ) : !popularCats?.length ? (
-          // Fallback: show first 6 categories if no order data yet
           <div className="dashboard-cats">
             {categories.slice(0, 6).map((cat, idx) => (
-              <CategoryCard
-                key={cat.id}
-                cat={cat}
-                idx={idx}
-                navigate={navigate}
-              />
+              <CategoryCard key={cat.id} cat={cat} idx={idx} navigate={navigate} />
             ))}
           </div>
         ) : (
           <div className="dashboard-cats">
             {popularCats.map((cat, idx) => (
-              <CategoryCard
-                key={cat.id}
-                cat={cat}
-                idx={idx}
-                navigate={navigate}
-              />
+              <CategoryCard key={cat.id} cat={cat} idx={idx} navigate={navigate} />
             ))}
           </div>
         )}
@@ -337,7 +329,7 @@ export default function Dashboard() {
   );
 }
 
-// ── Category card (extracted for reuse) ──────────────────────────────────────
+// ── Category card ─────────────────────────────────────────────────────────────
 function CategoryCard({ cat, idx, navigate }) {
   const asset = CATEGORY_IMAGE_MAP[cat.name];
   const placeholder = asset?.placeholder || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
@@ -350,10 +342,7 @@ function CategoryCard({ cat, idx, navigate }) {
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
     >
-      <div
-        className="dashboard-cat__img-wrap"
-        style={{ background: placeholder }}
-      >
+      <div className="dashboard-cat__img-wrap" style={{ background: placeholder }}>
         {asset?.icon ? (
           <img
             src={asset.icon}
@@ -363,9 +352,7 @@ function CategoryCard({ cat, idx, navigate }) {
             onLoad={e => e.currentTarget.classList.add("dashboard-cat__img--loaded")}
           />
         ) : (
-          <span className="dashboard-cat__letter">
-            {cat.name.charAt(0)}
-          </span>
+          <span className="dashboard-cat__letter">{cat.name.charAt(0)}</span>
         )}
         <div className="dashboard-cat__overlay">
           <span className="dashboard-cat__label">{cat.name}</span>
