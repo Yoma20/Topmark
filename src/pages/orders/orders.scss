@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tokens — aligned with the rest of the Topmark site
@@ -56,12 +56,10 @@
   --duration: 160ms;
 
   // Font
-  --font-body: 'Poppins', sans-serif;
+  --font-body: 'DM Sans', 'Manrope', 'Jakarta Sans', sans-serif;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Mixins
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 @mixin badge-variant($bg, $fg) {
   background: $bg;
@@ -515,6 +513,17 @@
 
     &:hover {
       background: var(--accent-light);
+    }
+  }
+
+  &--danger {
+    background: transparent;
+    color: #c0392b;
+    border-color: #e8b4b0;
+
+    &:hover {
+      background: #fff0f0;
+      border-color: #c0392b;
     }
   }
 }

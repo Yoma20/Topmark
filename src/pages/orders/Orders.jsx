@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AuthContext from "../../AuthContext.jsx";
 import newRequest from "../../utils/newRequest.js";
 import "./orders.scss";
@@ -17,6 +17,14 @@ function getInitials(title = "") {
     .toUpperCase();
 }
 
+// cover_image comes back as a relative path e.g. /media/gigs/x.jpg
+// prepend the API base so the <img> has a full URL
+function coverUrl(path) {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  return (import.meta.env.VITE_API_URL || "") + path;
+}
+
 export default function Orders() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -25,6 +33,7 @@ export default function Orders() {
 
   const [tab, setTab] = useState(isExpert ? "active" : "all");
   const [submitting, setSubmitting] = useState(null);
+  const [cancelling, setCancelling] = useState(null);
 
   // ── Data fetching ──────────────────────────────────────────────────────────
 
@@ -75,6 +84,21 @@ export default function Orders() {
       alert("Failed to submit work. Please try again.");
     } finally {
       setSubmitting(null);
+    }
+  }
+
+  async function handleCancel(orderId) {
+    if (!window.confirm("Cancel this order? This cannot be undone.")) return;
+    setCancelling(orderId);
+    try {
+      await newRequest.post(`/gigs/orders/${orderId}/cancel/`);
+      queryClient.setQueryData(["orders"], prev =>
+        prev.map(o => o.id === orderId ? { ...o, status: "archived" } : o)
+      );
+    } catch (e) {
+      alert(e?.response?.data?.detail || "Failed to cancel order. Please try again.");
+    } finally {
+      setCancelling(null);
     }
   }
 
@@ -139,8 +163,10 @@ export default function Orders() {
                 order={order}
                 isExpert={isExpert}
                 submitting={submitting}
+                cancelling={cancelling}
                 onContact={() => handleContact(order)}
                 onSubmitWork={() => handleSubmitWork(order.id)}
+                onCancel={() => handleCancel(order.id)}
                 onView={() => navigate(`/orders/${order.id}`)}
               />
             ))}
@@ -152,18 +178,22 @@ export default function Orders() {
   );
 }
 
-function OrderCard({ order, isExpert, submitting, onContact, onSubmitWork, onView }) {
+function OrderCard({ order, isExpert, submitting, cancelling, onContact, onSubmitWork, onCancel, onView }) {
   const navigate = useNavigate();
   const deadlineDate = order.deadline ? new Date(order.deadline) : null;
   const isOverdue = deadlineDate && deadlineDate < new Date() && order.status !== "completed";
+  const cover = coverUrl(order.gig_cover);
+
+  // Student can cancel only when order hasn't been paid yet
+  const canCancel = !isExpert && order.payment_status === "unpaid" && order.status !== "archived";
 
   return (
     <div className={`order-card${isOverdue ? " order-card--overdue" : ""}`}>
 
-      {/* Cover — shows image if available, otherwise green initials */}
-      {order.gig_cover ? (
+      {/* Cover */}
+      {cover ? (
         <img
-          src={order.gig_cover}
+          src={cover}
           alt={order.gig_title}
           className="order-card__cover"
         />
@@ -252,6 +282,16 @@ function OrderCard({ order, isExpert, submitting, onContact, onSubmitWork, onVie
               className="btn btn--success"
             >
               Review & Approve
+            </button>
+          )}
+
+          {canCancel && (
+            <button
+              onClick={onCancel}
+              disabled={cancelling === order.id}
+              className="btn btn--danger"
+            >
+              {cancelling === order.id ? "Cancelling…" : "Cancel Order"}
             </button>
           )}
         </div>
