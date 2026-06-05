@@ -14,6 +14,29 @@
         color: #222;
       }
     }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    
+      &:hover {
+        background: #f0f0f0;
+        color: #111;
+      }
+    
+      &:active {
+        background: #e4e4e4;
+      }
+    }
   
     /* ── two-column layout ── */
     .settings-layout {

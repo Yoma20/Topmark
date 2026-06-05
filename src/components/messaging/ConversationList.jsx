@@ -57,11 +57,24 @@ export default function ConversationList({
 
   if (!conversations.length) {
     return (
-      <div className="conv-list conv-list--empty">
-        <span>💬</span>
-        <p>No conversations yet.</p>
-        <small>Start one by messaging an expert.</small>
-      </div>
+      <svg width="100%" viewBox="0 0 680 260" role="img" xmlns="http://www.w3.org/2000/svg">
+        <title>No conversations yet</title>
+        <desc>Empty state illustration with a chat bubble, heading, and subtitle</desc>
+
+        
+        <rect x="265" y="30" width="150" height="100" rx="16" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1.5"/>
+        
+        <polygon points="292,130 276,155 318,130" fill="#f0f0f0"/>
+        <line x1="277" y1="137" x2="317" y2="137" stroke="#f0f0f0" stroke-width="3"/>
+      
+        <circle cx="315" cy="80" r="6" fill="#aaaaaa" opacity="0.5"/>
+        <circle cx="340" cy="80" r="6" fill="#aaaaaa" opacity="0.5"/>
+        <circle cx="365" cy="80" r="6" fill="#aaaaaa" opacity="0.5"/>
+
+        
+        <text x="340" y="185" text-anchor="middle" font-size="16" font-weight="500" font-family="sans-serif" fill="#111">No conversations yet.</text>
+        <text x="340" y="213" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#888">Start one by messaging an expert.</text>
+      </svg>
     );
   }
 
