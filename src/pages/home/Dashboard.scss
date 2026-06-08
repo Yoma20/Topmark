@@ -760,3 +760,15 @@ z-index: 1000;
     }
   }
 }
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 0 12px 40px;
+  }
+
+  .sb__filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+}

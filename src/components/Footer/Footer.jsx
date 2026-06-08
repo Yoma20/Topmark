@@ -69,7 +69,7 @@ const Footer = () => {
           <div className="site-footer__col">
             <h4 className="site-footer__heading">Contact</h4>
             <ul className="site-footer__contact">
-              <li><Mail size={15} /><span>davischuuck@gmail.com</span></li>
+              <li><Mail size={15} /><span>topmark.support@gmail.com</span></li>
               <li><Phone size={15} /><span>+1 (123) 000-0000</span></li>
               <li><MapPin size={15} /><span>Reserve Cir, Clearwater, FL 33759 , USA</span></li>
             </ul>

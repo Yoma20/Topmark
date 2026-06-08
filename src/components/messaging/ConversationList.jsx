@@ -59,7 +59,6 @@ export default function ConversationList({
     return (
       <svg width="100%" viewBox="0 0 680 260" role="img" xmlns="http://www.w3.org/2000/svg">
         <title>No conversations yet</title>
-        <desc>Empty state illustration with a chat bubble, heading, and subtitle</desc>
 
         
         <rect x="265" y="30" width="150" height="100" rx="16" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1.5"/>

@@ -785,3 +785,22 @@ body {
         }
     }
 }
+@media (max-width: 480px) {
+    .hero {
+      padding: 2.5rem 0 4rem;
+      
+      .hero-content {
+        padding: 0 16px;
+        box-sizing: border-box;
+        width: 100%;
+      }
+  
+      .popular-searches-row {
+        margin: 4% 16px;
+      }
+  
+      .hero-buttons {
+        gap: 1rem;
+      }
+    }
+  }
