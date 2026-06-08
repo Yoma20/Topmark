@@ -803,4 +803,19 @@ body {
         gap: 1rem;
       }
     }
+    .secondslide {
+        overflow: hidden;
+        width: 100%;
+        box-sizing: border-box;
+      
+        .second_slider_heading {
+          padding-left: 16px;
+          font-size: 22px;
+        }
+      }
+      
+      .slide, .slick-slider, .slick-list, .slick-track {
+        max-width: 100vw;
+        overflow: hidden;
+      }
   }

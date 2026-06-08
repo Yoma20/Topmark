@@ -19,3 +19,20 @@
         object-fit: contain;
     }
 }
+@media (max-width: 768px) {
+    .trustedBy {
+      height: auto;
+      padding: 16px;
+  
+      .container {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+      }
+  
+      img {
+        height: 36px;
+      }
+    }
+  }
