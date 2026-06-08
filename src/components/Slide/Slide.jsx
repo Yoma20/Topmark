@@ -9,24 +9,26 @@ const Slide = ({ children, slidesToShow, arrowsScroll }) => {
     infinite: true,
     slidesToShow: slidesToShow || 1,
     slidesToScroll: arrowsScroll || 1,
-    arrows: true,
+    arrows: false,  // hide arrows on mobile to prevent overflow
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: Math.min(slidesToShow || 1, 2),
-          slidesToScroll: arrowsScroll || 1,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 768,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
     ],
   };
+  
 
   return (
     <div className="slide bg-gray-100 py-8">

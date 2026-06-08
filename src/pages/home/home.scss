@@ -641,7 +641,15 @@ body {
         font-size: 0.875rem;
     }
 }
-
+@media (max-width: 768px) {
+    .home .explore .container .items .item {
+      width: 100%;
+      span {
+        white-space: normal;
+        word-break: break-word;
+      }
+    }
+  }
 @media (max-width: 768px) {
     .hero {
         padding: 3rem 1rem 4.5rem;
