@@ -809,9 +809,11 @@ body {
         box-sizing: border-box;
       
         .second_slider_heading {
-          padding-left: 16px;
-          font-size: 22px;
-        }
+            line-height: 1.3 !important;
+            font-size: 20px !important;
+            padding-left: 16px !important;
+            margin-bottom: 16px !important;
+          }
       }
       
       .slide, .slick-slider, .slick-list, .slick-track {

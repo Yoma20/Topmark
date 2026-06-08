@@ -43,3 +43,14 @@
         }
     }
 }
+@media (max-width: 768px) {
+    .projectcard {
+      width: 100%;
+      height: auto;
+      margin: 8px 0;
+  
+      img:first-child {
+        height: 180px;
+      }
+    }
+  }
