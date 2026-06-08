@@ -206,7 +206,7 @@ const Home = () => {
 
             <Featured />
             <TrustedBy />
-            <Slide slidesToShow={5} arrowsScroll={5}>
+            <Slide slidesToShow={window.innerWidth < 768 ? 1 : 5} arrowsScroll={5}>
                 {cards.map((card) => <CatCard item={card} key={card.id} />)}
             </Slide>
 
@@ -299,7 +299,7 @@ const Home = () => {
 
             <div className="secondslide">
                 <p className="second_slider_heading">Work completed on TopMark</p>
-                <Slide slidesToShow={4} arrowsScroll={5}>
+                <Slide slidesToShow={window.innerWidth < 768 ? 1 : 4} arrowsScroll={5}>
                     {projects.map((card) => <ProjectCard item={card} key={card.id} />)}
                 </Slide>
             </div>

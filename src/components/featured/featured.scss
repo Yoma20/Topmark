@@ -112,3 +112,60 @@
   80%  { background-image: url('hero5.webp'); }
   100% { background-image: url('hero6.webp'); }
 }
+
+@media (max-width: 768px) {
+    .featured {
+      height: auto;
+      min-height: 420px;
+      padding: 40px 16px;
+  
+      .container {
+        width: 100%;
+        position: relative;
+        padding: 0;
+  
+        .left {
+          width: 100%;
+          gap: 20px;
+          margin-top: 0;
+  
+          h2 {
+            font-size: 28px;
+            line-height: 1.3;
+          }
+  
+          .search {
+            width: 100%;
+            box-sizing: border-box;
+  
+            .searchInput {
+              flex: 1;
+              min-width: 0;
+  
+              input {
+                width: 100%;
+                font-size: 13px;
+              }
+            }
+  
+            button {
+              width: 80px;
+              font-size: 14px;
+              flex-shrink: 0;
+            }
+          }
+  
+          .popular {
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+  
+            button {
+              font-size: 12px;
+              padding: 4px 10px;
+            }
+          }
+        }
+      }
+    }
+  }
