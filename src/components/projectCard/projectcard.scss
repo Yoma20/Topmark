@@ -9,8 +9,6 @@
     overflow: hidden;
     font-family: 'Montserrat', 'sans-serif';
 
-    // FIX: hero image — takes up 70% of the 300px card height = 210px
-    // explicit height prevents CLS while image loads
     img {
         width: 100%;
         height: 70%;
@@ -29,6 +27,8 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
+            // Prevent the avatar from stretching
+            flex-shrink: 0;
         }
 
         .texts {
@@ -43,15 +43,26 @@
         }
     }
 }
+
 @media (max-width: 768px) {
     .projectcard {
-      width: 100%;
-      height: auto;
-      margin: 8px 0;
-  
-      img:first-child {
-        height: 180px;
+        // Let slick control the width — don't fight it with fixed px
         width: 100%;
-      }
+        max-width: 100%;
+        height: auto;
+        // Remove side margin — slick-slide padding handles spacing
+        margin: 0;
+        box-sizing: border-box;
+
+        img:first-child {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .info {
+            gap: 12px;
+            padding: 10px 12px;
+        }
     }
-  }
+}
