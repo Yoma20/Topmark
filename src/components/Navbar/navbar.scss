@@ -244,8 +244,11 @@
         flex-direction: column;
         cursor: pointer;
         gap: 5px;
-        padding: 6px 4px;
+        padding: 4px 0;
         flex-shrink: 0;
+        background: none;
+        border: none;
+        outline: none;
 
         span {
             display: block;
@@ -466,16 +469,16 @@
                 flex-shrink: 0;
 
                 .mobile-join-btn {
-                    color: white;
+                    color: #1a9e60;
                     padding: 7px 16px;
                     border-radius: 5px;
-                    border: 1.5px solid #1a9e60 ;
-                    background-color: #1a9e60 ;
+                    border: 1.5px solid #1a9e60;
+                    background-color: white;
                     font-size: 14px;
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.2s;
-                    &:hover { background: white; color: #1a9e60 ; }
+                    &:hover { background: #f0faf5; }
                 }
 
                 .mobile-user {
