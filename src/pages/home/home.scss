@@ -8,7 +8,6 @@
         &.dark {
             background-color: rgb(13, 8, 77);
 
-            // FIX: extended h1 selectors to h2/h3 to match demoted headings
             h1, h2, h3 {
                 color: white !important;
             }
@@ -69,7 +68,6 @@
                     background-color: black;
                 }
 
-                // FIX: cover h2/h3 as well as h1 (headings were demoted)
                 h1, h2, h3 {
                     font-weight: 500;
                     margin-bottom: 10px;
@@ -124,7 +122,6 @@
                 flex-direction: column;
                 justify-content: center;
 
-                // FIX: cover h2 as well as h1
                 h1, h2 {
                     font-weight: 700;
 
@@ -189,7 +186,6 @@
         .container {
             width: 1400px;
 
-            // FIX: cover h2 as well as h1 (heading demoted)
             h1, h2 {
                 color: #555;
             }
@@ -641,16 +637,26 @@ body {
         font-size: 0.875rem;
     }
 }
+
+/* ============================================================
+   MOBILE — single consolidated block, no duplicates
+   ============================================================ */
 @media (max-width: 768px) {
-    .home .explore .container .items .item {
-      width: 100%;
-      span {
-        white-space: normal;
-        word-break: break-word;
-      }
+
+    /* Hide both sliders on mobile — avoids the slick height bug entirely */
+    .home > .slide,
+    .home .secondslide {
+        display: none;
     }
-  }
-@media (max-width: 768px) {
+
+    .home .explore .container .items .item {
+        width: 100%;
+        span {
+            white-space: normal;
+            word-break: break-word;
+        }
+    }
+
     .hero {
         padding: 3rem 1rem 4.5rem;
         min-height: unset;
@@ -674,20 +680,6 @@ body {
                 }
             }
         }
-        .secondslide {
-            margin: 30px 0;         // was 100px — kills the giant gap
-            overflow: hidden;
-            width: 100%;
-            box-sizing: border-box;
-         
-            .second_slider_heading {
-                line-height: 1.3 !important;
-                font-size: 20px !important;
-                padding-left: 16px !important;
-                margin-bottom: 16px !important;
-            }
-        }
-         
 
         .explore {
             .container {
@@ -779,14 +771,9 @@ body {
                     width: 100% !important;
                     &:last-child { display: none !important; }
                     h1, h2, h3 { font-size: 1.4rem; }
-                    p  { font-size: 14px; }
+                    p { font-size: 14px; }
                 }
             }
-        }
-
-        .secondslide {
-            overflow: hidden;
-            width: 100%;
         }
     }
 
@@ -800,6 +787,26 @@ body {
     }
 }
 
+@media (max-width: 480px) {
+    .hero {
+        padding: 2.5rem 0 4rem;
+
+        .hero-content {
+            padding: 0 16px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .popular-searches-row {
+            margin: 4% 16px;
+        }
+
+        .hero-buttons {
+            gap: 1rem;
+        }
+    }
+}
+
 @media (max-width: 420px) {
     .home {
         .featured .container .left {
@@ -807,41 +814,3 @@ body {
         }
     }
 }
-@media (max-width: 480px) {
-    .hero {
-      padding: 2.5rem 0 4rem;
-      
-      .hero-content {
-        padding: 0 16px;
-        box-sizing: border-box;
-        width: 100%;
-      }
-  
-      .popular-searches-row {
-        margin: 4% 16px;
-      }
-  
-      .hero-buttons {
-        gap: 1rem;
-      }
-    }
-    .secondslide {
-        margin: 30px 0;         // was 100px — kills the giant gap
-        overflow: hidden;
-        width: 100%;
-        box-sizing: border-box;
-     
-        .second_slider_heading {
-            line-height: 1.3 !important;
-            font-size: 20px !important;
-            padding-left: 16px !important;
-            margin-bottom: 16px !important;
-        }
-    }
-     
-      
-      .slide, .slick-slider, .slick-list, .slick-track {
-        max-width: 100vw;
-        overflow: hidden;
-      }
-  }
