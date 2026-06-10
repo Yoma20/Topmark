@@ -469,6 +469,7 @@
                 flex-shrink: 0;
 
                 .mobile-join-btn {
+                    margin-right: 8px;
                     color: #1a9e60;
                     padding: 7px 16px;
                     border-radius: 5px;
@@ -558,6 +559,7 @@
 
         // ── Mobile menu panel ──────────────────────────────────────────────────
         .mobile-menu {
+            margin-left: 8px;
             display: flex;
             flex-direction: column;
             position: fixed;
