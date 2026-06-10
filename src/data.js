@@ -67,9 +67,7 @@ export const cards = [
   },
 ];
 
-// FIX: projects — avatar pp images were w=1600 but display at 40×40px (80px @2x).
-// Card img images display at 300×210px (600px @2x).
-// Switched to TopMark-relevant academic categories.
+
 export const projects = [
 {
   id: 1,
@@ -122,16 +120,14 @@ export const projects = [
 },
 {
   id: 8,
-  img: " https://cdn.topmark.pro/images/harriet.png",
+  img: "https://cdn.topmark.pro/images/harriet.png",
   pp: "https://images.pexels.com/photos/1680175/pexels-photo-1680175.jpeg?auto=compress&cs=tinysrgb&w=80",
   cat: "History Coursework",
   username: "Ward Brewer",
 },
 ];
 
-// FIX: gigs — all Pexels images were w=1600.
-// Card img displays at ~300px wide (600px @2x), avatar pp at 40px (80px @2x).
-// Updated categories to TopMark academic subjects.
+
 export const gigs = [
 {
   id: 1,

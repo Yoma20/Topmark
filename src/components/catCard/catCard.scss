@@ -1,3 +1,12 @@
+/* FIX: catcard-link wrapper — slick needs the direct child of slick-slide
+   to be a block-level element with a defined height, not an inline <a> */
+.catcard-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
 .catCard {
     border-radius: 5px;
     cursor: pointer;
@@ -5,19 +14,25 @@
     width: 252px;
     height: 344px;
     color: white;
+    overflow: hidden;
 
     img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        /* Prevent broken image from collapsing the card */
+        min-height: 100%;
+        display: block;
     }
-    .desc{
+
+    .desc {
         font-weight: 300;
         position: absolute;
-        top: 15px;left: 15px;
-
+        top: 15px;
+        left: 15px;
     }
-    .title{
+
+    .title {
         font-weight: 500;
         font-size: 24px;
         position: absolute;
@@ -27,8 +42,16 @@
 }
 
 @media (max-width: 768px) {
-    .catCard {
-      width: 100%;
-      height: 200px;
+    .catcard-link {
+        display: block;
+        width: 100%;
     }
-  }
+
+    .catCard {
+        /* FIX: width: 100% lets slick control sizing; removing fixed 252px
+           which fought slick's slide cell width on mobile */
+        width: 100%;
+        height: 220px;
+        border-radius: 4px;
+    }
+}
