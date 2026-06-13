@@ -190,7 +190,7 @@ const ChatWindow = ({ conversation, currentUserId, currentUserType, onMessageSen
   useEffect(() => {
     if (!conversation?.id) return;
     const id = conversation.id;
-    const interval = setInterval(() => { fetchMessagesRef.current?.(id); }, 4000);
+    const interval = setInterval(() => { fetchMessagesRef.current?.(id); }, 120000);
     return () => clearInterval(interval);
   }, [conversation?.id]);
 

@@ -78,7 +78,7 @@ export default function MessagingPage() {
   useEffect(() => {
     if (!currentUser?.id) return;
     fetchConversationsRef.current?.();
-    const interval = setInterval(() => { fetchConversationsRef.current?.(); }, 5000);
+    const interval = setInterval(() => { fetchConversationsRef.current?.(); }, 60000);
     return () => clearInterval(interval);
   }, [currentUser?.id]);
 
