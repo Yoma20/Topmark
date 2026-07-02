@@ -86,10 +86,9 @@ const Navbar = () => {
     const initials = (name = '') => name.slice(0, 2).toUpperCase() || 'U';
     const isExpert  = currentUser?.isSeller || currentUser?.user_type === 'expert';
 
-    const avatarUrl = currentUser?.profile?.avatar_url
-        || currentUser?.profile_picture
+    const avatarUrl = currentUser?.profile_picture
+        || currentUser?.profile?.avatar_url
         || null;
-
     const roleLabel = isExpert ? 'Expert' : 'Student';
 
     const AvatarImg = ({ size = 'md' }) => avatarUrl
