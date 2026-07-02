@@ -57,7 +57,7 @@ export default function ConversationList({
 
   if (!conversations.length) {
     return (
-      <svg width="100%" viewBox="0 0 680 260" role="img" xmlns="http://www.w3.org/2000/svg">
+      <svg width="100%" viewBox="235 15 210 215" role="img" xmlns="http://www.w3.org/2000/svg">
         <title>No conversations yet</title>
 
         
