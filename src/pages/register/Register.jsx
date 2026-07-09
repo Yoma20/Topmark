@@ -147,7 +147,12 @@ export default function Register() {
   const [pendingUser, setPendingUser] = useState(null);
   const [cfToken, setCfToken] = useState(null);
 
-  const handleVerified = useCallback(async (data) => {
+  const handleVerified = useCallback(async (data, method = "email") => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "sign_up",
+      method,
+    });
     await login(data);
     navigate("/");
   }, [login, navigate]);
@@ -229,13 +234,18 @@ export default function Register() {
       const res = await newRequest.post("/users/google-auth/", {
         credential: response.credential,
       });
-      handleVerified(res.data);
+      if (res.data.created) {
+        handleVerified(res.data, "google"); // new account → track sign_up
+      } else {
+        await login(res.data);              // returning user → just log in
+        navigate("/");
+      }
     } catch (err) {
       setError(err?.response?.data?.error || "Google sign-in failed. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [handleVerified]);
+  }, [handleVerified, login, navigate]);
 
   useEffect(() => {
     const handler = (e) => handleGoogleSignIn(e.detail);
