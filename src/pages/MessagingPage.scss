@@ -8,7 +8,7 @@ $orange: #E38968;
 // ── Light mode tokens ─────────────────────────────────────────────────────────
 .msg-page--light {
   --msg-page-bg:              #f0f2f5;
-  --msg-body-bg:              #ffffff;
+  --msg-body-bg:              #4e5150;
   --msg-sidebar-bg:           #ffffff;
   --msg-sidebar-border:       #e4e5e7;
   --msg-header-bg:            #ffffff;
@@ -151,7 +151,7 @@ $orange: #E38968;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 12px 0 0 12px;
+  border-radius: 12px 12px 12px 12px;
   transition: background 0.25s;
 
   &--hidden-mobile { display: flex; }
@@ -409,7 +409,7 @@ $orange: #E38968;
   background: var(--msg-main-bg);
   overflow: hidden;
   min-width: 0;
-  border-radius: 0 12px 12px 0;
+  border-radius: 12px 12px 12px 12px;
   transition: background 0.25s;
 
   &--hidden-mobile { display: flex; }
@@ -521,7 +521,16 @@ $orange: #E38968;
 
   &:hover { opacity: 0.85; }
 }
-
+.conves{
+  font-size: 1.2rem;
+  font-family: ui-sans-serif;
+  padding-top: 11px;
+  width: 100%;
+  padding-left: 12%;
+  color: #1a9e60;
+  font-weight: 700;
+  font-variant-emoji: emoji;
+}
 .chat-messages {
   flex: 1;
   overflow-y: auto;

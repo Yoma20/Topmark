@@ -4,7 +4,7 @@
   display: flex;
   min-height: 100vh;
   background: #0d0d0d;
-  font-family: 'Sora', sans-serif;
+  font-family: ui-sans-serif;
 
   // ── Sidebar ────────────────────────────────────────────────────────────────
   &__sidebar {
@@ -21,7 +21,7 @@
   }
 
   &__brand {
-    font-size: 1.4rem;
+    font-size: 1.7rem;
     font-weight: 700;
     margin-bottom: 40px;
     padding-bottom: 24px;
@@ -42,11 +42,11 @@
     display: block;
     padding: 10px 14px;
     border-radius: 8px;
-    font-size: 0.875rem;
+    font-size: 1.2rem;
     color: #666;
     text-decoration: none;
     transition: all 0.15s;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
 
     &:hover { color: #fff; background: #1a1a1a; }
     &--active { color: #fff; background: #1e1e1e; }
@@ -76,13 +76,13 @@
     font-weight: 700;
     color: #fff;
     margin-bottom: 4px;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
   }
 
   &__subtitle {
     font-size: 0.875rem;
     color: #555;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
   }
 
   // ── Filters ────────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      font-family: 'Sora', sans-serif;
+      font-family: ui-sans-serif;
     }
 
     input[type="date"] {
@@ -131,7 +131,7 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
     transition: background 0.15s;
     &:hover { background: #15864f; }
   }
@@ -145,7 +145,7 @@
     padding: 9px 14px;
     color: #fff;
     font-size: 0.875rem;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
     outline: none;
     width: 200px;
     transition: border-color 0.15s;
@@ -179,7 +179,7 @@
     color: #555;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
   }
 
   &__summary-value {
@@ -188,7 +188,7 @@
     color: #fff;
     font-family: 'DM Mono', monospace;
 
-    &--sm  { font-size: 0.875rem; color: #888; font-family: 'Sora', sans-serif; }
+    &--sm  { font-size: 0.875rem; color: #888; font-family: ui-sans-serif; }
     &--big { font-size: 1.8rem; color: #1a9e60; }
   }
 
@@ -213,7 +213,7 @@
       letter-spacing: 0.06em;
       text-align: left;
       border-bottom: 1px solid #1e1e1e;
-      font-family: 'Sora', sans-serif;
+      font-family: ui-sans-serif;
     }
   }
 
@@ -230,7 +230,7 @@
     padding: 14px 16px;
     font-size: 0.875rem;
     color: #ccc;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
     vertical-align: middle;
   }
 
@@ -270,7 +270,7 @@
     border-radius: 20px;
     font-size: 0.72rem;
     font-weight: 600;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
 
     &--paid    { background: #0a2a15; color: #1a9e60; }
     &--pending { background: #2a1e0a; color: #e09a1a; }
@@ -289,7 +289,7 @@
     color: #555;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
   }
 
   &__tfoot-val {
@@ -310,7 +310,7 @@
     padding: 48px;
     color: #555;
     font-size: 0.875rem;
-    font-family: 'Sora', sans-serif;
+    font-family: ui-sans-serif;
 
     &--error { color: #e05a5a; }
   }

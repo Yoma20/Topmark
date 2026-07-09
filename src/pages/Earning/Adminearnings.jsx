@@ -52,10 +52,10 @@ const AdminEarnings = () => {
           <span className="ae__brand-mark">Mark</span>
         </div>
         <nav className="ae__nav">
-          <a href="/admin" className="ae__nav-link">📊 Overview</a>
-          <a href="/admin/earnings" className="ae__nav-link ae__nav-link--active">💰 Earnings</a>
-          <a href="/admin/orders" className="ae__nav-link">📦 Orders</a>
-          <a href="/admin/users" className="ae__nav-link">👥 Users</a>
+          <a href="/admin" className="ae__nav-link"> Overview</a>
+          <a href="/admin/earnings" className="ae__nav-link ae__nav-link--active"> Earnings</a>
+          <a href="/admin/orders" className="ae__nav-link"> Orders</a>
+          <a href="/admin/users" className="ae__nav-link"> Users</a>
         </nav>
         <div className="ae__sidebar-footer">
           <a href="/" className="ae__nav-link">← Back to Site</a>
