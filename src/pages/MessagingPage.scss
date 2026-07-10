@@ -183,6 +183,12 @@ $orange: #E38968;
     font-family: ui-sans-serif;
 }
 
+.msg-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 .msg-theme-toggle {
   background: none;
   border: none;
@@ -192,6 +198,9 @@ $orange: #E38968;
   padding: 4px 6px;
   border-radius: 6px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.15s;
 
   &:hover { background: var(--msg-conv-hover); }

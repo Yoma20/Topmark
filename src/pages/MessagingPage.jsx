@@ -154,6 +154,7 @@ export default function MessagingPage() {
                   <span className="msg-page__badge">{unreadTotal}</span>
                 )}
               </h1>
+              <div className="msg-header-actions">
               <button
                 className="msg-theme-toggle"
                 onClick={toggleNotifications}
@@ -194,6 +195,7 @@ export default function MessagingPage() {
                   </svg>
                 )}
               </button>
+              </div>
             </div>
             <input
               className="msg-sidebar__search"
