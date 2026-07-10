@@ -198,7 +198,7 @@ export function MessagingProvider({ children }) {
   }, [pollOnce]);
 
   // Lets any component (e.g. a bell icon in the header) flip the
-  // notification sound on/off. Persists across reloads/sessions.
+  // notification sound on/off. Persists across reloads/session
   const toggleNotifications = useCallback(() => {
     setNotificationsEnabled((prev) => {
       const next = !prev;
