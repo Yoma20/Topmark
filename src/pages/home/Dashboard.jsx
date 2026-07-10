@@ -296,8 +296,25 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="dashboard-gigs">
-            {gigs.slice(0, 8).map(gig => (
-              <GigCard key={gig.id} item={gig} />
+            {gigs.slice(0, 8).map((gig, idx) => (
+              <div
+                key={gig.id}
+                // NEW — wrapper so we can tag the click without editing
+                // GigCard.jsx directly. GigCard's own onClick (for
+                // navigation) still fires normally via bubbling — this
+                // just also pushes a dataLayer event first.
+                onClick={() => {
+                  window.dataLayer = window.dataLayer || [];
+                  window.dataLayer.push({
+                    event: "select_gig",
+                    gig_id: gig.id,
+                    position: idx, // where it sat in the recommended list
+                    source: "dashboard_recommended",
+                  });
+                }}
+              >
+                <GigCard item={gig} />
+              </div>
             ))}
           </div>
         )}
@@ -337,7 +354,18 @@ function CategoryCard({ cat, idx, navigate }) {
   return (
     <div
       className="dashboard-cat"
-      onClick={() => navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}
+      onClick={() => {
+        // NEW — tags category interest, separate from select_gig above,
+        // so you can see whether people are browsing by subject vs.
+        // going straight to a specific expert.
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "select_category",
+          category: cat.name,
+          source: "dashboard_popular_subjects",
+        });
+        navigate(`/gigs?search=${encodeURIComponent(cat.name)}`);
+      }}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && navigate(`/gigs?search=${encodeURIComponent(cat.name)}`)}

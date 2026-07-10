@@ -94,6 +94,16 @@ export default function ContactDrawer({
         initial_message: trimmed,
          gig_id: gigId,
      });
+      // NEW — tags the moment a lead actually reaches out to an expert for
+      // the first time. This is the real "did the funnel convert" signal
+      // for gig pages — separate from sign_up, since a user can already be
+      // registered and this still be their first contact with this expert.
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "contact_expert_success",
+        expert_id: expertId,
+        gig_id: gigId,
+      });
       onClose();
       navigate("/messages"); // stay off the gig URL, no conversation ID leaked
     } catch (err) {

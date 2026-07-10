@@ -147,7 +147,16 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const successMessage = location.state?.message || null;
 
-  const saveAndRedirect = useCallback((data) => {
+  const saveAndRedirect = useCallback((data, method) => {
+    // NEW — tags a successful login. `method` distinguishes password vs
+    // Google so you can see which path people are actually using and
+    // whether one fails more than the other.
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "login",
+      success: true,
+      method,
+    });
     login(data);
     const params = new URLSearchParams(location.search);
     const next = params.get('next') || (data.user_type === 'expert' ? '/mygigs' : '/');
@@ -235,8 +244,11 @@ const Login = () => {
     setLoading(true);
     try {
       const res = await newRequest.post("/users/google-auth/", { credential: response.credential });
-      saveAndRedirect(res.data);
+      saveAndRedirect(res.data, "google");
     } catch (err) {
+      // NEW — failed Google sign-in attempt
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "login", success: false, method: "google" });
       setError(err?.response?.data?.error || "Google sign-in failed. Please try again.");
     } finally {
       setLoading(false);
@@ -262,7 +274,7 @@ const Login = () => {
     setLoading(true);
     try {
       const res = await newRequest.post('/users/login/', { username, password, cf_token: cfToken });
-      saveAndRedirect(res.data);
+      saveAndRedirect(res.data, "password");
     } catch (err) {
       const data = err?.response?.data;
 
@@ -270,6 +282,11 @@ const Login = () => {
         setPendingUser({ userId: data.user_id, email: data.email });
         return;
       }
+
+      // NEW — failed password login attempt (excludes the unverified-email
+      // case above, since that's a pending state, not a true failure)
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "login", success: false, method: "password" });
 
       const msg = data?.error
         || data?.message

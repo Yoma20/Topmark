@@ -245,8 +245,18 @@ export default function Register() {
     return () => window.removeEventListener("google-signin", handler);
   }, [handleGoogleSignIn]);
 
+  // NEW — fires once, the first time someone actually starts filling in the
+  // form. Lets you see how many people reach the signup page vs. how many
+  // actually engage with it vs. how many complete it (sign_up below).
+  const hasFiredBeginSignupRef = useRef(false);
+
   // ── Form helpers ───────────────────────────────────────────────────────────
   const handleChange = (e) => {
+    if (!hasFiredBeginSignupRef.current) {
+      hasFiredBeginSignupRef.current = true;
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "begin_signup" });
+    }
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setError(null);
