@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useContext } from "react";
+import { useEffect, useRef, useState, useCallback, useContext, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AuthContext from "../AuthContext";
 import { getConversations } from "../api/messaging";
@@ -47,6 +47,7 @@ export default function MessagingPage() {
   const [mobileView, setMobileView]         = useState("list");
   const [convError, setConvError]           = useState(null);
   const [darkMode, setDarkMode]             = useState(false);
+  const [searchTerm, setSearchTerm]         = useState(""); // NEW
   const navigate = useNavigate();
 
   const fetchConversationsRef = useRef(null);
@@ -108,6 +109,20 @@ export default function MessagingPage() {
     setActiveConv(null);
   };
 
+  // ── NEW: search filtering ───────────────────────────────────────────────────
+  // Matches on the other participant's username, the gig title (if any), and
+  // the last message preview text. Pure client-side — no backend change needed.
+  const filteredConversations = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return conversations;
+    return conversations.filter((conv) => {
+      const username = conv.other_participant?.username?.toLowerCase() || "";
+      const gigTitle = conv.gig_title?.toLowerCase() || "";
+      const lastMsg = conv.last_message?.content?.toLowerCase() || "";
+      return username.includes(q) || gigTitle.includes(q) || lastMsg.includes(q);
+    });
+  }, [conversations, searchTerm]);
+
   if (!currentUser) {
     return (
       <div className="msg-page msg-page--auth-required">
@@ -162,6 +177,9 @@ export default function MessagingPage() {
               className="msg-sidebar__search"
               type="text"
               placeholder="Search conversations…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search conversations"
             />
           </div>
 
@@ -171,8 +189,14 @@ export default function MessagingPage() {
             </div>
           )}
 
+          {!convError && searchTerm.trim() && filteredConversations.length === 0 && (
+            <div className="msg-sidebar__no-results">
+              No conversations match "{searchTerm}"
+            </div>
+          )}
+
           <ConversationList
-            conversations={conversations}
+            conversations={filteredConversations}
             activeId={activeConv?.id}
             onSelect={handleSelectConversation}
             loading={loadingConvs}
@@ -203,4 +227,3 @@ export default function MessagingPage() {
     </div>
   );
 }
-

@@ -35,6 +35,190 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 
+// ─── Append these to your existing ChatWindow.scss ────────────────────────────
+// (That file wasn't available when this was built, so these are new rules
+// only — nothing here should conflict with what you already have. Adjust
+// colors/spacing to match your existing design tokens.)
+
+.msg-bubble-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+// ── Header presence / typing ────────────────────────────────────────────────
+.chat-header-online {
+  color: #1a9e60;
+  font-weight: 500;
+}
+.chat-header-typing {
+  color: #1a9e60;
+  font-style: italic;
+}
+
+// ── Hover actions (react / more) ────────────────────────────────────────────
+.msg-hover-actions {
+  position: absolute;
+  top: -14px;
+  right: 4px;
+  display: none;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  padding: 2px 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.msg-bubble-wrap:hover .msg-hover-actions {
+  display: flex;
+}
+.msg-hover-actions__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  &:hover { background: #f2f2f2; }
+}
+
+// ── Reaction picker popover ─────────────────────────────────────────────────
+.reaction-picker {
+  position: absolute;
+  top: -46px;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 20px;
+  padding: 6px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  z-index: 5;
+}
+.reaction-picker__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 2px;
+  transition: transform 0.1s;
+  &:hover { transform: scale(1.25); }
+}
+
+// ── Reaction pills row (under a message) ────────────────────────────────────
+.reaction-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.reaction-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #f2f2f2;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 1px 7px;
+  font-size: 12px;
+  cursor: pointer;
+  &:hover { background: #e6e6e6; }
+}
+.reaction-pill--mine {
+  background: #e6f7ee;
+  border-color: #1a9e60;
+}
+.reaction-pill__count {
+  font-weight: 600;
+  color: #555;
+}
+
+// ── Message actions menu (edit / delete) ────────────────────────────────────
+.msg-actions-menu {
+  position: absolute;
+  top: -14px;
+  right: 4px;
+  transform: translateY(-100%);
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  min-width: 110px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    &:hover { background: #f2f2f2; }
+  }
+}
+.msg-actions-menu__danger {
+  color: #d64545;
+}
+
+// ── Edited tag ───────────────────────────────────────────────────────────────
+.msg-edited-tag {
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+}
+
+// ── Deleted placeholder ─────────────────────────────────────────────────────
+.msg-bubble--deleted {
+  color: #999;
+  font-style: italic;
+}
+
+// ── Inline edit textarea ────────────────────────────────────────────────────
+.msg-edit-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.msg-edit-textarea {
+  width: 100%;
+  min-width: 220px;
+  border: 1px solid #1a9e60;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+.msg-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 12px;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    &:hover { background: #f2f2f2; }
+  }
+}
+.msg-edit-actions__save {
+  color: #fff;
+  background: #1a9e60 !important;
+  &:hover { background: #158a52 !important; }
+}
+
+// ── Search "no results" state (MessagingPage) ───────────────────────────────
+.msg-sidebar__no-results {
+  padding: 16px;
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+}
 // ─── Drawer panel ─────────────────────────────────────────────
 .cd-drawer {
   position: fixed;

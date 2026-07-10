@@ -214,17 +214,9 @@ export default function Register() {
     }
   }, []);
 
-  // PERF: load GSI only on first hover/focus over the Google button area
+  // Load GSI immediately on mount so the button is always visible
   useEffect(() => {
-    const el = googleBtnRef.current;
-    if (!el) return;
-    const handleInteraction = () => loadGsiScript(initGoogle);
-    el.addEventListener("pointerenter", handleInteraction, { once: true });
-    el.addEventListener("focusin",      handleInteraction, { once: true });
-    return () => {
-      el.removeEventListener("pointerenter", handleInteraction);
-      el.removeEventListener("focusin",      handleInteraction);
-    };
+    loadGsiScript(initGoogle);
   }, [initGoogle]);
 
   const handleGoogleSignIn = useCallback(async (response) => {

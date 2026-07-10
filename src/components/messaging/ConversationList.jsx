@@ -72,9 +72,13 @@ export default function ConversationList({
         const isActive = conv.id === activeId;
         const isMine = last?.sender_id === currentUserId;
 
-        const isOnline = last
-          ? Date.now() - new Date(last.created_at).getTime() < 10 * 60 * 1000
-          : false;
+        // NEW: prefer real backend presence (REST heartbeat-driven — see
+        // presence.py). Falls back to the old "last message < 10 min"
+        // heuristic only if the backend hasn't been updated yet, so this
+        // degrades gracefully rather than breaking.
+        const isOnline = typeof other?.is_online === "boolean"
+          ? other.is_online
+          : (last ? Date.now() - new Date(last.created_at).getTime() < 10 * 60 * 1000 : false);
 
         return (
           <li
@@ -93,6 +97,7 @@ export default function ConversationList({
                 className={`conv-status-dot ${
                   isOnline ? "conv-status-dot--online" : "conv-status-dot--offline"
                 }`}
+                title={isOnline ? "Online" : "Offline"}
               />
             </div>
 
