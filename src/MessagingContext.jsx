@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import AuthContext from "./AuthContext";
-import { playNotificationSound, unlockAudio } from "./components/messaging/soundNotification";
+import { playNotificationSound, unlockAudio } from "./utils/soundNotification";
 // ^ adjust this import path to wherever soundNotification.js actually lives in your tree
 
 const MessagingContext = createContext(null);
