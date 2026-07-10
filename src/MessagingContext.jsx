@@ -15,40 +15,43 @@ const NOTIF_PREF_KEY = "topmark_msg_notifications_enabled";
  *
  * PRIMARY PATH: WebSocket to ws/unread/ — server pushes updates the
  * moment a new message arrives, so the badge is current with no
- * polling overhead. Kept as-is, per your call.
+ * polling overhead.
+ *
+ * The socket URL is derived from window.location (not an env var),
+ * so it goes through the Vercel rewrite (/ws/:path* -> Railway)
+ * defined in vercel.json, rather than hitting Railway directly.
  *
  * SAFETY NET: the websocket is known to drop / fail to connect
- * sometimes (Railway idle timeouts, the broader ws issue we've been
- * tracking). If it's down, the badge and the sound both silently stop
- * working with no fallback — that was the actual bug. So this now
- * ALSO polls getUnreadCount() on an interval, purely as a backup.
- * Whichever source (socket or poll) reports a number first "wins" —
- * they both just call the same setUnreadCount setter.
+ * sometimes (Railway idle timeouts). If it's down, the badge and the
+ * sound both silently stop working with no fallback — that was the
+ * actual bug. So this now ALSO polls getUnreadCount() on an interval,
+ * purely as a backup. Whichever source (socket or poll) reports a
+ * number first "wins" — they both just call the same setUnreadCount
+ * setter.
  *
  * SOUND: fires only when unreadCount goes UP from its previous value
  * (not on initial load, not on decreases from marking things read),
  * and only if the user has notifications enabled.
  */
 
-const WS_BASE = import.meta.env.VITE_WS_BASE; // e.g. wss://your-app.railway.app
 const POLL_INTERVAL_MS = 20000; // fallback poll, only matters when the socket is down
 
 export function MessagingProvider({ children }) {
   const { user } = useContext(AuthContext);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // NEW — user-controlled notification toggle, persisted across sessions.
+  // user-controlled notification toggle, persisted across sessions.
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     const saved = localStorage.getItem(NOTIF_PREF_KEY);
     return saved === null ? true : saved === "true"; // default ON
   });
 
-  const wsRef          = useRef(null);
-  const reconnectRef    = useRef(null);
-  const mountedRef      = useRef(true);
-  const pollIntervalRef = useRef(null);
-  const prevUnreadRef   = useRef(0);
-  const hasLoadedOnceRef = useRef(false); // don't play a sound for the very first count we ever see
+  const wsRef            = useRef(null);
+  const reconnectRef      = useRef(null);
+  const mountedRef        = useRef(true);
+  const pollIntervalRef   = useRef(null);
+  const prevUnreadRef     = useRef(0);
+  const hasLoadedOnceRef  = useRef(false); // don't play a sound for the very first count we ever see
   const notificationsEnabledRef = useRef(notificationsEnabled);
 
   // Keep a ref in sync so the websocket/poll callbacks (created once) always
@@ -62,7 +65,7 @@ export function MessagingProvider({ children }) {
     return () => { mountedRef.current = false; };
   }, []);
 
-  // NEW — unlock audio playback on the first real user interaction anywhere
+  // Unlock audio playback on the first real user interaction anywhere
   // in the app. Browsers block audio until this happens, so this needs to
   // run once, early, globally — this provider wraps the whole app, so it's
   // the right place.
@@ -80,7 +83,7 @@ export function MessagingProvider({ children }) {
     };
   }, []);
 
-  // NEW — central place both the socket and the poll funnel through, so the
+  // Central place both the socket and the poll funnel through, so the
   // "did it go up? should we play a sound?" logic only lives in one spot.
   const applyUnreadCount = useCallback((next) => {
     if (!mountedRef.current) return;
@@ -99,17 +102,22 @@ export function MessagingProvider({ children }) {
   }, []);
 
   const connect = useCallback(() => {
-    if (!user?.id || !WS_BASE) return;
+    if (!user?.id) return;
 
     // Clean up any existing socket before opening a new one
     if (wsRef.current) {
-      wsRef.current.onclose = null;  // prevent reconnect loop on manual close
+      wsRef.current.onclose = null; // prevent reconnect loop on manual close
       wsRef.current.close();
     }
 
+    // Derive the socket URL from the current origin so it goes through the
+    // Vercel rewrite (/ws/:path* -> Railway) instead of a separate env var
+    // pointing straight at Railway.
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const WS_BASE = `${wsProtocol}//${window.location.host}`;
-    wsRef.current = new WebSocket(`${WS_BASE}/ws/unread/`);
+    const wsBase = `${wsProtocol}//${window.location.host}`;
+
+    const ws = new WebSocket(`${wsBase}/ws/unread/`);
+    wsRef.current = ws;
 
     ws.onmessage = (e) => {
       try {
@@ -135,7 +143,7 @@ export function MessagingProvider({ children }) {
     ws.onopen = () => { reconnectRef.current = { attempt: 0 }; };
   }, [user?.id, applyUnreadCount]);
 
-  // NEW — the polling safety net. Runs continuously alongside the socket
+  // The polling safety net. Runs continuously alongside the socket
   // (not just when the socket is down) — that keeps this simple and self-
   // healing, and the socket path still "wins" on latency whenever it's
   // actually connected, since it'll update the count first.
@@ -189,7 +197,7 @@ export function MessagingProvider({ children }) {
     pollOnce();
   }, [pollOnce]);
 
-  // NEW — lets any component (e.g. a bell icon in the header) flip the
+  // Lets any component (e.g. a bell icon in the header) flip the
   // notification sound on/off. Persists across reloads/sessions.
   const toggleNotifications = useCallback(() => {
     setNotificationsEnabled((prev) => {
