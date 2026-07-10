@@ -107,8 +107,9 @@ export function MessagingProvider({ children }) {
       wsRef.current.close();
     }
 
-    const ws = new WebSocket(`${WS_BASE}/ws/unread/`);
-    wsRef.current = ws;
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const WS_BASE = `${wsProtocol}//${window.location.host}`;
+    wsRef.current = new WebSocket(`${WS_BASE}/ws/unread/`);
 
     ws.onmessage = (e) => {
       try {

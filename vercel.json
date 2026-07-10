@@ -7,6 +7,10 @@
       "destination": "https://web-production-d2ca9.up.railway.app/api/:path*"
     },
     {
+      "source": "/ws/:path*",
+      "destination": "https://web-production-d2ca9.up.railway.app/ws/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
