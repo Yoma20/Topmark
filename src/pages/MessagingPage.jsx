@@ -79,9 +79,26 @@ export default function MessagingPage() {
   useEffect(() => {
     if (!currentUser?.id) return;
     fetchConversationsRef.current?.();
-    const interval = setInterval(() => { fetchConversationsRef.current?.(); }, 60000);
+    // CHANGED — tightened from 60000ms to 20000ms as a general backstop.
+    // The real fix is the effect below, which refetches immediately when
+    // the badge count changes rather than waiting on this timer.
+    const interval = setInterval(() => { fetchConversationsRef.current?.(); }, 20000);
     return () => clearInterval(interval);
   }, [currentUser?.id]);
+
+  // NEW — the unread badge (unreadTotal) updates fast via websocket/poll in
+  // MessagingContext, but the conversation list itself (which has the actual
+  // sender + message preview) was only refreshing on the slow interval above.
+  // That mismatch is why the "1" showed up immediately but you had to click
+  // into every chat to find who it was from. Refetching here whenever the
+  // total changes closes that gap without touching the badge logic itself.
+  const prevUnreadTotalRef = useRef(unreadTotal);
+  useEffect(() => {
+    if (unreadTotal !== prevUnreadTotalRef.current) {
+      prevUnreadTotalRef.current = unreadTotal;
+      fetchConversationsRef.current?.();
+    }
+  }, [unreadTotal]);
 
   const didAutoSelectRef = useRef(false);
   useEffect(() => {

@@ -771,4 +771,28 @@ z-index: 1000;
     overflow-x: auto;
     padding-bottom: 4px;
   }
+
+  // NEW — Popular Subjects uses large category images that overwhelm the
+  // phone layout, so it's hidden entirely on narrow screens rather than
+  // trying to shrink it down.
+  .dashboard-section--popular-subjects {
+    display: none;
+  }
+
+  // NEW — Recommended Experts: tighten the grid so cards read as a smaller,
+  // denser list on phones instead of full-width blocks.
+  .dashboard-gigs {
+    gap: 12px;
+  }
+
+  .dashboard-section {
+    margin-bottom: 32px;
+
+    &__header {
+      margin-bottom: 14px;
+
+      h2 { font-size: 1.05rem; }
+      span { font-size: 0.8rem; }
+    }
+  }
 }

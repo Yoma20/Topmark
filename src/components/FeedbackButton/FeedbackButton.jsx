@@ -9,12 +9,26 @@ const TYPES = [
     { value: 'other',    label: 'Other' },
   ];
 
+const DISMISS_KEY = 'topmark_feedback_btn_dismissed';
+
 const FeedbackButton = () => {
   const [open,        setOpen]    = useState(false);
   const [reportType,  setType]    = useState('bug');
   const [message,     setMessage] = useState('');
   const [status,      setStatus]  = useState('idle'); // idle | loading | success | error
   const [errorMsg,    setError]   = useState('');
+
+  // NEW — lets the user permanently hide the floating button. Persisted so
+  // it stays hidden across reloads/sessions, not just for this page view.
+  const [dismissed, setDismissed] = useState(
+    () => localStorage.getItem(DISMISS_KEY) === 'true'
+  );
+
+  const handleDismiss = (e) => {
+    e.stopPropagation(); // don't also trigger the open-modal click
+    localStorage.setItem(DISMISS_KEY, 'true');
+    setDismissed(true);
+  };
 
   const reset = () => {
     setType('bug');
@@ -48,21 +62,39 @@ const FeedbackButton = () => {
     }
   };
 
+  // Fully hidden once dismissed — nothing renders, not even the modal shell.
+  if (dismissed) return null;
+
   return (
     <>
       {/* Floating trigger button */}
-      <button
-        className="fb-trigger"
-        onClick={() => setOpen(true)}
-        aria-label="Send feedback"
-        type="button"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-        <span>Feedback</span>
-      </button>
+      <div className="fb-trigger-wrap">
+        <button
+          className="fb-trigger"
+          onClick={() => setOpen(true)}
+          aria-label="Send feedback"
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span>Feedback</span>
+        </button>
+        <button
+          className="fb-trigger-dismiss"
+          onClick={handleDismiss}
+          aria-label="Hide feedback button"
+          title="Hide this button"
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
 
       {/* Overlay */}
       {open && <div className="fb-overlay" onClick={handleClose} />}

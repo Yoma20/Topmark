@@ -303,7 +303,7 @@ export default function Dashboard() {
         )}
       </section>
 
-      <section className="dashboard-section">
+      <section className="dashboard-section dashboard-section--popular-subjects">
         <div className="dashboard-section__header">
           <h2>Popular Subjects</h2>
           <span onClick={() => navigate("/gigs")}>See all →</span>

@@ -7,11 +7,16 @@ $muted:      #64748b;
 $radius:     12px;
 
 // ── Floating trigger ──────────────────────────────────────────────────────────
-.fb-trigger {
+.fb-trigger-wrap {
   position: fixed;
   bottom: 32px;
   right: 32px;
   z-index: 1000;
+}
+
+.fb-trigger {
+  position: static; // positioning now lives on .fb-trigger-wrap
+  z-index: auto;
 
   display: flex;
   align-items: center;
@@ -42,6 +47,32 @@ $radius:     12px;
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+// Small "x" pinned to the corner of the trigger, for permanently hiding it
+.fb-trigger-dismiss {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  color: $muted;
+  border: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+
+  &:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    transform: scale(1.08);
   }
 }
 
@@ -261,7 +292,7 @@ $radius:     12px;
     bottom: 80px;
   }
 
-  .fb-trigger {
+  .fb-trigger-wrap {
     right: 16px;
     bottom: 20px;
   }
