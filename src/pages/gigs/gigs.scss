@@ -190,6 +190,66 @@
 
     &:hover { color: #1a9e60; }
 }
+
+// Pin controls (admin-only) on the gigs grid
+.gigs-card-wrap {
+    position: relative;
+}
+
+.gigs-pin-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1.5px solid #e0e0e0;
+    border-radius: 50%;
+    color: #888;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.15s;
+
+    svg { width: 16px; height: 16px; }
+
+    &:hover {
+        color: #1dbf73;
+        border-color: #1dbf73;
+        transform: scale(1.06);
+    }
+
+    &--active {
+        color: #1dbf73;
+        border-color: #1dbf73;
+        background: #e9fbf2;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+}
+
+.gigs-pin-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    background: #1dbf73;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
 @media (max-width: 768px) {
     .gigs {
       .container {

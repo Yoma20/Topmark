@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import './gigs.scss';
 import GigCard from '../../components/GigCard/GigCard';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import AuthContext from "../../AuthContext";
 
 const Gigs = () => {
   const [open, setOpen]           = useState(false);
@@ -15,6 +16,9 @@ const Gigs = () => {
   const maxRef = useRef();
   const { search } = useLocation();
   const navigate   = useNavigate();
+  const { user } = useContext(AuthContext);
+  const isAdmin = user?.user_type === "admin";
+  const queryClient = useQueryClient();
 
   const params       = new URLSearchParams(search);
   const searchQuery  = params.get("search") || "";
@@ -48,6 +52,12 @@ const Gigs = () => {
     queryFn: () =>
       newRequest.get(`/gigs/?${buildQuery()}`)
         .then((res) => res.data?.results ?? res.data),
+  });
+
+  // Admin-only: pin/unpin a gig so it surfaces at the top of every listing
+  const pinMutation = useMutation({
+    mutationFn: (slug) => newRequest.post(`/gigs/${slug}/pin/`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gigs"] }),
   });
 
   const handleCategorySelect = (catId) => {
@@ -161,7 +171,29 @@ const Gigs = () => {
                     )}
                   </div>
                 )
-                : data.map((gig) => <GigCard key={gig.slug} item={gig} />)
+                : data.map((gig) => (
+                  <div key={gig.slug} className="gigs-card-wrap">
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className={`gigs-pin-btn${gig.is_pinned ? " gigs-pin-btn--active" : ""}`}
+                        title={gig.is_pinned ? "Unpin this gig" : "Pin to top"}
+                        disabled={pinMutation.isPending}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          pinMutation.mutate(gig.slug);
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={gig.is_pinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2 L12 12 M12 12 L7 17 L17 17 Z M9 17 L9 22" />
+                        </svg>
+                      </button>
+                    )}
+                    {gig.is_pinned && <span className="gigs-pin-badge">Pinned</span>}
+                    <GigCard item={gig} />
+                  </div>
+                ))
           }
         </div>
       </div>
