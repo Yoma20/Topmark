@@ -1,7 +1,7 @@
 // src/pages/home/Dashboard.jsx
 import { useContext, useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AuthContext from "../../AuthContext";
 import newRequest from "../../utils/newRequest";
 import GigCard from "../../components/GigCard/GigCard";
@@ -248,6 +248,8 @@ function SearchBar({ categories }) {
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const isAdmin = user?.user_type === "admin";
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -269,6 +271,12 @@ export default function Dashboard() {
     queryFn: () =>
       newRequest.get("/gigs/categories/popular/?limit=6").then(r => r.data?.results ?? r.data),
     staleTime: 1000 * 60 * 10,
+  });
+
+  // Admin-only: pin/unpin a gig so it surfaces at the top of Recommended Experts
+  const pinMutation = useMutation({
+    mutationFn: (slug) => newRequest.post(`/gigs/${slug}/pin/`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard-gigs"] }),
   });
 
   return (
@@ -303,6 +311,7 @@ export default function Dashboard() {
                 // GigCard.jsx directly. GigCard's own onClick (for
                 // navigation) still fires normally via bubbling — this
                 // just also pushes a dataLayer event first.
+                className="dashboard-gig-wrap"
                 onClick={() => {
                   window.dataLayer = window.dataLayer || [];
                   window.dataLayer.push({
@@ -313,6 +322,24 @@ export default function Dashboard() {
                   });
                 }}
               >
+                {isAdmin && (
+                  <button
+                    type="button"
+                    className={`dashboard-pin-btn${gig.is_pinned ? " dashboard-pin-btn--active" : ""}`}
+                    title={gig.is_pinned ? "Unpin this gig" : "Pin to top"}
+                    disabled={pinMutation.isPending}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      pinMutation.mutate(gig.slug);
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={gig.is_pinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2 L12 12 M12 12 L7 17 L17 17 Z M9 17 L9 22" />
+                    </svg>
+                  </button>
+                )}
+                {gig.is_pinned && <span className="dashboard-pin-badge">Pinned</span>}
                 <GigCard item={gig} />
               </div>
             ))}
