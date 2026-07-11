@@ -22,14 +22,36 @@ function getContext() {
 
 let unlocked = false;
 
+/**
+ * Attempts to unlock the AudioContext. Returns a Promise<boolean> so the
+ * caller can tell whether it actually worked — unlike before, this does
+ * NOT mark itself "unlocked" just because resume() was called; it waits
+ * for confirmation the context is really running. That matters because a
+ * single failed/late resume() used to permanently disable sound for the
+ * rest of the tab's life (the click/keydown listener that calls this only
+ * fires once). Now, if it fails, the caller can leave the listener in
+ * place and simply try again on the next interaction.
+ */
 export function unlockAudio() {
-  if (unlocked) return;
+  if (unlocked) return Promise.resolve(true);
   const ctx = getContext();
-  if (!ctx) return;
-  if (ctx.state === "suspended") {
-    ctx.resume().catch(() => {});
+  if (!ctx) return Promise.resolve(false);
+
+  if (ctx.state === "running") {
+    unlocked = true;
+    return Promise.resolve(true);
   }
-  unlocked = true;
+
+  return ctx
+    .resume()
+    .then(() => {
+      if (ctx.state === "running") {
+        unlocked = true;
+        return true;
+      }
+      return false;
+    })
+    .catch(() => false);
 }
 
 /** Plays a short two-tone "ding" — Discord-style notification chime. */

@@ -36,6 +36,31 @@ const NOTIF_PREF_KEY = "topmark_msg_notifications_enabled";
 
 const POLL_INTERVAL_MS = 20000; // fallback poll, only matters when the socket is down
 
+// ntfy.sh push notifications ------------------------------------------------
+// NOTE: this only fires while this tab/app is open and running JS. It is
+// NOT a true background push (phone closed / app killed) — for that you'd
+// trigger the ntfy POST from the backend when the message row is created.
+// This is a client-side add-on to the existing "sound on unread increase"
+// logic below, nothing more.
+//
+// Pick a hard-to-guess topic name — anyone who knows it can read AND post
+// to it, since ntfy.sh topics are public by default (no auth). Use a
+// self-hosted ntfy server with auth if that's a concern.
+const NTFY_TOPIC = "topmark-msgs-CHANGE-ME"; // TODO: set your own topic
+const NTFY_URL = `https://ntfy.sh/${NTFY_TOPIC}`;
+
+function sendNtfyPush(count) {
+  fetch(NTFY_URL, {
+    method: "POST",
+    headers: {
+      Title: "New message",
+      Priority: "default",
+      Tags: "speech_balloon",
+    },
+    body: count === 1 ? "You have 1 new message" : `You have ${count} new messages`,
+  }).catch(() => { /* best-effort — don't let a push failure affect the UI */ });
+}
+
 export function MessagingProvider({ children }) {
   const { user } = useContext(AuthContext);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -70,10 +95,17 @@ export function MessagingProvider({ children }) {
   // run once, early, globally — this provider wraps the whole app, so it's
   // the right place.
   useEffect(() => {
+    // Keep retrying on every interaction until unlockAudio() actually
+    // confirms the context is running — a single failed attempt used to
+    // remove these listeners anyway and leave sound permanently dead for
+    // the tab. Now we only stop once we know it worked.
     const handler = () => {
-      unlockAudio();
-      window.removeEventListener("click", handler);
-      window.removeEventListener("keydown", handler);
+      unlockAudio().then((success) => {
+        if (success) {
+          window.removeEventListener("click", handler);
+          window.removeEventListener("keydown", handler);
+        }
+      });
     };
     window.addEventListener("click", handler);
     window.addEventListener("keydown", handler);
@@ -93,6 +125,7 @@ export function MessagingProvider({ children }) {
       const wentUp = hasLoadedOnceRef.current && next > prevUnreadRef.current;
       if (wentUp && notificationsEnabledRef.current) {
         playNotificationSound();
+        sendNtfyPush(next);
       }
 
       prevUnreadRef.current = next;
