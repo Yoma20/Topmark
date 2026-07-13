@@ -54,7 +54,7 @@ export function unlockAudio() {
     .catch(() => false);
 }
 
-/** Plays a short two-tone "ding" — Discord-style notification chime. */
+/** Plays a longer four-note ascending melody — C6, E6, G6, C7. */
 export function playNotificationSound() {
   try {
     const ctx = getContext();
@@ -67,10 +67,10 @@ export function playNotificationSound() {
     }
 
     const now = ctx.currentTime;
-    const tones = [784, 1046.5]; // G5 -> C6, pleasant short chime
+    const tones = [1046.5, 1318.5, 1568, 2093]; // C6 -> E6 -> G6 -> C7
 
     tones.forEach((freq, i) => {
-      const start = now + i * 0.09;
+      const start = now + i * 0.1;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
@@ -78,14 +78,14 @@ export function playNotificationSound() {
       osc.frequency.setValueAtTime(freq, start);
 
       gain.gain.setValueAtTime(0, start);
-      gain.gain.linearRampToValueAtTime(0.2, start + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.24);
+      gain.gain.linearRampToValueAtTime(0.35, start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start(start);
-      osc.stop(start + 0.26);
+      osc.stop(start + 0.37);
     });
   } catch (err) {
     // Never let a notification sound crash the app
