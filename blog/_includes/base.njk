@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>{{ title }} | TopMark Blog</title>
+  <meta name="description" content="{{ description }}" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="TopMark" />
+  <meta name="theme-color" content="#1dbf73" />
+  <link rel="canonical" href="https://topmark.pro/blog/{{ page.fileSlug }}/" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://topmark.pro/blog/{{ page.fileSlug }}/" />
+  <meta property="og:title" content="{{ title }}" />
+  <meta property="og:description" content="{{ description }}" />
+  <meta property="og:image" content="{{ image or 'https://topmark.pro/images/logo-white.png' }}" />
+  <meta property="og:site_name" content="TopMark" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ title }}" />
+  <meta name="twitter:description" content="{{ description }}" />
+  <meta name="twitter:image" content="{{ image or 'https://topmark.pro/images/logo-white.png' }}" />
+
+  <link rel="icon" type="image/png" href="/images/logow.png" />
+  <link rel="stylesheet" href="/blog/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ title }}",
+    "description": "{{ description }}",
+    "datePublished": "{{ date | readableDate }}",
+    "author": { "@type": "Organization", "name": "TopMark" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "TopMark",
+      "logo": { "@type": "ImageObject", "url": "https://topmark.pro/images/logo-white.png" }
+    },
+    "mainEntityOfPage": "https://topmark.pro/blog/{{ page.fileSlug }}/"
+  }
+  </script>
+</head>
+<body>
+  <header class="blog-header">
+    <a href="/" class="blog-logo">TopMark</a>
+    <nav>
+      <a href="/blog">Blog</a>
+      <a href="/gigs">Browse Experts</a>
+    </nav>
+  </header>
+
+  <main class="blog-post">
+    <article>
+      <h1>{{ title }}</h1>
+      <p class="blog-meta">{{ date | readableDate }}</p>
+      <div class="blog-content">
+        {{ content | safe }}
+      </div>
+    </article>
+
+    <a href="/blog" class="back-link">← Back to all posts</a>
+  </main>
+
+  <footer class="blog-footer">
+    <p>&copy; {{ currentYear }} TopMark. All rights reserved.</p>
+  </footer>
+</body>
+</html>

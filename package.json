@@ -25,13 +25,16 @@
     "tailwind-merge": "^3.3.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
+"scripts": {
     "dev": "vite",
-    "build": "vite build && node critical-css.mjs",
+    "build": "npm run build:blog && vite build && node critical-css.mjs",
     "preview": "vite preview",
-    "postinstall": "chmod +x node_modules/.bin/vite"
+    "postinstall": "chmod +x node_modules/.bin/vite",
+    "build:blog": "npx @11ty/eleventy --config=blog/.eleventy.js",
+    "dev:blog": "npx @11ty/eleventy --config=blog/.eleventy.js --serve --port=8081"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^3.1.6",
     "@vitejs/plugin-react": "^4.3.4",
     "critters": "^0.0.25",
     "vite": "^5.4.19",
