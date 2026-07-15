@@ -24,6 +24,8 @@
   <meta name="twitter:image" content="{{ image or 'https://topmark.pro/images/logo-white.png' }}" />
 
   <link rel="icon" type="image/png" href="/images/logow.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/blog/style.css" />
 
   <script type="application/ld+json">
@@ -44,27 +46,51 @@
   </script>
 </head>
 <body>
-  <header class="blog-header">
-    <a href="/" class="blog-logo">TopMark</a>
-    <nav>
+  <header class="tm-nav">
+    <a href="/" class="tm-nav__logo">TopMark</a>
+    <nav class="tm-nav__links">
       <a href="/blog">Blog</a>
       <a href="/gigs">Browse Experts</a>
     </nav>
   </header>
 
-  <main class="blog-post">
-    <article>
-      <h1>{{ title }}</h1>
-      <p class="blog-meta">{{ date | readableDate }}</p>
-      <div class="blog-content">
+  <main class="tm-post">
+    <div class="tm-post__rail">
+      <a href="/blog" class="tm-post__back">← Index</a>
+      <div class="tm-stamp" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="48" height="48">
+          <circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <path d="M20 33 L28 41 L44 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Verified Guide</span>
+      </div>
+    </div>
+
+    <article class="tm-post__body">
+      <p class="tm-post__eyebrow">TopMark Dispatch</p>
+      <h1 class="tm-post__title">{{ title }}</h1>
+      <div class="tm-post__meta">
+        <span>{{ date | readableDate }}</span>
+        <span class="tm-dot">·</span>
+        <span>{{ content | readTime }} min read</span>
+      </div>
+
+      {% if image %}
+      <img class="tm-post__hero-img" src="{{ image }}" alt="" />
+      {% endif %}
+
+      <div class="tm-post__content">
         {{ content | safe }}
       </div>
-    </article>
 
-    <a href="/blog" class="back-link">← Back to all posts</a>
+      <a href="/gigs" class="tm-post__cta">
+        Browse verified experts
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5 5-5 5" /><path d="M4 4v7a4 4 0 004 4h12" /></svg>
+      </a>
+    </article>
   </main>
 
-  <footer class="blog-footer">
+  <footer class="tm-footer">
     <p>&copy; {{ currentYear }} TopMark. All rights reserved.</p>
   </footer>
 </body>

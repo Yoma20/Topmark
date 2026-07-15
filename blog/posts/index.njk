@@ -13,35 +13,71 @@ eleventyExcludeFromCollections: true
   <meta name="theme-color" content="#1dbf73" />
   <link rel="canonical" href="https://topmark.pro/blog/" />
   <link rel="icon" type="image/png" href="/images/logow.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/blog/style.css" />
 </head>
 <body>
-  <header class="blog-header">
-    <a href="/" class="blog-logo">TopMark</a>
-    <nav>
-      <a href="/blog">Blog</a>
+  <header class="tm-nav">
+    <a href="/" class="tm-nav__logo">TopMark</a>
+    <nav class="tm-nav__links">
+      <a href="/blog" aria-current="page">Blog</a>
       <a href="/gigs">Browse Experts</a>
     </nav>
   </header>
 
-  <main class="blog-index">
-    <h1>TopMark Blog</h1>
-    <p class="blog-subtitle">Guides and tips for students working with academic experts.</p>
+  <main class="tm-index">
+    <div class="tm-index__intro">
+      <p class="tm-index__eyebrow">Field Notes</p>
+      <h1 class="tm-index__title">The TopMark Dispatch</h1>
+      <p class="tm-index__subtitle">Working notes on hiring, writing, and getting graded work done right — from the team behind TopMark.</p>
+    </div>
 
-    <ul class="post-list">
-      {% for post in collections.posts %}
-      <li class="post-card">
-        <a href="{{ post.url }}">
-          <h2>{{ post.data.title }}</h2>
-          <p class="blog-meta">{{ post.data.date | readableDate }}</p>
-          <p>{{ post.data.description }}</p>
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
+    {% set posts = collections.posts %}
+    {% if posts.length > 0 %}
+      {% set hero = posts[0] %}
+      <a href="{{ hero.url }}" class="tm-hero">
+        <div class="tm-hero__meta">
+          <span class="tm-hero__label">Latest Dispatch</span>
+          <span class="tm-hero__issue">No. {{ posts.length | pad3 }}</span>
+        </div>
+        <h2 class="tm-hero__title">{{ hero.data.title }}</h2>
+        <p class="tm-hero__desc">{{ hero.data.description }}</p>
+        <div class="tm-hero__footer">
+          <span>{{ hero.data.date | readableDate }}</span>
+          <span class="tm-dot">·</span>
+          <span>{{ hero.templateContent | readTime }} min read</span>
+          <span class="tm-hero__arrow">Read dispatch →</span>
+        </div>
+      </a>
+
+      {% if posts.length > 1 %}
+      <div class="tm-list">
+        <p class="tm-list__label">Archive</p>
+        <ol class="tm-list__items">
+          {% for post in posts %}
+            {% if loop.index > 1 %}
+            <li class="tm-list__item">
+              <a href="{{ post.url }}">
+                <span class="tm-list__num">{{ (posts.length - loop.index + 1) | pad3 }}</span>
+                <span class="tm-list__text">
+                  <span class="tm-list__title">{{ post.data.title }}</span>
+                  <span class="tm-list__desc">{{ post.data.description }}</span>
+                </span>
+                <span class="tm-list__date">{{ post.data.date | readableDate }}</span>
+              </a>
+            </li>
+            {% endif %}
+          {% endfor %}
+        </ol>
+      </div>
+      {% endif %}
+    {% else %}
+      <p class="tm-empty">No dispatches yet — the first one is coming soon.</p>
+    {% endif %}
   </main>
 
-  <footer class="blog-footer">
+  <footer class="tm-footer">
     <p>&copy; {{ currentYear }} TopMark. All rights reserved.</p>
   </footer>
 </body>

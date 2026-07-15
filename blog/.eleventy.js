@@ -12,6 +12,16 @@ module.exports = function (eleventyConfig) {
     });
   });
 
+  // Estimated reading time from rendered HTML content, ~200 words/min
+  eleventyConfig.addFilter("readTime", (htmlString) => {
+    const text = (htmlString || "").replace(/<[^>]*>/g, " ");
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / 200));
+  });
+
+  // Zero-pads issue numbers: 7 -> "007"
+  eleventyConfig.addFilter("pad3", (n) => String(n).padStart(3, "0"));
+
   // Global value available in every template as {{ currentYear }}
   eleventyConfig.addGlobalData("currentYear", new Date().getFullYear());
 
