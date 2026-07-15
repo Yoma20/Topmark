@@ -2,7 +2,7 @@ backend:
   name: github
   repo: Yoma20/Topmark        # your-username/your-repo — update if this changes
   branch: main
-  base_url: https://YOUR-OAUTH-WORKER.workers.dev   # replace once OAuth worker is deployed, see notes below
+  base_url: https://topmark-cms-auth.porttoace.workers.dev  # replace once OAuth worker is deployed, see notes below
 
 # Where uploaded images from the editor get saved / served from
 media_folder: "blog/posts/images"

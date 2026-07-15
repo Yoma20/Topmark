@@ -1,0 +1,89 @@
+:root {
+  --tm-green: #1dbf73;
+  --tm-green-dark: #17a563;
+  --tm-text: #1f2d2a;
+  --tm-muted: #62716d;
+  --tm-border: #e4e9e7;
+  --tm-bg: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--tm-text);
+  background: var(--tm-bg);
+  line-height: 1.6;
+}
+
+a { color: var(--tm-green-dark); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.blog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--tm-border);
+}
+.blog-logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--tm-green-dark);
+}
+.blog-header nav a {
+  margin-left: 1.5rem;
+  color: var(--tm-text);
+  font-weight: 500;
+}
+.blog-header nav a:hover { color: var(--tm-green-dark); }
+
+/* Index page */
+.blog-index {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+.blog-index h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+.blog-subtitle { color: var(--tm-muted); margin-bottom: 2.5rem; }
+
+.post-list { list-style: none; padding: 0; margin: 0; }
+.post-card {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--tm-border);
+}
+.post-card h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem;
+  color: var(--tm-text);
+}
+.post-card:hover h2 { color: var(--tm-green-dark); }
+
+/* Post page */
+.blog-post {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+.blog-post h1 { font-size: 2.1rem; margin-bottom: 0.5rem; }
+.blog-meta { color: var(--tm-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.blog-content h2 { margin-top: 2rem; font-size: 1.4rem; }
+.blog-content p { margin-bottom: 1.2rem; }
+
+.back-link {
+  display: inline-block;
+  margin-top: 2.5rem;
+  font-weight: 500;
+}
+
+/* Footer */
+.blog-footer {
+  text-align: center;
+  padding: 2rem;
+  color: var(--tm-muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--tm-border);
+  margin-top: 2rem;
+}
